@@ -1,59 +1,52 @@
+# Stage 1: Builder
 FROM node:18-alpine AS builder
 
-# Cores ANSI para o terminal
-ARG GREEN='\033[0;32m'
-ARG YELLOW='\033[1;33m'
-ARG BLUE='\033[0;34m'
-ARG RED='\033[0;31m' # Adicionando cor vermelha para erros
-ARG NC='\033[0m' # No Color
+# Decorando o processo de build
+RUN echo -e "\033[0;34m========================================\033[0m" && \
+    echo -e "\033[0;34m  Iniciando Build do Siqueira Campos Imóveis  \033[0m" && \
+    echo -e "\033[0;34m========================================\033[0m"
 
 WORKDIR /app
 
-# Etapa de Instalação de Dependências
-RUN echo -e "${BLUE}========================================${NC}" && \
-    echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEIRA CAMPOS IMÓVEIS${NC}" && \
-    echo -e "${BLUE}========================================${NC}" && \
-    echo "" && \
-    echo -e "${YELLOW}📦 Copiando package.json e instalando dependências...${NC}"
+# Diagnóstico de rede (manter para depuração)
+RUN echo -e "\033[1;33mDiagnóstico de rede: Tentando pingar registry.npmjs.org...\033[0m" && \
+    ping -c 3 registry.npmjs.org || echo "Ping falhou, pode ser problema de DNS ou rede." && \
+    echo -e "\033[1;33mTentando curl https://registry.npmjs.org...\033[0m" && \
+    curl -v https://registry.npmjs.org || echo "Curl falhou, pode ser problema de conectividade."
+
 COPY package*.json ./
 
-# --- ETAPA DE DIAGNÓSTICO DE REDE ---
-RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...${NC}" && \
-    ping -c 3 registry.npmjs.org || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}" && \
-    echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
-    apk add --no-cache curl && \
-    curl -v https://registry.npmjs.org || echo -e "${RED}Falha ao acessar https://registry.npmjs.org com curl. Verifique sua conexão de rede/proxy/firewall.${NC}" && \
-    echo ""
-# --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
+# TENTATIVA DE SOLUÇÃO: Forçar DNS para npm install
+# Adiciona um arquivo de configuração npm para usar um registro específico com DNS
+# Isso é uma tentativa de contornar problemas de DNS no ambiente de build
+RUN echo "registry=https://registry.npmjs.org/" > .npmrc && \
+    echo "strict-ssl=false" >> .npmrc && \
+    echo "cafile=/etc/ssl/certs/ca-certificates.crt" >> .npmrc && \
+    echo "dns-config=8.8.8.8,8.8.4.4" >> .npmrc && \
+    npm install
 
-RUN npm install
-RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}" && \
-    echo ""
+# Copia o script de inicialização
+COPY start.sh ./
 
-# Etapa de Cópia de Arquivos e Build da Aplicação
-RUN echo -e "${YELLOW}📋 Copiando arquivos do projeto e iniciando build do Next.js...${NC}"
-COPY . .
-RUN npm run build
-RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
-    echo -e "${BLUE}========================================${NC}" && \
-    echo -e "${BLUE}BUILD COMPLETO! PRONTO PARA RODAR.${NC}" && \
-    echo -e "${BLUE}========================================${NC}" && \
-    echo ""
+# Stage 2: Runner
+FROM node:18-alpine
 
-FROM node:18-alpine AS runner
+# Decorando o processo de inicialização
+RUN echo -e "\033[0;32m========================================\033[0m" && \
+    echo -e "\033[0;32m  Preparando para Iniciar o Aplicativo  \033[0m" && \
+    echo -e "\033[0;32m========================================\033[0m"
+
 WORKDIR /app
 
 # Copia os arquivos da etapa de build
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/start.sh ./start.sh
+COPY --from=builder /app/package.json ./package.json # Necessário para o start.sh
 
-# Copia o script de inicialização
-COPY start.sh ./start.sh
-RUN chmod +x ./start.sh
-
+# Expor a porta que o Next.js usa
 EXPOSE 3000
 
-# Define o comando de inicialização para o nosso script decorado
-CMD ["./start.sh"]
+# Comando para iniciar o aplicativo usando o script decorado
+CMD ["/bin/sh", "start.sh"]
