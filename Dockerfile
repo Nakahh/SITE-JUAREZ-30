@@ -4,6 +4,7 @@ FROM node:18-alpine AS builder
 ARG GREEN='\033[0;32m'
 ARG YELLOW='\033[1;33m'
 ARG BLUE='\033[0;34m'
+ARG RED='\033[0;31m' # Adicionando cor vermelha para erros
 ARG NC='\033[0m' # No Color
 
 WORKDIR /app
@@ -15,6 +16,16 @@ RUN echo -e "${BLUE}========================================${NC}" && \
     echo "" && \
     echo -e "${YELLOW}📦 Copiando package.json e instalando dependências...${NC}"
 COPY package*.json ./
+
+# --- ETAPA DE DIAGNÓSTICO DE REDE ---
+RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...${NC}" && \
+    ping -c 3 registry.npmjs.org || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}" && \
+    echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
+    apk add --no-cache curl && \
+    curl -v https://registry.npmjs.org || echo -e "${RED}Falha ao acessar https://registry.npmjs.org com curl. Verifique sua conexão de rede/proxy/firewall.${NC}" && \
+    echo ""
+# --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
+
 RUN npm install
 RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}" && \
     echo ""
