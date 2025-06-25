@@ -31,6 +31,12 @@ RUN echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
 
 # --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
 
+# --- NOVAS ETAPAS: LIMPAR LOCKFILES E CACHE DO YARN ---
+RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-lock.json, pnpm-lock.yaml)...${NC}" && \
+    rm -f yarn.lock package-lock.json pnpm-lock.yaml && \
+    echo -e "${YELLOW}Limpando cache do Yarn...${NC}" && \
+    yarn cache clean
+
 # --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN ---
 RUN echo -e "${YELLOW}Instalando dependências com Yarn...${NC}" && \
     yarn install --network-timeout 100000 || \
