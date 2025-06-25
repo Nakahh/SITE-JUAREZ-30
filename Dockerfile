@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:18-slim AS builder
+FROM node:18-alpine AS builder
 
 # Cores ANSI para o terminal
 ARG GREEN='\033[0;32m'
@@ -16,19 +16,10 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# --- ETAPA DE DIAGNÓSTICO DE REDE E INSTALAÇÃO DO YARN VIA APT ---
-# Instala curl, iputils-ping e yarn via apt-get
-RUN apt-get update && apt-get install -y curl iputils-ping yarn && \
-    echo -e "${GREEN}✅ Yarn instalado com sucesso via apt-get!${NC}"
-
-# Força a saída do ping e curl para o log
-RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...\033[0m" && \
-    ping -c 3 registry.npmjs.org 2>&1 | tee /dev/stderr || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}"
-
-RUN echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
-    curl -v https://registry.npmjs.org 2>&1 | tee /dev/stderr || echo -e "${RED}Falha ao acessar https://registry.npmjs.org com curl. Verifique sua conexão de rede/proxy/firewall.${NC}"
-
-# --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
+# --- ETAPA DE INSTALAÇÃO DO YARN E FERRAMENTAS DE BUILD VIA APK ---
+# Instala yarn e ferramentas de build essenciais para Alpine
+RUN apk add --no-cache curl iputils-ping yarn git python3 make g++ && \
+    echo -e "${GREEN}✅ Yarn e ferramentas de build instalados com sucesso via apk!${NC}"
 
 # --- NOVAS ETAPAS: LIMPAR LOCKFILES E CACHE DO YARN ---
 RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-lock.json, pnpm-lock.yaml)...${NC}" && \
@@ -36,9 +27,10 @@ RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-
     echo -e "${YELLOW}Limpando cache do Yarn...${NC}" && \
     yarn cache clean
 
-# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN ---
-RUN echo -e "${YELLOW}Instalando dependências com Yarn...${NC}" && \
-    yarn install --network-timeout 100000 || \
+# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN (com mais memória) ---
+RUN echo -e "${YELLOW}Instalando dependências com Yarn (com mais memória para o Node.js)...${NC}" && \
+    # Aumenta o limite de memória para o processo do Node.js durante a instalação
+    NODE_OPTIONS="--max_old_space_size=4096" yarn install --network-timeout 100000 || \
     (echo -e "${RED}ERRO CRÍTICO: Yarn install falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
 
 RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso com Yarn!${NC}" && \
@@ -55,7 +47,7 @@ RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo ""
 
 # Stage 2: Runner
-FROM node:18-slim AS runner
+FROM node:18-alpine AS runner
 
 RUN echo -e "${GREEN}========================================${NC}" && \
     echo -e "${GREEN}  Preparando para Iniciar o Aplicativo  \033[0m" && \
