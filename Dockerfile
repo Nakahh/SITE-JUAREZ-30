@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:18-slim AS builder # AQUI NÃO DEVE TER NENHUM COMENTÁRIO NA MESMA LINHA
+FROM node:18-slim AS builder # NENHUM COMENTÁRIO AQUI NESTA LINHA
 
 # Cores ANSI para o terminal
 ARG GREEN='\033[0;32m'
@@ -58,7 +58,7 @@ RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo ""
 
 # Stage 2: Runner
-FROM node:18-slim AS runner # AQUI TAMBÉM NÃO DEVE TER NENHUM COMENTÁRIO NA MESMA LINHA
+FROM node:18-slim AS runner # NENHUM COMENTÁRIO AQUI NESTA LINHA
 
 RUN echo -e "${GREEN}========================================${NC}" && \
     echo -e "${GREEN}  Preparando para Iniciar o Aplicativo  \033[0m" && \
