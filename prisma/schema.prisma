@@ -35,7 +35,7 @@ model User {
   articleComments ArticleComment[] // Relação com comentários de artigos
   properties    Property[] // Imóveis atribuídos a este corretor
   favoriteProperties FavoriteProperty[] // Relação com favoritos
-  visits        Visit[] @relation("UserVisits") // Relação com visitas (se o cliente for um User) - CORRIGIDO
+  visits        Visit[] @relation("UserVisits") // Relação com visitas (se o cliente for um User)
   
   @@map("users")
 }

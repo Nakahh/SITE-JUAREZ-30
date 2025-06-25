@@ -1,0 +1,28 @@
+api:
+  dashboard: true # Habilita o dashboard do Traefik
+  insecure: false # Desabilita acesso inseguro ao dashboard (use HTTPS)
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false # Apenas serviços com traefik.enable=true serão roteados
+    network: siqueira-net # Traefik só monitorará serviços nesta rede
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: ${TRAEFIK_EMAIL} # Seu e-mail para Let's Encrypt
+      storage: /acme.json
+      httpChallenge:
+        entryPoint: web
