@@ -17,9 +17,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # --- ETAPA DE DIAGNÓSTICO DE REDE E INSTALAÇÃO DO YARN ---
-# Instala curl, iputils-ping e yarn
+# Instala curl, iputils-ping e yarn (AGORA COM --force)
 RUN apt-get update && apt-get install -y curl iputils-ping && \
-    npm install -g yarn && \
+    npm install -g yarn --force && \
     echo -e "${GREEN}✅ Yarn instalado com sucesso!${NC}"
 
 # Força a saída do ping e curl para o log
