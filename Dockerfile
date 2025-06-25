@@ -16,9 +16,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# --- ETAPA DE DIAGNÓSTICO DE REDE FORÇADO ---
-# Instala curl e iputils-ping para diagnóstico
-RUN apt-get update && apt-get install -y curl iputils-ping
+# --- ETAPA DE DIAGNÓSTICO DE REDE E INSTALAÇÃO DO YARN ---
+# Instala curl, iputils-ping e yarn
+RUN apt-get update && apt-get install -y curl iputils-ping && \
+    npm install -g yarn && \
+    echo -e "${GREEN}✅ Yarn instalado com sucesso!${NC}"
 
 # Força a saída do ping e curl para o log
 RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...\033[0m" && \
@@ -29,34 +31,18 @@ RUN echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
 
 # --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
 
-# Configurações do npm (para tentar forçar o registro e SSL)
-RUN echo "registry=https://registry.npmjs.org/" > .npmrc && \
-    echo "strict-ssl=false" >> .npmrc && \
-    echo "cafile=/etc/ssl/certs/ca-certificates.crt" >> .npmrc && \
-    echo "dns-config=8.8.8.8,8.8.4.4" >> .npmrc && \
-    echo -e "${YELLOW}Conteúdo de .npmrc:${NC}" && \
-    cat .npmrc
+# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN ---
+RUN echo -e "${YELLOW}Instalando dependências com Yarn...${NC}" && \
+    yarn install --network-timeout 100000 || \
+    (echo -e "${RED}ERRO CRÍTICO: Yarn install falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
 
-# --- NOVAS ETAPAS: ATUALIZAR NPM E LIMPAR CACHE ---
-RUN echo -e "${YELLOW}Atualizando npm para a versão mais recente...${NC}" && \
-    npm install -g npm@latest || \
-    (echo -e "${RED}Falha ao atualizar npm. Prosseguindo com a versão existente.${NC}")
-
-RUN echo -e "${YELLOW}Limpando cache do npm...${NC}" && \
-    npm cache clean --force
-
-# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS (AGORA COM --force DIRETO) ---
-RUN echo -e "${YELLOW}Instalando dependências com npm install --force...${NC}" && \
-    npm install --force || \
-    (echo -e "${RED}ERRO CRÍTICO: npm install --force falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
-
-RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}" && \
+RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso com Yarn!${NC}" && \
     echo ""
 
 # Etapa de Cópia de Arquivos e Build da Aplicação
 RUN echo -e "${YELLOW}📋 Copiando arquivos do projeto e iniciando build do Next.js...${NC}"
 COPY . .
-RUN npm run build
+RUN yarn build
 RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo -e "${BLUE}========================================${NC}" && \
     echo -e "${BLUE}BUILD COMPLETO! PRONTO PARA RODAR.${NC}" && \
