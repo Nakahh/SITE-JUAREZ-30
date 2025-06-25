@@ -1,37 +1,6 @@
 version: "3.9"
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DATABASE}
-      - SECRET_KEY=${SECRET_KEY}
-      - TZ=America/Sao_Paulo
-    depends_on:
-      - db
-    networks:
-      - juareznet
-
-  db:
-    image: postgres:14-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: ${POSTGRES_DATABASE}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      TZ: America/Sao_Paulo
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - juareznet
-    ports:
-      - "5432:5432"
-    command: postgres -c max_connections=500 -c shared_buffers=512MB
-
   frontend:
     build:
       context: .
@@ -39,6 +8,7 @@ services:
     container_name: siqueira-frontend
     restart: unless-stopped
     environment:
+      # Variáveis de ambiente para o aplicativo Next.js
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DATABASE}?schema=public
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXT_PUBLIC_BASE_URL}
@@ -55,11 +25,11 @@ services:
       NEXT_PUBLIC_DEVELOPER_INSTAGRAM: ${NEXT_PUBLIC_DEVELOPER_INSTAGRAM}
       NEXT_PUBLIC_DEVELOPER_WHATSAPP: ${NEXT_PUBLIC_DEVELOPER_WHATSAPP}
       NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      SECRET_KEY: ${SECRET_KEY} # Adicionada a variável SECRET_KEY
     volumes:
       - next-cache:/app/.next/cache
     depends_on:
-      - db
-      - backend
+      - postgres
     networks:
       - juareznet
     labels:
@@ -68,23 +38,6 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-
-  backend:
-    image: your-backend-image:latest
-    container_name: siqueira-backend
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DATABASE}?schema=public
-    depends_on:
-      - db
-    networks:
-      - juareznet
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=myresolver"
-      - "traefik.http.services.backend.loadbalancer.server.port=8080"
 
   postgres:
     image: postgres:14-alpine
@@ -101,7 +54,7 @@ services:
     networks:
       - juareznet
     ports:
-      - "5432:5432"
+      - "5432:5432" # Expondo a porta para acesso local (ex: para migrações)
 
   traefik:
     image: traefik:latest
@@ -123,7 +76,7 @@ services:
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$H6usA.0Q$$f00000000000000000000"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$H6usA.0Q$$f00000000000000000000" # Senha "admin" para o dashboard do Traefik
       - "traefik.http.services.api.loadbalancer.server.port=8080"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
@@ -132,12 +85,9 @@ services:
       - "traefik.http.routers.dashboard.middlewares=auth"
 
 volumes:
-  postgres_data:
   postgres-data:
   next-cache:
 
 networks:
   juareznet:
-    driver: bridge
-  siqueira-net:
     driver: bridge

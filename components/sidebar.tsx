@@ -19,6 +19,7 @@ import {
   DollarSign,
   Building,
   Users,
+  MessageCircleMore,
 } from "lucide-react" // Adicionado todos os ícones necessários
 import { useSession } from "next-auth/react"
 
@@ -104,6 +105,12 @@ export function Sidebar() {
       href: "/admin/chat",
       icon: MessageSquare,
       roles: ["ADMIN", "CORRETOR", "ASSISTENTE"],
+    },
+    {
+      title: "WhatsApp API",
+      href: "/admin/whatsapp",
+      icon: MessageCircleMore, // Ou o ícone que preferir
+      roles: ["ADMIN"],
     },
   ].filter((item) => item.roles.includes(userRole))
 
