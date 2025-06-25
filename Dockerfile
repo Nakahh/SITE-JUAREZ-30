@@ -37,13 +37,18 @@ RUN echo "registry=https://registry.npmjs.org/" > .npmrc && \
     echo -e "${YELLOW}Conteúdo de .npmrc:${NC}" && \
     cat .npmrc
 
-# Tenta npm install. Se falhar com E404, tenta com --legacy-peer-deps e --force
-RUN npm install || \
-    (echo -e "${RED}npm install falhou com E404. Tentando com --legacy-peer-deps...${NC}" && \
-     npm install --legacy-peer-deps) || \
-    (echo -e "${RED}npm install --legacy-peer-deps falhou. Tentando com --force...${NC}" && \
-     npm install --force) || \
-    (echo -e "${RED}Todas as tentativas de npm install falharam. Verifique a rede e o registro.${NC}" && exit 1)
+# --- NOVAS ETAPAS: ATUALIZAR NPM E LIMPAR CACHE ---
+RUN echo -e "${YELLOW}Atualizando npm para a versão mais recente...${NC}" && \
+    npm install -g npm@latest || \
+    (echo -e "${RED}Falha ao atualizar npm. Prosseguindo com a versão existente.${NC}")
+
+RUN echo -e "${YELLOW}Limpando cache do npm...${NC}" && \
+    npm cache clean --force
+
+# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS (AGORA COM --force DIRETO) ---
+RUN echo -e "${YELLOW}Instalando dependências com npm install --force...${NC}" && \
+    npm install --force || \
+    (echo -e "${RED}ERRO CRÍTICO: npm install --force falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
 
 RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}" && \
     echo ""
