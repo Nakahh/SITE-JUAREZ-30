@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder # ALTERADO DE node:18-alpine PARA node:18-slim
 
 # Cores ANSI para o terminal
 ARG GREEN='\033[0;32m'
@@ -17,10 +17,11 @@ WORKDIR /app
 COPY package*.json ./
 
 # --- ETAPA DE DIAGNÓSTICO DE REDE FORÇADO ---
-# Instala curl e iputils-ping para diagnóstico
-RUN apk add --no-cache curl iputils-ping
+# Instala curl e iputils-ping para diagnóstico (se já não estiverem presentes na imagem slim)
+# Usamos apt-get para Debian/Ubuntu-based images
+RUN apt-get update && apt-get install -y curl iputils-ping
 
-RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...${NC}" && \
+RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...\033[0m" && \
     ping -c 3 registry.npmjs.org 2>&1 || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}"
 
 RUN echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
@@ -58,7 +59,7 @@ RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo ""
 
 # Stage 2: Runner
-FROM node:18-alpine AS runner
+FROM node:18-slim AS runner # ALTERADO DE node:18-alpine PARA node:18-slim
 
 RUN echo -e "${GREEN}========================================${NC}" && \
     echo -e "${GREEN}  Preparando para Iniciar o Aplicativo  \033[0m" && \
