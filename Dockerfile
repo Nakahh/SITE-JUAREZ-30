@@ -1,12 +1,12 @@
 # Stage 1: Builder
-FROM node:18-slim AS builder # NENHUM COMENTÁRIO AQUI NESTA LINHA
+FROM node:18-slim AS builder
 
 # Cores ANSI para o terminal
 ARG GREEN='\033[0;32m'
 ARG YELLOW='\033[1;33m'
 ARG BLUE='\033[0;34m'
-ARG RED='\033[0;31m' # Adicionando cor vermelha para erros
-ARG NC='\033[0m' # No Color
+ARG RED='\033[0;31m'
+ARG NC='\033[0m'
 
 RUN echo -e "${BLUE}========================================${NC}" && \
     echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEIRA CAMPOS IMÓVEIS${NC}" && \
@@ -17,14 +17,15 @@ WORKDIR /app
 COPY package*.json ./
 
 # --- ETAPA DE DIAGNÓSTICO DE REDE FORÇADO ---
-# Instala curl e iputils-ping para diagnóstico (usando apt-get para Debian/Ubuntu-based images)
+# Instala curl e iputils-ping para diagnóstico
 RUN apt-get update && apt-get install -y curl iputils-ping
 
+# Força a saída do ping e curl para o log
 RUN echo -e "${YELLOW}Diagnóstico de rede: Tentando pingar registry.npmjs.org...\033[0m" && \
-    ping -c 3 registry.npmjs.org 2>&1 || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}"
+    ping -c 3 registry.npmjs.org 2>&1 | tee /dev/stderr || echo -e "${RED}Falha ao pingar registry.npmjs.org. Verifique sua conexão de rede/DNS.${NC}"
 
 RUN echo -e "${YELLOW}Tentando curl https://registry.npmjs.org...${NC}" && \
-    curl -v https://registry.npmjs.org 2>&1 || echo -e "${RED}Falha ao acessar https://registry.npmjs.org com curl. Verifique sua conexão de rede/proxy/firewall.${NC}"
+    curl -v https://registry.npmjs.org 2>&1 | tee /dev/stderr || echo -e "${RED}Falha ao acessar https://registry.npmjs.org com curl. Verifique sua conexão de rede/proxy/firewall.${NC}"
 
 # --- FIM DA ETAPA DE DIAGNÓSTICO DE REDE ---
 
@@ -58,7 +59,7 @@ RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo ""
 
 # Stage 2: Runner
-FROM node:18-slim AS runner # NENHUM COMENTÁRIO AQUI NESTA LINHA
+FROM node:18-slim AS runner
 
 RUN echo -e "${GREEN}========================================${NC}" && \
     echo -e "${GREEN}  Preparando para Iniciar o Aplicativo  \033[0m" && \
