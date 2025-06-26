@@ -9,7 +9,7 @@ ARG RED='\033[0;31m'
 ARG NC='\033[0m' # No Color
 
 RUN echo -e "${BLUE}========================================${NC}" && \
-    echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEIRA CAMPOS IMÓVEIS${NC}" && \
+    echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEEIRA CAMPOS IMÓVEIS${NC}" && \
     echo -e "${BLUE}========================================${NC}"
 
 WORKDIR /app

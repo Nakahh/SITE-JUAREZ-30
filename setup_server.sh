@@ -59,17 +59,22 @@ else
 fi
 
 # --- 5. Clonar seu Projeto ---
-echo -e "${YELLOW}5. Clonando seu projeto do GitHub...${NC}"
-# ATENÇÃO: SUBSTITUA PELO URL REAL DO SEU REPOSITÓRIO GITHUB
-PROJECT_REPO="https://github.com/seu-usuario/seu-repositorio.git"
+echo -e "${YELLOW}5. Clonando seu projeto do GitHub via SSH...${NC}"
+# ATENÇÃO: O URL abaixo é para acesso via SSH. Certifique-se de que sua chave SSH está configurada no GitHub.
+PROJECT_REPO="git@github.com:Nakahh/SITE-JUAREZ-30.git" # AGORA USANDO SSH
 PROJECT_DIR="siqueira-campos-imoveis"
 
 if [ -d "$PROJECT_DIR" ]; then
     echo -e "${YELLOW}Diretório do projeto '$PROJECT_DIR' já existe. Pulando clonagem.${NC}"
-    echo -e "${YELLOW}Certifique-se de que o conteúdo está atualizado (git pull manual se necessário).${NC}"
+    echo -e "${YELLOW}Puxando as últimas alterações...${NC}"
+    cd "$PROJECT_DIR" || { echo -e "${RED}Erro: Não foi possível entrar no diretório do projeto.${NC}"; exit 1; }
+    git pull origin main # Ou a branch que você usa para deploy
+    cd .. # Voltar para o diretório anterior
+    if [ $? -ne 0 ]; then echo -e "${RED}Erro ao puxar as últimas alterações. Verifique suas permissões SSH.${NC}"; exit 1; fi
+    echo -e "${GREEN}✅ Últimas alterações puxadas.${NC}"
 else
     git clone "$PROJECT_REPO" "$PROJECT_DIR"
-    if [ $? -ne 0 ]; then echo -e "${RED}Erro ao clonar o repositório. Verifique o URL e suas permissões.${NC}"; exit 1; fi
+    if [ $? -ne 0 ]; then echo -e "${RED}Erro ao clonar o repositório. Verifique o URL e suas permissões SSH.${NC}"; exit 1; fi
     echo -e "${GREEN}✅ Projeto clonado em '$PROJECT_DIR'.${NC}"
 fi
 
