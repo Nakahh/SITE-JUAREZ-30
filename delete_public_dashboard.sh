@@ -1,1 +1,1 @@
-rm app/$$public$$/dashboard/page.tsx
+rm -f app/$$public$$/dashboard/page.tsx
