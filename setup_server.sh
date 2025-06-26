@@ -58,32 +58,27 @@ else
     echo -e "${GREEN}✅ Espaço de swap de 2GB adicionado e ativado.${NC}"
 fi
 
-# --- 5. Clonar seu Projeto ---
-echo -e "${YELLOW}5. Clonando seu projeto do GitHub via SSH...${NC}"
-# ATENÇÃO: O URL abaixo é para acesso via SSH. Certifique-se de que sua chave SSH está configurada no GitHub.
-PROJECT_REPO="git@github.com:Nakahh/SITE-JUAREZ-30.git" # AGORA USANDO SSH
+# --- 5. Limpar e Clonar seu Projeto ---
+echo -e "${YELLOW}5. Limpando diretório antigo e clonando seu projeto do GitHub via SSH...${NC}"
+PROJECT_REPO="git@github.com:Nakahh/SITE-JUAREZ-30.git" # URL SSH do seu repositório
 PROJECT_DIR="siqueira-campos-imoveis"
 
+# Remove o diretório antigo para garantir um clone limpo
 if [ -d "$PROJECT_DIR" ]; then
-    echo -e "${YELLOW}Diretório do projeto '$PROJECT_DIR' já existe. Pulando clonagem.${NC}"
-    echo -e "${YELLOW}Puxando as últimas alterações...${NC}"
-    cd "$PROJECT_DIR" || { echo -e "${RED}Erro: Não foi possível entrar no diretório do projeto.${NC}"; exit 1; }
-    git pull origin main # Ou a branch que você usa para deploy
-    cd .. # Voltar para o diretório anterior
-    if [ $? -ne 0 ]; then echo -e "${RED}Erro ao puxar as últimas alterações. Verifique suas permissões SSH.${NC}"; exit 1; fi
-    echo -e "${GREEN}✅ Últimas alterações puxadas.${NC}"
-else
-    git clone "$PROJECT_REPO" "$PROJECT_DIR"
-    if [ $? -ne 0 ]; then echo -e "${RED}Erro ao clonar o repositório. Verifique o URL e suas permissões SSH.${NC}"; exit 1; fi
-    echo -e "${GREEN}✅ Projeto clonado em '$PROJECT_DIR'.${NC}"
+    echo -e "${YELLOW}Removendo diretório existente: $PROJECT_DIR${NC}"
+    rm -rf "$PROJECT_DIR"
 fi
+
+git clone "$PROJECT_REPO" "$PROJECT_DIR"
+if [ $? -ne 0 ]; then echo -e "${RED}Erro ao clonar o repositório. Verifique o URL e suas permissões SSH.${NC}"; exit 1; fi
+echo -e "${GREEN}✅ Projeto clonado em '$PROJECT_DIR'.${NC}"
 
 cd "$PROJECT_DIR" || { echo -e "${RED}Erro: Não foi possível entrar no diretório do projeto.${NC}"; exit 1; }
 
-# --- 6. Configurar o Arquivo .env ---
+# --- 6. Configurar o Arquivo .env (Criar e Pausar para Edição) ---
 echo -e "${YELLOW}6. Configurando o arquivo .env...${NC}"
 if [ ! -f ".env" ]; then
-    echo -e "${YELLOW}Criando arquivo .env. Por favor, edite-o com suas variáveis de ambiente.${NC}"
+    echo -e "${YELLOW}Criando arquivo .env com valores padrão. Por favor, edite-o com suas variáveis de ambiente reais.${NC}"
     cat << EOF > .env
 # Variáveis para o Banco de Dados
 DATABASE_URL="postgresql://vitornakah:nakah123@postgres:5432/siqueira_db?schema=public"
@@ -103,7 +98,7 @@ MINIO_BUCKET_NAME=juarez-site
 
 # Variáveis de API
 RESEND_API_KEY=re_WRyNRULE_Mezz7zLti92oMRJG8oq5jKuv
-OPENAI_API_KEY=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
+OPENAI_API_KEY=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
 EVOLUTION_API_URL=https://evo.siqueicamposimoveis.com.br # SEU SUBDOMÍNIO REAL AQUI
 EVOLUTION_API_KEY=aeb9b8541f0567865fa02df9a0aea5a0
 
@@ -121,8 +116,10 @@ TRAEFIK_DOMAIN=siqueicamposimoveis.com.br # SEU DOMÍNIO PRINCIPAL REAL AQUI
 # Variável Secreta Geral (se usada pelo app)
 SECRET_KEY=uma_chave_secreta_longa_e_complexa_aqui_gerada_aleatoriamente
 EOF
+    echo -e "${YELLOW}*** PAUSA PARA EDIÇÃO DO .ENV ***${NC}"
     echo -e "${YELLOW}Por favor, edite o arquivo .env AGORA com seus dados reais e salve (Ctrl+X, Y, Enter).${NC}"
-    read -p "Pressione Enter para continuar após editar o .env..."
+    nano .env # Abre o editor para o usuário editar
+    echo -e "${YELLOW}*** EDIÇÃO DO .ENV CONCLUÍDA. CONTINUANDO... ***${NC}"
 else
     echo -e "${YELLOW}Arquivo .env já existe. Certifique-se de que está configurado corretamente.${NC}"
     read -p "Pressione Enter para continuar..."
@@ -131,9 +128,8 @@ echo -e "${GREEN}✅ Arquivo .env verificado/criado.${NC}"
 
 # --- 7. Verificar e Atualizar Dockerfile e docker-compose.yml ---
 echo -e "${YELLOW}7. Verificando Dockerfile e docker-compose.yml...${NC}"
-# Aqui você deve garantir que seu Dockerfile e docker-compose.yml no repositório estão atualizados.
-# O script assume que eles já estão corretos no seu repositório clonado.
-# Se precisar de ajustes, faça-os no seu repositório e puxe as mudanças.
+# O script assume que seu Dockerfile e docker-compose.yml no repositório estão atualizados.
+# Se você fez alterações locais no Dockerfile, elas serão sobrescritas pelo git clone/pull.
 echo -e "${GREEN}✅ Dockerfile e docker-compose.yml assumidos como corretos no repositório.${NC}"
 
 # --- 8. Executar o Deploy do Docker Compose ---
@@ -163,8 +159,12 @@ echo -e "${YELLOW}10. Verificando o status dos contêineres...${NC}"
 docker compose ps
 echo -e "${GREEN}✅ Status dos contêineres verificado.${NC}"
 
-# --- 11. Instalar Portainer (Opcional) ---
-echo -e "${YELLOW}11. Instalando Portainer para gerenciamento visual...${NC}"
+# --- 11. Verificar os Logs do Frontend (para depuração inicial) ---
+echo -e "${YELLOW}11. Exibindo os últimos logs do frontend (Ctrl+C para sair)...${NC}"
+docker compose logs -f frontend
+
+# --- 12. Instalar Portainer (Opcional) ---
+echo -e "${YELLOW}12. Instalando Portainer para gerenciamento visual...${NC}"
 cd ~ # Voltar para o diretório home
 docker volume create portainer_data
 if [ $? -ne 0 ]; then echo -e "${RED}Erro ao criar volume do Portainer.${NC}"; exit 1; fi
