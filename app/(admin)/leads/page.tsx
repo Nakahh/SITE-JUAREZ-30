@@ -15,13 +15,42 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
 
 const prisma = new PrismaClient()
 
+// Componente cliente para o AlertDialog
+function DeleteClientDialog({ clientId, clientName }: { clientId: string; clientName: string }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="icon">
+          <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Excluir</span>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta ação não pode ser desfeita. Isso excluirá permanentemente o lead{" "}
+            <span className="font-bold">{clientName}</span>.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <form action={deleteClient.bind(null, clientId)}>
+            <AlertDialogAction type="submit">Excluir</AlertDialogAction>
+          </form>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
 export default async function AdminLeads() {
-  const leads = await prisma.client.findMany({
+  const clients = await prisma.client.findMany({
     orderBy: {
       createdAt: "desc",
     },
@@ -39,7 +68,7 @@ export default async function AdminLeads() {
         </Link>
       </div>
 
-      {leads.length === 0 ? (
+      {clients.length === 0 ? (
         <p className="text-center text-muted-foreground">Nenhum lead cadastrado ainda.</p>
       ) : (
         <Table>
@@ -48,48 +77,24 @@ export default async function AdminLeads() {
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Telefone</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leads.map((lead) => (
-              <TableRow key={lead.id}>
-                <TableCell className="font-medium">{lead.nome}</TableCell>
-                <TableCell>{lead.email}</TableCell>
-                <TableCell>{lead.telefone || "N/A"}</TableCell>
-                <TableCell>{format(lead.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
+            {clients.map((client) => (
+              <TableRow key={client.id}>
+                <TableCell className="font-medium">{client.name}</TableCell>
+                <TableCell>{client.email}</TableCell>
+                <TableCell>{client.phone || "N/A"}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/admin/leads/${lead.id}/edit`}>
+                    <Link href={`/admin/leads/${client.id}/edit`}>
                       <Button variant="outline" size="icon">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
                     </Link>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Excluir</span>
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação não pode ser desfeita. Isso excluirá permanentemente o lead{" "}
-                            <span className="font-bold">{lead.nome}</span>.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <form action={deleteClient.bind(null, lead.id)}>
-                            <AlertDialogAction type="submit">Excluir</AlertDialogAction>
-                          </form>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <DeleteClientDialog clientId={client.id} clientName={client.name} />
                   </div>
                 </TableCell>
               </TableRow>

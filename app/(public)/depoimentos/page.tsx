@@ -1,87 +1,62 @@
 import { PrismaClient } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star } from "lucide-react"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { createTestimonial } from "@/app/actions/testimonial-actions"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
 
 const prisma = new PrismaClient()
 
-export default async function TestimonialsPage() {
+export default async function DepoimentosPage() {
   const testimonials = await prisma.testimonial.findMany({
-    where: { approved: true },
-    orderBy: { createdAt: "desc" },
-    include: { author: { select: { nome: true } } },
+    where: {
+      approved: true, // Apenas depoimentos aprovados
+    },
+    include: {
+      user: {
+        select: { name: true, image: true },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   })
-
-  const session = await getServerSession(authOptions)
 
   return (
     <section className="container py-12">
-      <h1 className="text-4xl font-bold tracking-tight text-center mb-10">O que nossos clientes dizem</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {testimonials.length === 0 ? (
-          <p className="text-center text-muted-foreground col-span-full">Nenhum depoimento aprovado ainda.</p>
-        ) : (
-          testimonials.map((testimonial) => (
-            <Card key={testimonial.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-5 w-5 ${
-                        i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Por {testimonial.authorName} em {format(testimonial.createdAt, "dd/MM/yyyy", { locale: ptBR })}
-                </p>
+      <h1 className="text-4xl font-bold mb-8 text-center">O que nossos clientes dizem</h1>
+      {testimonials.length === 0 ? (
+        <p className="text-center text-muted-foreground">Nenhum depoimento disponível ainda.</p>
+      ) : (
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <Card key={testimonial.id} className="flex flex-col">
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={testimonial.user.image || "/placeholder-user.jpg"} />
+                  <AvatarFallback>{testimonial.user.name?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-lg">{testimonial.user.name || "Cliente Anônimo"}</CardTitle>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-lg leading-relaxed">"{testimonial.content}"</p>
+              <CardContent className="flex-grow">
+                <p className="text-muted-foreground italic">"{testimonial.content}"</p>
               </CardContent>
             </Card>
-          ))
-        )}
-      </div>
-
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Deixe seu Depoimento</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={createTestimonial} className="space-y-4">
-            <div>
-              <label htmlFor="authorName" className="block text-sm font-medium">
-                Seu Nome
-              </label>
-              <Input type="text" id="authorName" name="authorName" defaultValue={session?.user?.name || ""} required />
-            </div>
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium">
-                Seu Depoimento
-              </label>
-              <Textarea id="content" name="content" rows={5} required />
-            </div>
-            <div>
-              <label htmlFor="rating" className="block text-sm font-medium">
-                Avaliação (1-5 Estrelas)
-              </label>
-              <Input type="number" id="rating" name="rating" min="1" max="5" defaultValue={5} required />
-            </div>
-            <Button type="submit">Enviar Depoimento</Button>
-          </form>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

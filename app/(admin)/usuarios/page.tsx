@@ -16,6 +16,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
+
 const prisma = new PrismaClient()
 
 // Componente cliente para o AlertDialog
@@ -81,9 +83,9 @@ export default async function AdminUsuarios() {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.nome}</TableCell>
+                <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.papel}</TableCell>
+                <TableCell>{user.role}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/usuarios/${user.id}/edit`}>
@@ -92,7 +94,7 @@ export default async function AdminUsuarios() {
                         <span className="sr-only">Editar</span>
                       </Button>
                     </Link>
-                    <DeleteUserDialog userId={user.id} userName={user.nome || user.email} />
+                    <DeleteUserDialog userId={user.id} userName={user.name || user.email} />
                   </div>
                 </TableCell>
               </TableRow>

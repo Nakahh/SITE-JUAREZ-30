@@ -1,11 +1,21 @@
-import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { PrismaClient } from "@prisma/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
 
 const prisma = new PrismaClient()
 
-export default async function Blog() {
+export default async function BlogPage() {
   const articles = await prisma.article.findMany({
+    include: {
+      author: {
+        select: { name: true },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -13,27 +23,32 @@ export default async function Blog() {
 
   return (
     <section className="container py-12">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Blog</h1>
-      <p className="mt-4 text-muted-foreground mb-8">Artigos sobre o mercado imobiliário, dicas e novidades.</p>
-
+      <h1 className="text-4xl font-bold mb-8 text-center">Nosso Blog</h1>
       {articles.length === 0 ? (
         <p className="text-center text-muted-foreground">Nenhum artigo publicado ainda.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
-            <Card key={article.id}>
+            <Card key={article.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle className="text-xl font-bold">{article.titulo}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Publicado em: {new Date(article.createdAt).toLocaleDateString("pt-BR")}
-                </p>
+                <CardTitle className="text-xl font-semibold">
+                  <Link href={`/blog/${article.id}`} className="hover:underline">
+                    {article.title}
+                  </Link>
+                </CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">
+                  Por {article.author.name || "Autor Desconhecido"} em{" "}
+                  {format(article.createdAt, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground line-clamp-3">{article.conteudo}</p>
-                <Link href={`/blog/${article.slug}`} className="text-primary hover:underline mt-2 inline-block">
-                  Leia mais
-                </Link>
+              <CardContent className="flex-grow">
+                <p className="text-muted-foreground line-clamp-3">{article.content}</p>
               </CardContent>
+              <div className="p-6 pt-0">
+                <Link href={`/blog/${article.id}`}>
+                  <Button variant="outline">Ler Mais</Button>
+                </Link>
+              </div>
             </Card>
           ))}
         </div>

@@ -7,13 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createProperty } from "@/app/actions/property-actions"
 import { ImageUpload } from "@/components/image-upload"
 import { useState, useEffect } from "react"
-import { PrismaClient, type User } from "@prisma/client"
-
-const prisma = new PrismaClient()
+// Removido: import { PrismaClient, type User } from "@prisma/client"
+// Removido: const prisma = new PrismaClient()
 
 export default function NewPropertyPage() {
   const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [agents, setAgents] = useState<User[]>([])
+  const [agents, setAgents] = useState<any[]>([]) // Use 'any' ou defina um tipo User simplificado se não quiser importar PrismaClient
   const [loadingAgents, setLoadingAgents] = useState(true)
 
   useEffect(() => {

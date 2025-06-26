@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { PrismaClient } from "@prisma/client"
-import { auth } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth" // Importação corrigida
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Heart, Search, Calendar, Star } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image" // Adicionado import para Image
+import Image from "next/image"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
 
 const prisma = new PrismaClient()
 
@@ -29,20 +31,20 @@ export default async function ClientDashboard() {
 
   const totalFavorites = await prisma.favoriteProperty.count({ where: { userId } })
   const totalSavedSearches = await prisma.savedSearch.count({ where: { userId } })
-  const totalVisits = await prisma.visit.count({ where: { clientId: userId } })
+  const totalVisits = await prisma.visit.count({ where: { userId } }) // Alterado de clientId para userId
   const totalReviews = await prisma.propertyReview.count({ where: { userId } })
 
   const recentFavorites = await prisma.favoriteProperty.findMany({
     where: { userId },
-    include: { property: { select: { titulo: true, localizacao: true, preco: true, images: true } } },
+    include: { property: { select: { title: true, address: true, price: true, images: true } } }, // Corrigido para 'title' e 'address'
     orderBy: { createdAt: "desc" },
     take: 3,
   })
 
   const upcomingVisits = await prisma.visit.findMany({
-    where: { clientId: userId, status: "Pendente" },
-    include: { property: { select: { titulo: true, localizacao: true } } },
-    orderBy: { dataHora: "asc" },
+    where: { userId, date: { gte: new Date() } }, // Alterado de clientId para userId e adicionado filtro de data
+    include: { property: { select: { title: true, address: true } } }, // Corrigido para 'title' e 'address'
+    orderBy: { date: "asc" },
     take: 3,
   })
 
@@ -147,8 +149,8 @@ export default async function ClientDashboard() {
                     <div className="relative h-16 w-16 flex-shrink-0 rounded-md overflow-hidden">
                       {fav.property.images.length > 0 ? (
                         <Image
-                          src={fav.property.images[0].url || "/placeholder.svg"}
-                          alt={fav.property.titulo}
+                          src={fav.property.images[0] || "/placeholder.svg"} // Assumindo que images é um array de strings de URL
+                          alt={fav.property.title}
                           fill
                           style={{ objectFit: "cover" }}
                         />
@@ -163,12 +165,12 @@ export default async function ClientDashboard() {
                     </div>
                     <div>
                       <Link href={`/imoveis/${fav.property.id}`} className="font-semibold hover:underline">
-                        {fav.property.titulo}
+                        {fav.property.title}
                       </Link>
-                      <p className="text-sm text-muted-foreground">{fav.property.localizacao}</p>
+                      <p className="text-sm text-muted-foreground">{fav.property.address}</p>
                       <p className="text-sm font-medium">
                         {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-                          fav.property.preco,
+                          fav.property.price,
                         )}
                       </p>
                     </div>
@@ -191,12 +193,12 @@ export default async function ClientDashboard() {
                 {upcomingVisits.map((visit) => (
                   <li key={visit.id}>
                     <p className="font-semibold">
-                      {visit.property.titulo} em {visit.property.localizacao}
+                      {visit.property?.title} em {visit.property?.address}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Data: {format(visit.dataHora, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                      Data: {format(visit.date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                     </p>
-                    <p className="text-sm text-muted-foreground">Status: {visit.status}</p>
+                    {/* Removido status, pois não está no schema de Visit */}
                     <Link href={`/dashboard/visitas?id=${visit.id}`}>
                       <Button variant="link" className="p-0 h-auto">
                         Ver Detalhes

@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { deleteNewsletterSubscription } from "@/app/actions/newsletter-actions" // Importa a Server Action
+import { deleteNewsletterSubscription } from "@/app/actions/newsletter-actions"
+import { PrismaClient } from "@prisma/client" // Importar PrismaClient aqui
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,17 +20,42 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-// Removido o import de PrismaClient aqui, pois não é usado diretamente no cliente
-// e a chamada de dados deve ser feita em um Server Component ou Server Action.
+export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
+
+const prisma = new PrismaClient()
+
+// Componente cliente para o AlertDialog (mantido como cliente para interatividade)
+function DeleteSubscriptionDialog({ subscriptionId }: { subscriptionId: string }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="sm">
+          <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Excluir</span>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta ação não pode ser desfeita. Isso removerá permanentemente a inscrição deste e-mail da newsletter.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={() => deleteNewsletterSubscription(subscriptionId)}>Excluir</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
 
 export default async function NewsletterPage() {
-  // A busca por subscriptions deve ser feita em um Server Component pai
-  // ou em uma Server Action separada que este componente cliente possa chamar.
-  // Por enquanto, para o build, vamos simular os dados ou passar via props.
-  // Para fins de correção do build, vou ajustar a chamada.
-
-  // Para o build, vamos usar um array vazio temporariamente.
-  const subscriptions: { id: string; email: string; createdAt: Date }[] = [] // Temporário para o build
+  const subscriptions = await prisma.newsletterSubscription.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
 
   return (
     <section className="container py-12">
@@ -57,29 +83,7 @@ export default async function NewsletterPage() {
                     <TableCell className="font-medium">{sub.email}</TableCell>
                     <TableCell>{format(sub.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
                     <TableCell className="text-right">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Excluir</span>
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta ação não pode ser desfeita. Isso removerá permanentemente a inscrição deste e-mail da
-                              newsletter.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => deleteNewsletterSubscription(sub.id)}>
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <DeleteSubscriptionDialog subscriptionId={sub.id} />
                     </TableCell>
                   </TableRow>
                 ))}

@@ -1,92 +1,37 @@
 import type React from "react"
-import { Sidebar } from "@/components/sidebar" // Corrigido para lowercase 'sidebar'
-import { auth } from "@/app/api/auth/[...nextauth]/route"
-import { redirect } from "next/navigation"
-import { Home, Building, Users, Newspaper, MessageSquare, DollarSign, Calendar, Star, Mail } from "lucide-react"
+import { Inter } from "next/font/google"
+import "../globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
+import { SessionProvider } from "@/components/session-provider"
+import { Sidebar } from "@/components/sidebar"
+import { auth } from "@/lib/auth" // Importação corrigida
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const session = await auth()
+const inter = Inter({ subsets: ["latin"] })
 
-  if (!session) {
-    redirect("/login")
-  }
+export const metadata = {
+  title: "Siqueira Campos Imóveis - Admin",
+  description: "Painel administrativo para gerenciar imóveis, usuários, leads e mais.",
+}
 
-  const userRole = session.user?.papel || "CLIENTE"
-  const userName = session.user?.name || session.user?.email || "Usuário"
-
-  const navigationItems = [
-    {
-      title: "Dashboard",
-      href: "/admin/admin", // Ajustado para a nova rota
-      icon: Home,
-      roles: ["ADMIN", "CORRETOR", "ASSISTENTE"],
-    },
-    {
-      title: "Imóveis",
-      href: "/admin/admin/imoveis", // Ajustado para a nova rota
-      icon: Building,
-      roles: ["ADMIN", "CORRETOR", "ASSISTENTE"],
-    },
-    {
-      title: "Leads",
-      href: "/admin/leads",
-      icon: Users,
-      roles: ["ADMIN", "CORRETOR"],
-    },
-    {
-      title: "Visitas",
-      href: "/admin/visitas",
-      icon: Calendar,
-      roles: ["ADMIN", "CORRETOR"],
-    },
-    {
-      title: "Financeiro",
-      href: "/admin/financeiro",
-      icon: DollarSign,
-      roles: ["ADMIN"],
-    },
-    {
-      title: "Blog",
-      href: "/admin/admin/blog", // Ajustado para a nova rota
-      icon: Newspaper,
-      roles: ["ADMIN"],
-    },
-    {
-      title: "Depoimentos",
-      href: "/admin/admin/depoimentos", // Ajustado para a nova rota
-      icon: Star,
-      roles: ["ADMIN"],
-    },
-    {
-      title: "Newsletter",
-      href: "/admin/newsletter",
-      icon: Mail,
-      roles: ["ADMIN"],
-    },
-    {
-      title: "Usuários",
-      href: "/admin/usuarios",
-      icon: Users,
-      roles: ["ADMIN"],
-    },
-    {
-      title: "Chat",
-      href: "/admin/chat",
-      icon: MessageSquare,
-      roles: ["ADMIN", "CORRETOR", "ASSISTENTE"],
-    },
-  ].filter((item) => item.roles.includes(userRole)) // Filtra itens com base no papel do usuário
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth() // Obter a sessão aqui
 
   return (
-    <div className="flex min-h-screen w-full">
-      <Sidebar navItems={navigationItems} userRole={userRole} userName={userName} />
-      <div className="flex flex-col flex-1">
-        <main className="flex-1 p-4 md:p-6">{children}</main>
-      </div>
-    </div>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SessionProvider session={session}>
+            {" "}
+            {/* Passar a sessão para o SessionProvider */}
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <main className="flex-1 p-6 lg:p-10">{children}</main>
+            </div>
+            <Toaster />
+          </SessionProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   )
 }

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createUser } from "@/app/actions/user-actions"
-import { Papel } from "@prisma/client"
+import { Role } from "@prisma/client" // Importar o enum Role
 
 export default function NewUserPage() {
   return (
@@ -31,16 +31,16 @@ export default function NewUserPage() {
           <label htmlFor="papel" className="block text-sm font-medium">
             Papel
           </label>
-          <Select name="papel" defaultValue={Papel.CLIENTE} required>
+          <Select name="papel" defaultValue={Role.USER} required>
+            {" "}
+            {/* Corrigido para Role.USER */}
             <SelectTrigger>
               <SelectValue placeholder="Selecione o papel" />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(Papel).map((role) => (
-                <SelectItem key={role} value={role}>
-                  {role}
-                </SelectItem>
-              ))}
+              <SelectItem value={Role.USER}>Usuário Comum</SelectItem>
+              <SelectItem value={Role.AGENT}>Corretor</SelectItem>
+              <SelectItem value={Role.ADMIN}>Administrador</SelectItem>
             </SelectContent>
           </Select>
         </div>
