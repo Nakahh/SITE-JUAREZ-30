@@ -6,7 +6,7 @@ ARG GREEN='\033[0;32m'
 ARG YELLOW='\033[1;33m'
 ARG BLUE='\033[0;34m'
 ARG RED='\033[0;31m'
-ARG NC='\033[0m'
+ARG NC='\033[0m' # No Color
 
 RUN echo -e "${BLUE}========================================${NC}" && \
     echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEIRA CAMPOS IMÓVEIS${NC}" && \
