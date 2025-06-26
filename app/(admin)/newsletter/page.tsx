@@ -28,10 +28,6 @@ export default async function NewsletterPage() {
   // Por enquanto, para o build, vamos simular os dados ou passar via props.
   // Para fins de correção do build, vou ajustar a chamada.
 
-  // Se esta página for um Server Component, o "use client" deve ser removido.
-  // Se for um Client Component, os dados devem vir de props ou de um hook de cliente que chame uma Server Action.
-  // Dado o contexto, e para resolver o erro imediato, vou ajustar a chamada.
-
   // Para o build, vamos usar um array vazio temporariamente.
   const subscriptions: { id: string; email: string; createdAt: Date }[] = [] // Temporário para o build
 
