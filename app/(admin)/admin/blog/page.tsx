@@ -18,7 +18,7 @@ export default async function AdminBlog() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Gerenciar Artigos do Blog</h1>
-        <Link href="/admin/blog/new">
+        <Link href="/admin/admin/blog/new">
           <Button>
             <PlusCircle className="h-4 w-4 mr-2" />
             Adicionar Artigo
@@ -46,7 +46,7 @@ export default async function AdminBlog() {
                 <TableCell>{new Date(article.createdAt).toLocaleDateString("pt-BR")}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/admin/blog/${article.id}/edit`}>
+                    <Link href={`/admin/admin/blog/edit/${article.id}`}>
                       <Button variant="outline" size="icon">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>

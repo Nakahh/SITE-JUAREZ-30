@@ -58,7 +58,7 @@ export default async function AdminImoveis() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Gerenciar Imóveis</h1>
-        <Link href="/admin/imoveis/new">
+        <Link href="/admin/admin/imoveis/new">
           <Button>
             <PlusCircle className="h-4 w-4 mr-2" />
             Adicionar Imóvel
@@ -92,7 +92,7 @@ export default async function AdminImoveis() {
                 <TableCell>{property.status}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/admin/imoveis/${property.id}/edit`}>
+                    <Link href={`/admin/admin/imoveis/edit/${property.id}`}>
                       <Button variant="outline" size="icon">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>

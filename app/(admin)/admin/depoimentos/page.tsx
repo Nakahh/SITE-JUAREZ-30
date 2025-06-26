@@ -99,7 +99,7 @@ export default async function AdminTestimonials() {
                         </Button>
                       </form>
                     )}
-                    <Link href={`/admin/depoimentos/${testimonial.id}/edit`}>
+                    <Link href={`/admin/admin/depoimentos/edit/${testimonial.id}`}>
                       <Button variant="outline" size="icon">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>

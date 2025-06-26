@@ -187,7 +187,7 @@ export default async function AdminDashboard() {
                 {latestProperties.map((property) => (
                   <li key={property.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/imoveis/${property.id}/edit`} className="text-primary hover:underline">
+                      <Link href={`/admin/admin/imoveis/edit/${property.id}`} className="text-primary hover:underline">
                         {property.titulo}
                       </Link>{" "}
                       - {property.localizacao}
@@ -214,7 +214,7 @@ export default async function AdminDashboard() {
                 {latestVisits.map((visit) => (
                   <li key={visit.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/visitas/${visit.id}/edit`} className="text-primary hover:underline">
+                      <Link href={`/admin/admin/visitas/edit/${visit.id}`} className="text-primary hover:underline">
                         {visit.client.nome}
                       </Link>{" "}
                       para {visit.property.titulo}
@@ -241,7 +241,7 @@ export default async function AdminDashboard() {
                 {latestLeads.map((lead) => (
                   <li key={lead.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/leads/${lead.id}/edit`} className="text-primary hover:underline">
+                      <Link href={`/admin/admin/leads/edit/${lead.id}`} className="text-primary hover:underline">
                         {lead.nome}
                       </Link>{" "}
                       ({lead.email})
@@ -268,7 +268,10 @@ export default async function AdminDashboard() {
                 {latestTestimonials.map((testimonial) => (
                   <li key={testimonial.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/depoimentos/${testimonial.id}/edit`} className="text-primary hover:underline">
+                      <Link
+                        href={`/admin/admin/depoimentos/edit/${testimonial.id}`}
+                        className="text-primary hover:underline"
+                      >
                         {testimonial.authorName}
                       </Link>{" "}
                       ({testimonial.approved ? "Aprovado" : "Pendente"})
@@ -295,7 +298,10 @@ export default async function AdminDashboard() {
                 {latestReviews.map((review) => (
                   <li key={review.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/imoveis/${review.property.id}/edit`} className="text-primary hover:underline">
+                      <Link
+                        href={`/admin/admin/imoveis/edit/${review.property.id}`}
+                        className="text-primary hover:underline"
+                      >
                         {review.property.titulo}
                       </Link>{" "}
                       por {review.user.name || review.user.email}
@@ -322,7 +328,10 @@ export default async function AdminDashboard() {
                 {latestComments.map((comment) => (
                   <li key={comment.id} className="flex justify-between items-center">
                     <span>
-                      <Link href={`/admin/blog/${comment.article.slug}/edit`} className="text-primary hover:underline">
+                      <Link
+                        href={`/admin/admin/blog/edit/${comment.article.id}`}
+                        className="text-primary hover:underline"
+                      >
                         {comment.article.title}
                       </Link>{" "}
                       por {comment.user.name || comment.user.email}
