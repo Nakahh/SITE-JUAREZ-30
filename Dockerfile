@@ -14,12 +14,15 @@ RUN echo -e "${BLUE}========================================${NC}" && \
 
 WORKDIR /app
 
-COPY package*.json ./
+# --- PASSO CRÍTICO: COPIAR TODO O PROJETO ANTES DE INSTALAR DEPENDÊNCIAS ---
+# Isso garante que prisma/schema.prisma e outros arquivos estejam disponíveis
+COPY . .
 
 # --- ETAPA DE INSTALAÇÃO DO YARN E FERRAMENTAS DE BUILD VIA APK ---
-# Instala yarn e ferramentas de build essenciais para Alpine
-RUN apk add --no-cache curl iputils-ping yarn git python3 make g++ && \
-    echo -e "${GREEN}✅ Yarn e ferramentas de build instalados com sucesso via apk!${NC}"
+# Instala yarn, ferramentas de build essenciais e openssl para Prisma
+RUN echo -e "${YELLOW}Instalando dependências do sistema (yarn, git, python3, make, g++, openssl)...${NC}" && \
+    apk add --no-cache curl iputils-ping yarn git python3 make g++ openssl && \
+    echo -e "${GREEN}✅ Yarn, ferramentas de build e OpenSSL instalados com sucesso via apk!${NC}"
 
 # --- NOVAS ETAPAS: LIMPAR LOCKFILES E CACHE DO YARN ---
 RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-lock.json, pnpm-lock.yaml)...${NC}" && \
@@ -28,17 +31,16 @@ RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-
     yarn cache clean
 
 # --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN (com mais memória) ---
+# Agora o prisma/schema.prisma estará disponível para 'prisma generate'
 RUN echo -e "${YELLOW}Instalando dependências com Yarn (com mais memória para o Node.js)...${NC}" && \
-    # Aumenta o limite de memória para o processo do Node.js durante a instalação
     NODE_OPTIONS="--max_old_space_size=4096" yarn install --network-timeout 100000 || \
     (echo -e "${RED}ERRO CRÍTICO: Yarn install falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
 
 RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso com Yarn!${NC}" && \
     echo ""
 
-# Etapa de Cópia de Arquivos e Build da Aplicação
-RUN echo -e "${YELLOW}📋 Copiando arquivos do projeto e iniciando build do Next.js...${NC}"
-COPY . .
+# Etapa de Build da Aplicação (arquivos já foram copiados)
+RUN echo -e "${YELLOW}📋 Iniciando build do Next.js...${NC}"
 RUN yarn build
 RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
     echo -e "${BLUE}========================================${NC}" && \
