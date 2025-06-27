@@ -11,12 +11,12 @@ async function fixCommonIssues() {
     await prisma.$connect();
     console.log("✅ Conexão com banco estabelecida");
 
-    // Verificar se tabelas existem
+    // Verificar se tabelas existem (SQLite)
     console.log("🔍 Verificando estrutura do banco...");
     const tables = (await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
+      SELECT name
+      FROM sqlite_master
+      WHERE type='table'
     `) as any[];
 
     const requiredTables = [
@@ -28,7 +28,7 @@ async function fixCommonIssues() {
       "FinancialRecord",
     ];
     const missingTables = requiredTables.filter(
-      (table) => !tables.some((t) => t.table_name === table),
+      (table) => !tables.some((t) => t.name === table),
     );
 
     if (missingTables.length > 0) {
@@ -93,7 +93,7 @@ async function fixCommonIssues() {
 
     if (invalidFavorites.length > 0) {
       console.log(
-        `🧹 Removendo ${invalidFavorites.length} favorito(s) inválido(s)...`,
+        `��� Removendo ${invalidFavorites.length} favorito(s) inválido(s)...`,
       );
       await prisma.favoriteProperty.deleteMany({
         where: {
