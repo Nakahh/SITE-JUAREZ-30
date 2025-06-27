@@ -1,101 +1,144 @@
-"use server"
+"use server";
 
-import { PrismaClient } from "@prisma/client"
-import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
-import { sendEmail, getVisitConfirmationEmailHtml } from "@/lib/email"
+import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function scheduleVisit(formData: FormData) {
-  const propertyId = formData.get("propertyId") as string
-  const clientName = formData.get("clientName") as string
-  const clientEmail = formData.get("clientEmail") as string
-  const clientPhone = formData.get("clientPhone") as string
-  const dataHora = new Date(formData.get("dataHora") as string)
+  const propertyId = formData.get("propertyId") as string;
+  const date = formData.get("date") as string;
+  const time = formData.get("time") as string;
+  const notes = formData.get("notes") as string;
+  const clientName = formData.get("clientName") as string;
+  const clientEmail = formData.get("clientEmail") as string;
+  const clientPhone = formData.get("clientPhone") as string;
 
-  // Tenta encontrar o cliente existente ou cria um novo
-  let client = await prisma.client.findUnique({
-    where: { email: clientEmail },
-  })
-
-  if (!client) {
-    client = await prisma.client.create({
-      data: {
-        nome: clientName,
-        email: clientEmail,
-        telefone: clientPhone,
-      },
-    })
-  } else {
-    // Atualiza o nome e telefone se o cliente já existe e os dados são fornecidos
-    await prisma.client.update({
-      where: { id: client.id },
-      data: {
-        nome: clientName,
-        telefone: clientPhone,
-      },
-    })
+  if (!propertyId || !date || !time || !clientName || !clientEmail) {
+    return {
+      success: false,
+      message: "Campos obrigatórios: data, hora, nome e email.",
+    };
   }
 
-  const newVisit = await prisma.visit.create({
-    data: {
+  try {
+    const session = await auth();
+
+    // Combinar data e hora
+    const visitDateTime = new Date(`${date}T${time}:00`);
+
+    // Verificar se a data não é no passado
+    if (visitDateTime < new Date()) {
+      return {
+        success: false,
+        message: "Não é possível agendar visitas para datas passadas.",
+      };
+    }
+
+    let visitData: any = {
       propertyId,
-      clientId: client.id, // Usa o ID do cliente encontrado ou criado
-      dataHora,
-      status: "Pendente",
-    },
-  })
+      date: visitDateTime,
+      notes: notes || null,
+    };
 
-  // Buscar detalhes do imóvel para o e-mail
-  const property = await prisma.property.findUnique({
-    where: { id: propertyId },
-    select: { titulo: true },
-  })
+    if (session?.user?.id) {
+      // Usuário logado
+      visitData.userId = session.user.id;
+    } else {
+      // Cliente não logado - criar ou encontrar cliente
+      let client = await prisma.client.findUnique({
+        where: { email: clientEmail },
+      });
 
-  if (property) {
-    const propertyLink = `${process.env.NEXT_PUBLIC_BASE_URL}/imoveis/${propertyId}`
-    const formattedDateTime = new Intl.DateTimeFormat("pt-BR", {
-      dateStyle: "full",
-      timeStyle: "short",
-    }).format(dataHora)
+      if (!client) {
+        client = await prisma.client.create({
+          data: {
+            name: clientName,
+            email: clientEmail,
+            phone: clientPhone || null,
+          },
+        });
+      }
 
-    await sendEmail({
-      to: clientEmail,
-      subject: `Confirmação de Visita Agendada - ${property.titulo}`,
-      html: getVisitConfirmationEmailHtml(clientName, property.titulo, formattedDateTime, propertyLink),
-    })
+      visitData.clientId = client.id;
+    }
+
+    await prisma.visit.create({
+      data: visitData,
+    });
+
+    revalidatePath("/admin/visitas");
+    revalidatePath("/dashboard/visitas");
+
+    return {
+      success: true,
+      message:
+        "Visita agendada com sucesso! Entraremos em contato para confirmar.",
+    };
+  } catch (error) {
+    console.error("Erro ao agendar visita:", error);
+    return {
+      success: false,
+      message: "Erro ao agendar visita. Tente novamente.",
+    };
+  }
+}
+
+export async function updateVisitStatus(visitId: string, status: string) {
+  const session = await auth();
+
+  if (!session?.user?.role || !["ADMIN", "AGENT"].includes(session.user.role)) {
+    return { success: false, message: "Permissão negada." };
   }
 
-  revalidatePath(`/imoveis/${propertyId}`)
-  revalidatePath("/admin/visitas")
-  return { success: true, message: "Visita agendada com sucesso!" }
+  try {
+    await prisma.visit.update({
+      where: { id: visitId },
+      data: { status },
+    });
+
+    revalidatePath("/admin/visitas");
+    return { success: true, message: "Status da visita atualizado." };
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error);
+    return { success: false, message: "Erro ao atualizar status." };
+  }
 }
 
-export async function updateVisit(id: string, formData: FormData) {
-  const propertyId = formData.get("propertyId") as string
-  const clientId = formData.get("clientId") as string
-  const dataHora = new Date(formData.get("dataHora") as string)
-  const status = formData.get("status") as string
+export async function cancelVisit(visitId: string) {
+  const session = await auth();
 
-  await prisma.visit.update({
-    where: { id },
-    data: {
-      propertyId,
-      clientId,
-      dataHora,
-      status,
-    },
-  })
+  try {
+    const visit = await prisma.visit.findUnique({
+      where: { id: visitId },
+      include: { user: true, client: true },
+    });
 
-  revalidatePath("/admin/visitas")
-  redirect("/admin/visitas")
-}
+    if (!visit) {
+      return { success: false, message: "Visita não encontrada." };
+    }
 
-export async function deleteVisit(id: string) {
-  await prisma.visit.delete({
-    where: { id },
-  })
+    // Verificar permissão - só o próprio usuário, admin ou agent pode cancelar
+    const canCancel =
+      session?.user?.id === visit.userId ||
+      ["ADMIN", "AGENT"].includes(session?.user?.role || "");
 
-  revalidatePath("/admin/visitas")
+    if (!canCancel) {
+      return { success: false, message: "Permissão negada." };
+    }
+
+    await prisma.visit.update({
+      where: { id: visitId },
+      data: { status: "CANCELLED" },
+    });
+
+    revalidatePath("/admin/visitas");
+    revalidatePath("/dashboard/visitas");
+
+    return { success: true, message: "Visita cancelada com sucesso." };
+  } catch (error) {
+    console.error("Erro ao cancelar visita:", error);
+    return { success: false, message: "Erro ao cancelar visita." };
+  }
 }
