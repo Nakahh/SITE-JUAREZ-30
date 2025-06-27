@@ -14,7 +14,7 @@ model User {
   emailVerified    DateTime?
   image            String?
   password         String?
-  role             Role               @default(USER)
+  role             String             @default("USER") // "USER", "AGENT", "ADMIN", "CLIENT"
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
@@ -44,8 +44,8 @@ model Property {
   title            String
   description      String
   price            Float
-  type             PropertyType
-  status           PropertyStatus   @default(FOR_SALE)
+  type             String // "HOUSE", "APARTMENT", "LAND", "COMMERCIAL"
+  status           String           @default("FOR_SALE") // "FOR_SALE", "FOR_RENT", "SOLD", "RENTED"
   address          String
   city             String
   state            String
@@ -56,7 +56,7 @@ model Property {
   garage           Boolean          @default(false)
   pool             Boolean          @default(false)
   balcony          Boolean          @default(false)
-  images           String[]
+  images           String // JSON string ou separado por vírgulas
   agentId          String?          // Corretor responsável
   agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())
@@ -95,7 +95,7 @@ model FinancialRecord {
   id          String        @id @default(cuid())
   clientId    String
   client      Client        @relation(fields: [clientId], references: [id])
-  type        FinancialType
+  type        String // "INCOME", "EXPENSE"
   amount      Float
   description String?
   date        DateTime      @default(now())
@@ -135,7 +135,7 @@ model SavedSearch {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  criteria  Json
+  criteria  String // JSON string
   createdAt DateTime @default(now())
 }
 
@@ -168,28 +168,5 @@ model AppSetting {
   value String // Armazenará "true" ou "false"
 }
 
-enum Role {
-  USER
-  AGENT
-  ADMIN
-  CLIENT
-}
-
-enum PropertyType {
-  HOUSE
-  APARTMENT
-  LAND
-  COMMERCIAL
-}
-
-enum PropertyStatus {
-  FOR_SALE
-  FOR_RENT
-  SOLD
-  RENTED
-}
-
-enum FinancialType {
-  INCOME
-  EXPENSE
-}
+// Enums removidos para compatibilidade com SQLite
+// Usando strings com comentários indicando valores válidos
