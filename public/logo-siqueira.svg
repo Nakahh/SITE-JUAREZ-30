@@ -1,0 +1,9 @@
+<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="60" rx="8" fill="#2563eb" />
+  <text x="100" y="25" fontSize="16" fontWeight="bold" textAnchor="middle" fill="white">
+    SIQUEIRA CAMPOS
+  </text>
+  <text x="100" y="45" fontSize="12" fontWeight="normal" textAnchor="middle" fill="#93c5fd">
+    IMÓVEIS
+  </text>
+</svg>
