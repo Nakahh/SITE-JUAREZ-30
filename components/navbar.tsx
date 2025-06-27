@@ -39,7 +39,7 @@ export function Navbar() {
             Siqueira Campos
           </span>
         </Link>
-        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
+        <nav className="flex items-center space-x-4 lg:space-x-6">
           {navigationItems.map((item) => (
             <Link
               key={item.href}
