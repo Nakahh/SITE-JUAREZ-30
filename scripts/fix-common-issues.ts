@@ -80,20 +80,21 @@ async function fixCommonIssues() {
     // Verificar integridade dos dados
     console.log("🔍 Verificando integridade dos dados...");
 
-    // Buscar favoritos com referências inválidas
-    const invalidFavorites = await prisma.favoriteProperty.findMany({
-      where: {
-        OR: [{ user: null }, { property: null }],
-      },
+    // Buscar favoritos com referências inválidas - simplificado para SQLite
+    const allFavorites = await prisma.favoriteProperty.findMany({
       include: {
         user: true,
         property: true,
       },
     });
 
+    const invalidFavorites = allFavorites.filter(
+      (fav) => !fav.user || !fav.property,
+    );
+
     if (invalidFavorites.length > 0) {
       console.log(
-        `��� Removendo ${invalidFavorites.length} favorito(s) inválido(s)...`,
+        `🧹 Removendo ${invalidFavorites.length} favorito(s) inválido(s)...`,
       );
       await prisma.favoriteProperty.deleteMany({
         where: {
