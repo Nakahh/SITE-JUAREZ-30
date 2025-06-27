@@ -31,9 +31,9 @@ export function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <img
-            src="/logo-siqueira.svg"
+            src="/placeholder-logo.svg"
             alt="Siqueira Campos Imóveis"
-            className="h-8 w-auto"
+            className="h-10 w-auto"
           />
           <span className="hidden sm:inline text-lg font-bold text-primary">
             Siqueira Campos
