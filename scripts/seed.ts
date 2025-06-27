@@ -186,9 +186,7 @@ async function main() {
       data: {
         title: "Mercado Imobiliário em Goiânia: Tendências 2024",
         content:
-          "O mercado imobiliário de Goiânia continua aquecido em 2024, com crescimento nos setores Bueno, Oeste e Jardins...",
-        excerpt:
-          "Análise completa das tendências do mercado imobiliário goianiense",
+          "O mercado imobiliário de Goiânia continua aquecido em 2024, com crescimento nos setores Bueno, Oeste e Jardins. A cidade tem se destacado no cenário nacional pela qualidade de vida e oportunidades de investimento.",
         published: true,
         authorId: admin.id,
       },
@@ -204,9 +202,7 @@ async function main() {
       data: {
         title: "Melhores Bairros para Investir em Goiânia",
         content:
-          "Conheça os bairros com maior potencial de valorização em Goiânia: Jardins, Setor Bueno, Alto da Glória...",
-        excerpt:
-          "Guia completo dos melhores bairros para investimento imobiliário",
+          "Conheça os bairros com maior potencial de valorização em Goiânia: Jardins, Setor Bueno, Alto da Glória, Setor Oeste e região do Parque Flamboyant. Estes bairros combinam infraestrutura moderna e valorização imobiliária.",
         published: true,
         authorId: admin.id,
       },
