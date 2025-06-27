@@ -104,3 +104,35 @@ export async function deleteUser(id: string) {
     return { success: false, message: "Erro ao excluir usuário." };
   }
 }
+
+export async function registerUser(formData: FormData) {
+  const name = formData.get("nome") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!name || !email || !password) {
+    return { success: false, message: "Todos os campos são obrigatórios." };
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "USER", // Registro público como USER por padrão
+      },
+    });
+    return {
+      success: true,
+      message: "Usuário registrado com sucesso! Faça login para continuar.",
+    };
+  } catch (error: any) {
+    if (error.code === "P2002" && error.meta?.target?.includes("email")) {
+      return { success: false, message: "Este e-mail já está em uso." };
+    }
+    console.error("Erro ao registrar usuário:", error);
+    return { success: false, message: "Erro ao registrar usuário." };
+  }
+}
