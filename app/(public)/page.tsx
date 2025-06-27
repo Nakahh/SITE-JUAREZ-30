@@ -57,7 +57,17 @@ export default async function HomePage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {latestProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property.id}
+                id={property.id}
+                titulo={property.title}
+                preco={property.price}
+                tipo={property.type}
+                quartos={property.bedrooms}
+                area={property.area}
+                localizacao={`${property.city}, ${property.state}`}
+                imageUrls={property.images ? JSON.parse(property.images) : []}
+              />
             ))}
           </div>
         )}
