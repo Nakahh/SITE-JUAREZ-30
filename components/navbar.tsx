@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useSession, signOut } from "next-auth/react"
-import { Building, LogOut, LayoutDashboard } from "lucide-react"
-import { KryonixLogo } from "./kryonix-logo"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSession, signOut } from "next-auth/react";
+import { Building, LogOut, LayoutDashboard } from "lucide-react";
 
 export function Navbar() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   const navigationItems = [
     { href: "/", label: "Início" },
@@ -20,14 +24,20 @@ export function Navbar() {
     { href: "/corretores", label: "Corretores" },
     { href: "/contato", label: "Contato" },
     { href: "/desenvolvedor", label: "Desenvolvedor" },
-  ]
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <KryonixLogo className="h-8 w-auto" />
-          <span className="sr-only">Siqueira Campos Imóveis</span>
+          <img
+            src="/logo-siqueira.svg"
+            alt="Siqueira Campos Imóveis"
+            className="h-8 w-auto"
+          />
+          <span className="hidden sm:inline text-lg font-bold text-primary">
+            Siqueira Campos
+          </span>
         </Link>
         <nav className="hidden items-center space-x-4 md:flex lg:space-x-6">
           {navigationItems.map((item) => (
@@ -44,21 +54,30 @@ export function Navbar() {
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage
                       src={session.user?.image || "/placeholder-user.jpg"}
                       alt={session.user?.name || "User"}
                     />
-                    <AvatarFallback>{session.user?.name?.[0] || session.user?.email?.[0]}</AvatarFallback>
+                    <AvatarFallback>
+                      {session.user?.name?.[0] || session.user?.email?.[0]}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuItem className="flex flex-col items-start space-y-1">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{session.user?.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{session.user?.email}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {session.user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {session.user?.email}
+                    </p>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -67,7 +86,7 @@ export function Navbar() {
                     Dashboard
                   </Link>
                 </DropdownMenuItem>
-                {session.user?.papel === "ADMIN" && (
+                {session.user?.role === "ADMIN" && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">
                       <Building className="mr-2 h-4 w-4" />
@@ -75,7 +94,9 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
                 </DropdownMenuItem>
@@ -89,5 +110,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }
