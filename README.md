@@ -196,6 +196,10 @@ npx prisma generate  # Gerar cliente Prisma
 npx prisma db push   # Aplicar schema ao banco
 npx prisma studio    # Interface visual do banco
 npx tsx scripts/seed.ts  # Popular banco com dados
+
+# Verificação e diagnóstico
+npm run health       # Verificação completa do sistema
+npm run fix          # Corrigir problemas comuns
 ```
 
 ## 🚀 Deploy
