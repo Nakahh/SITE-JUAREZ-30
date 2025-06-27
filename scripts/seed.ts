@@ -20,7 +20,7 @@ async function main() {
       data: {
         email: "siqueiraecamposimoveis@gmail.com",
         password: hashedPasswordOwner,
-        name: "Owner Siqueira Campos",
+        name: "Siqueira Campos Imóveis",
         role: "ADMIN",
       },
     });
@@ -56,7 +56,7 @@ async function main() {
       data: {
         email: "agent@email.com",
         password: hashedPasswordAgent,
-        name: "Corretor",
+        name: "Corretor Goiânia",
         role: "AGENT",
       },
     });
@@ -74,7 +74,7 @@ async function main() {
       data: {
         email: "user@email.com",
         password: hashedPasswordUser,
-        name: "Usuário",
+        name: "Usuário Cliente",
         role: "USER",
       },
     });
@@ -92,7 +92,7 @@ async function main() {
       data: {
         email: "client@email.com",
         password: hashedPasswordClient,
-        name: "Cliente",
+        name: "Cliente Goiânia",
         role: "CLIENT",
       },
     });
@@ -101,168 +101,174 @@ async function main() {
     console.log("Client user already exists:", client.email);
   }
 
-  // Criar alguns imóveis de exemplo se não existirem
-  const existingProperty1 = await prisma.property.findFirst({
-    where: { title: "Apartamento no Centro" },
-  });
-  if (!existingProperty1 && agent) {
+  // DELETAR PROPRIEDADES ANTIGAS E RECRIAR COM DADOS DE GOIÂNIA
+  await prisma.property.deleteMany({});
+  console.log("Deleted old properties");
+
+  // Criar imóveis de Goiânia com imagens reais
+  if (agent) {
     const property1 = await prisma.property.create({
       data: {
-        title: "Apartamento no Centro",
-        description: "Lindo apartamento com vista panorâmica",
-        price: 500000,
+        title: "Apartamento no Setor Bueno",
+        description:
+          "Moderno apartamento com vista panorâmica no coração de Goiânia. Próximo ao Flamboyant Shopping e principais avenidas.",
+        price: 580000,
         type: "APARTMENT",
         bedrooms: 3,
         bathrooms: 2,
         area: 120,
-        address: "Rua das Flores, 123",
-        city: "Siqueira Campos",
-        state: "PR",
-        zipCode: "86400-000",
+        address: "Rua T-28, 456 - Setor Bueno",
+        city: "Goiânia",
+        state: "GO",
+        zipCode: "74210-010",
         images: JSON.stringify([
-          "/placeholder.svg?height=500&width=700",
-          "/placeholder.svg?height=100&width=150",
+          "https://images.pexels.com/photos/7147286/pexels-photo-7147286.jpeg",
+          "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
         ]),
         agentId: agent.id,
       },
     });
     console.log("Property created:", property1.title);
-  } else {
-    console.log("Property already exists or agent not found");
-  }
 
-  const existingProperty2 = await prisma.property.findFirst({
-    where: { title: "Casa em Condomínio" },
-  });
-  if (!existingProperty2 && agent) {
     const property2 = await prisma.property.create({
       data: {
-        title: "Casa em Condomínio",
-        description: "Casa espaçosa em condomínio fechado",
-        price: 800000,
+        title: "Casa em Condomínio no Jardins",
+        description:
+          "Lindíssima casa em condomínio fechado no Jardins Goiânia. Área de lazer completa, segurança 24h.",
+        price: 950000,
         type: "HOUSE",
         bedrooms: 4,
         bathrooms: 3,
-        area: 250,
-        address: "Av. Principal, 456",
-        city: "Siqueira Campos",
-        state: "PR",
-        zipCode: "86400-000",
+        area: 280,
+        address: "Rua das Palmeiras, 123 - Jardins Goiânia",
+        city: "Goiânia",
+        state: "GO",
+        zipCode: "74430-090",
         images: JSON.stringify([
-          "/placeholder.svg?height=500&width=700",
-          "/placeholder.svg?height=100&width=150",
+          "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+          "https://images.pexels.com/photos/323776/pexels-photo-323776.jpeg",
         ]),
         agentId: agent.id,
       },
     });
     console.log("Property created:", property2.title);
-  } else {
-    console.log("Property already exists or agent not found");
+
+    const property3 = await prisma.property.create({
+      data: {
+        title: "Cobertura no Setor Oeste",
+        description:
+          "Cobertura luxuosa no Setor Oeste com terraço gourmet e vista da cidade. Acabamento de primeira qualidade.",
+        price: 1200000,
+        type: "APARTMENT",
+        bedrooms: 4,
+        bathrooms: 4,
+        area: 200,
+        address: "Avenida T-7, 890 - Setor Oeste",
+        city: "Goiânia",
+        state: "GO",
+        zipCode: "74120-060",
+        images: JSON.stringify([
+          "https://images.pexels.com/photos/2581922/pexels-photo-2581922.jpeg",
+          "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg",
+        ]),
+        agentId: agent.id,
+      },
+    });
+    console.log("Property created:", property3.title);
   }
 
-  // Criar alguns artigos de blog de exemplo se não existirem
+  // Criar artigos sobre o mercado imobiliário de Goiânia
   const existingArticle1 = await prisma.article.findFirst({
-    where: { title: "Dicas para comprar seu primeiro imóvel" },
+    where: { title: "Mercado Imobiliário em Goiânia: Tendências 2024" },
   });
   if (!existingArticle1 && admin) {
     const article1 = await prisma.article.create({
       data: {
-        title: "Dicas para comprar seu primeiro imóvel",
+        title: "Mercado Imobiliário em Goiânia: Tendências 2024",
         content:
-          "Conteúdo do artigo sobre dicas para comprar o primeiro imóvel...",
-        authorId: admin?.id || owner?.id || "",
+          "O mercado imobiliário de Goiânia continua aquecido em 2024, com crescimento nos setores Bueno, Oeste e Jardins...",
+        excerpt:
+          "Análise completa das tendências do mercado imobiliário goianiense",
+        published: true,
+        authorId: admin.id,
       },
     });
     console.log("Article created:", article1.title);
-  } else {
-    console.log("Article already exists or admin not found");
   }
 
   const existingArticle2 = await prisma.article.findFirst({
-    where: { title: "O mercado imobiliário em Siqueira Campos" },
+    where: { title: "Melhores Bairros para Investir em Goiânia" },
   });
   if (!existingArticle2 && admin) {
     const article2 = await prisma.article.create({
       data: {
-        title: "O mercado imobiliário em Siqueira Campos",
-        content: "Conteúdo do artigo sobre o mercado imobiliário...",
-        authorId: admin?.id || owner?.id || "",
+        title: "Melhores Bairros para Investir em Goiânia",
+        content:
+          "Conheça os bairros com maior potencial de valorização em Goiânia: Jardins, Setor Bueno, Alto da Glória...",
+        excerpt:
+          "Guia completo dos melhores bairros para investimento imobiliário",
+        published: true,
+        authorId: admin.id,
       },
     });
     console.log("Article created:", article2.title);
-  } else {
-    console.log("Article already exists or admin not found");
   }
 
-  // Criar alguns registros financeiros de exemplo se não existirem
-  const existingClient1 = await prisma.client.findFirst({
-    where: { email: "cliente.exemplo@email.com" },
+  // Criar cliente exemplo de Goiânia
+  const existingClient = await prisma.client.findFirst({
+    where: { email: "cliente.goiania@email.com" },
   });
-  let clientExample;
-  if (!existingClient1) {
-    clientExample = await prisma.client.create({
+  if (!existingClient) {
+    const clientExample = await prisma.client.create({
       data: {
-        name: "Cliente Exemplo",
-        email: "cliente.exemplo@email.com",
-        phone: "(43) 99999-9999",
-        address: "Rua Exemplo, 123",
+        name: "Maria Silva",
+        email: "cliente.goiania@email.com",
+        phone: "(62) 99999-8888",
+        address: "Setor Central, Goiânia, GO",
       },
     });
-    console.log("Client created:", clientExample.email);
-  } else {
-    clientExample = existingClient1;
-    console.log("Client already exists:", existingClient1.email);
+    console.log("Client created:", clientExample.name);
   }
 
-  const existingFinancialRecord1 = await prisma.financialRecord.findFirst({
-    where: {
-      type: "INCOME",
-      amount: 15000,
-      clientId: clientExample.id,
-    },
+  // Criar registros financeiros de exemplo
+  const existingFinancial1 = await prisma.financialRecord.findFirst({
+    where: { description: "Venda Apartamento Setor Bueno" },
   });
-  if (!existingFinancialRecord1) {
-    await prisma.financialRecord.create({
+  if (!existingFinancial1) {
+    const financial1 = await prisma.financialRecord.create({
       data: {
-        amount: 15000,
+        description: "Venda Apartamento Setor Bueno",
+        amount: 580000,
         type: "INCOME",
-        description: "Comissão venda imóvel",
-        clientId: clientExample.id,
+        date: new Date(),
       },
     });
-    console.log("Financial record created: Income 15000");
-  } else {
-    console.log("Financial record already exists: Income 15000");
+    console.log("Financial record created:", financial1.description);
   }
 
-  const existingFinancialRecord2 = await prisma.financialRecord.findFirst({
-    where: {
-      type: "EXPENSE",
-      amount: 2000,
-      clientId: clientExample.id,
-    },
+  const existingFinancial2 = await prisma.financialRecord.findFirst({
+    where: { description: "Despesas Operacionais Outubro" },
   });
-  if (!existingFinancialRecord2) {
-    await prisma.financialRecord.create({
+  if (!existingFinancial2) {
+    const financial2 = await prisma.financialRecord.create({
       data: {
-        amount: 2000,
+        description: "Despesas Operacionais Outubro",
+        amount: 15000,
         type: "EXPENSE",
-        description: "Marketing digital",
-        clientId: clientExample.id,
+        date: new Date(),
       },
     });
-    console.log("Financial record created: Expense 2000");
-  } else {
-    console.log("Financial record already exists: Expense 2000");
+    console.log("Financial record created:", financial2.description);
   }
+
+  console.log("✅ Seed concluído com dados de Goiânia!");
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });
