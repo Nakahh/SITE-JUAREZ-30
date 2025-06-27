@@ -1,23 +1,26 @@
-import { PrismaClient } from "@prisma/client"
-import { NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
     const agents = await prisma.user.findMany({
       where: {
-        papel: "CORRETOR",
+        role: "AGENT",
       },
       select: {
         id: true,
-        nome: true,
+        name: true,
         email: true,
       },
-    })
-    return NextResponse.json(agents)
+    });
+    return NextResponse.json(agents);
   } catch (error) {
-    console.error("Erro ao buscar corretores:", error)
-    return NextResponse.json({ error: "Erro ao buscar corretores" }, { status: 500 })
+    console.error("Erro ao buscar agentes:", error);
+    return NextResponse.json(
+      { error: "Erro ao buscar agentes" },
+      { status: 500 },
+    );
   }
 }
