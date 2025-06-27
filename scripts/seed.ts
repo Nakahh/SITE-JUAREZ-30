@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -21,7 +21,7 @@ async function main() {
         email: "siqueiraecamposimoveis@gmail.com",
         password: hashedPasswordOwner,
         name: "Owner Siqueira Campos",
-        role: Role.ADMIN,
+        role: "ADMIN",
       },
     });
     console.log("Owner user created:", owner.email);
@@ -39,7 +39,7 @@ async function main() {
         email: "admin@email.com",
         password: hashedPasswordAdmin,
         name: "Administrador",
-        role: Role.ADMIN,
+        role: "ADMIN",
       },
     });
     console.log("Admin user created:", admin.email);
@@ -57,7 +57,7 @@ async function main() {
         email: "agent@email.com",
         password: hashedPasswordAgent,
         name: "Corretor",
-        role: Role.AGENT,
+        role: "AGENT",
       },
     });
     console.log("Agent user created:", agent.email);
@@ -74,8 +74,8 @@ async function main() {
       data: {
         email: "user@email.com",
         password: hashedPasswordUser,
-        name: "Usu��rio",
-        role: Role.USER,
+        name: "Usuário",
+        role: "USER",
       },
     });
     console.log("User created:", user.email);
@@ -93,7 +93,7 @@ async function main() {
         email: "client@email.com",
         password: hashedPasswordClient,
         name: "Cliente",
-        role: Role.CLIENT,
+        role: "CLIENT",
       },
     });
     console.log("Client user created:", client.email);
@@ -119,10 +119,10 @@ async function main() {
         city: "Siqueira Campos",
         state: "PR",
         zipCode: "86400-000",
-        images: [
+        images: JSON.stringify([
           "/placeholder.svg?height=500&width=700",
           "/placeholder.svg?height=100&width=150",
-        ],
+        ]),
         agentId: agent.id,
       },
     });
@@ -148,10 +148,10 @@ async function main() {
         city: "Siqueira Campos",
         state: "PR",
         zipCode: "86400-000",
-        images: [
+        images: JSON.stringify([
           "/placeholder.svg?height=500&width=700",
           "/placeholder.svg?height=100&width=150",
-        ],
+        ]),
         agentId: agent.id,
       },
     });
@@ -170,7 +170,7 @@ async function main() {
         title: "Dicas para comprar seu primeiro imóvel",
         content:
           "Conteúdo do artigo sobre dicas para comprar o primeiro imóvel...",
-        authorId: admin.id,
+        authorId: admin?.id || owner?.id || "",
       },
     });
     console.log("Article created:", article1.title);
@@ -186,7 +186,7 @@ async function main() {
       data: {
         title: "O mercado imobiliário em Siqueira Campos",
         content: "Conteúdo do artigo sobre o mercado imobiliário...",
-        authorId: admin.id,
+        authorId: admin?.id || owner?.id || "",
       },
     });
     console.log("Article created:", article2.title);
