@@ -8,7 +8,16 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma db push --force-reset && npm run db:seed",
+    "setup": "npm install && npm run db:generate && npm run db:push && npm run db:seed",
+    "fix": "tsx scripts/fix-common-issues.ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
