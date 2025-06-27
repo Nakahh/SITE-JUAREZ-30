@@ -36,9 +36,7 @@ export function PropertyCard({
   comodidades,
 }: PropertyCardProps) {
   const displayImageUrl =
-    imageUrls && imageUrls.length > 0
-      ? imageUrls[0]
-      : "/placeholder-property.svg";
+    imageUrls && imageUrls.length > 0 ? imageUrls[0] : "/placeholder.svg";
 
   const propertyData = {
     id,
@@ -55,7 +53,7 @@ export function PropertyCard({
     <Card className="w-full max-w-sm">
       <CardHeader className="p-0">
         <Image
-          src={displayImageUrl || "/placeholder-property.svg"}
+          src={displayImageUrl || "/placeholder.svg"}
           alt={titulo}
           width={300}
           height={200}
