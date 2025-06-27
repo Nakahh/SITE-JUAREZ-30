@@ -1,21 +1,27 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Home, BedSingle, Ruler } from "lucide-react" // Adicionado CheckCircle
-import { AddToFavoritesButton } from "./add-to-favorites-button"
-import { AddToCompareButton } from "./add-to-compare-button"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home, BedSingle, Ruler } from "lucide-react"; // Adicionado CheckCircle
+import { AddToFavoritesButton } from "./add-to-favorites-button";
+import { AddToCompareButton } from "./add-to-compare-button";
 
 interface PropertyCardProps {
-  id: string
-  titulo: string
-  preco: number
-  tipo: string
-  quartos: number
-  area: number
-  localizacao: string
-  imageUrls?: string[]
-  comodidades?: string[]
+  id: string;
+  titulo: string;
+  preco: number;
+  tipo: string;
+  quartos: number;
+  area: number;
+  localizacao: string;
+  imageUrls?: string[];
+  comodidades?: string[];
 }
 
 export function PropertyCard({
@@ -29,15 +35,27 @@ export function PropertyCard({
   imageUrls,
   comodidades,
 }: PropertyCardProps) {
-  const displayImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : "/placeholder.svg?height=200&width=300"
+  const displayImageUrl =
+    imageUrls && imageUrls.length > 0
+      ? imageUrls[0]
+      : "/placeholder-property.svg";
 
-  const propertyData = { id, titulo, preco, tipo, quartos, area, localizacao, imageUrl: displayImageUrl }
+  const propertyData = {
+    id,
+    titulo,
+    preco,
+    tipo,
+    quartos,
+    area,
+    localizacao,
+    imageUrl: displayImageUrl,
+  };
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="p-0">
         <Image
-          src={displayImageUrl || "/placeholder.svg"}
+          src={displayImageUrl || "/placeholder-property.svg"}
           alt={titulo}
           width={300}
           height={200}
@@ -49,7 +67,8 @@ export function PropertyCard({
         <p className="text-muted-foreground text-sm">{localizacao}</p>
         {comodidades && comodidades.length > 0 && (
           <div className="mt-2 text-xs text-muted-foreground">
-            <span className="font-semibold">Comodidades:</span> {comodidades.slice(0, 3).join(", ")}
+            <span className="font-semibold">Comodidades:</span>{" "}
+            {comodidades.slice(0, 3).join(", ")}
             {comodidades.length > 3 && "..."}
           </div>
         )}
@@ -68,7 +87,10 @@ export function PropertyCard({
           </div>
         </div>
         <p className="mt-4 text-2xl font-bold text-primary">
-          {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(preco)}
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(preco)}
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex flex-col gap-2">
@@ -81,5 +103,5 @@ export function PropertyCard({
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -27,7 +27,7 @@ export default async function HomePage() {
     <main className="flex-1">
       <section
         className="relative w-full h-[60vh] flex items-center justify-center text-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/placeholder.jpg')" }}
+        style={{ backgroundImage: "url('/hero-bg.svg')" }}
       >
         <div className="absolute inset-0 bg-black/50" />
         <div className="z-10 text-white space-y-4">
