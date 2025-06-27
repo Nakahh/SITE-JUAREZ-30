@@ -1,69 +1,101 @@
-import { PrismaClient } from "@prisma/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign, Users, Home, Calendar, MessageCircle, Star, Mail, Newspaper } from "lucide-react" // Adicionado Newspaper
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import Link from "next/link"
+import { PrismaClient } from "@prisma/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DollarSign,
+  Users,
+  Home,
+  Calendar,
+  MessageCircle,
+  Star,
+  Mail,
+  Newspaper,
+} from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import Link from "next/link";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export default async function AdminDashboard() {
-  const totalProperties = await prisma.property.count()
-  const totalClients = await prisma.client.count()
-  const totalVisits = await prisma.visit.count()
-  const totalUsers = await prisma.user.count()
-  const totalArticles = await prisma.article.count()
-  const totalTestimonials = await prisma.testimonial.count()
-  const totalNewsletterSubscribers = await prisma.newsletterSubscription.count()
-  const totalPropertyReviews = await prisma.propertyReview.count() // Novo
-  const totalArticleComments = await prisma.articleComment.count() // Novo
+  let stats = {
+    totalProperties: 0,
+    totalClients: 0,
+    totalVisits: 0,
+    totalUsers: 0,
+    totalArticles: 0,
+    totalTestimonials: 0,
+    totalNewsletterSubscribers: 0,
+    totalPropertyReviews: 0,
+    totalArticleComments: 0,
+    latestProperties: [],
+    latestVisits: [],
+    latestClients: [],
+    latestArticles: [],
+    totalRevenue: 0,
+    totalExpenses: 0,
+  };
 
-  const latestProperties = await prisma.property.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  })
+  try {
+    // Contar registros de forma segura
+    stats.totalProperties = await prisma.property.count();
+    stats.totalClients = await prisma.client.count();
+    stats.totalVisits = await prisma.visit.count();
+    stats.totalUsers = await prisma.user.count();
+    stats.totalArticles = await prisma.article.count();
+    stats.totalTestimonials = await prisma.testimonial.count();
+    stats.totalNewsletterSubscribers =
+      await prisma.newsletterSubscription.count();
+    stats.totalPropertyReviews = await prisma.propertyReview.count();
+    stats.totalArticleComments = await prisma.articleComment.count();
 
-  const latestVisits = await prisma.visit.findMany({
-    orderBy: { dataHora: "desc" },
-    take: 5,
-    include: { property: { select: { titulo: true } }, client: { select: { nome: true } } },
-  })
+    // Buscar registros recentes
+    stats.latestProperties = await prisma.property.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
 
-  const latestLeads = await prisma.client.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  })
+    stats.latestVisits = await prisma.visit.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        client: { select: { name: true } },
+      },
+    });
 
-  const latestTestimonials = await prisma.testimonial.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  })
+    stats.latestClients = await prisma.client.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
 
-  const latestReviews = await prisma.propertyReview.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-    include: { property: { select: { titulo: true } }, user: { select: { name: true } } },
-  })
+    stats.latestArticles = await prisma.article.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        author: { select: { name: true } },
+      },
+    });
 
-  const latestComments = await prisma.articleComment.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-    include: { article: { select: { title: true } }, user: { select: { name: true } } },
-  })
+    // Cálculos financeiros
+    const revenueRecords = await prisma.financialRecord.findMany({
+      where: { type: "INCOME" },
+    });
+    const expenseRecords = await prisma.financialRecord.findMany({
+      where: { type: "EXPENSE" },
+    });
 
-  // Cálculo financeiro real (se houver dados)
-  const totalRevenueRecord = await prisma.financialRecord.aggregate({
-    _sum: { valor: true },
-    where: { tipo: "Receita" },
-  })
-  const totalExpensesRecord = await prisma.financialRecord.aggregate({
-    _sum: { valor: true },
-    where: { tipo: "Despesa" },
-  })
+    stats.totalRevenue = revenueRecords.reduce(
+      (sum, record) => sum + record.amount,
+      0,
+    );
+    stats.totalExpenses = expenseRecords.reduce(
+      (sum, record) => sum + record.amount,
+      0,
+    );
+  } catch (error) {
+    console.error("Erro ao buscar dados do dashboard:", error);
+  }
 
-  const totalRevenue = totalRevenueRecord._sum.valor || 0
-  const totalExpenses = totalExpensesRecord._sum.valor || 0
-  const netProfit = totalRevenue - totalExpenses
+  const netProfit = stats.totalRevenue - stats.totalExpenses;
 
   return (
     <div className="space-y-6">
@@ -72,34 +104,43 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Imóveis</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total de Imóveis
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProperties}</div>
+            <div className="text-2xl font-bold">{stats.totalProperties}</div>
             <p className="text-xs text-muted-foreground">Imóveis cadastrados</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Clientes/Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total de Clientes
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalClients}</div>
-            <p className="text-xs text-muted-foreground">Leads e clientes registrados</p>
+            <div className="text-2xl font-bold">{stats.totalClients}</div>
+            <p className="text-xs text-muted-foreground">
+              Clientes registrados
+            </p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Visitas Agendadas</CardTitle>
+            <CardTitle className="text-sm font-medium">Visitas</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalVisits}</div>
-            <p className="text-xs text-muted-foreground">Visitas totais</p>
+            <div className="text-2xl font-bold">{stats.totalVisits}</div>
+            <p className="text-xs text-muted-foreground">Visitas registradas</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Lucro Líquido</CardTitle>
@@ -107,69 +148,60 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(netProfit)}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(netProfit)}
             </div>
             <p className="text-xs text-muted-foreground">Receitas - Despesas</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Usuários Registrados</CardTitle>
+            <CardTitle className="text-sm font-medium">Usuários</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground">Total de usuários (incluindo admins)</p>
+            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            <p className="text-xs text-muted-foreground">Usuários do sistema</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Artigos Publicados</CardTitle>
+            <CardTitle className="text-sm font-medium">Artigos</CardTitle>
             <Newspaper className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalArticles}</div>
+            <div className="text-2xl font-bold">{stats.totalArticles}</div>
             <p className="text-xs text-muted-foreground">Posts no blog</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Depoimentos</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalTestimonials}</div>
-            <p className="text-xs text-muted-foreground">Depoimentos recebidos</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inscritos Newsletter</CardTitle>
+            <CardTitle className="text-sm font-medium">Newsletter</CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalNewsletterSubscribers}</div>
-            <p className="text-xs text-muted-foreground">Assinantes da newsletter</p>
+            <div className="text-2xl font-bold">
+              {stats.totalNewsletterSubscribers}
+            </div>
+            <p className="text-xs text-muted-foreground">Inscritos</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avaliações de Imóveis</CardTitle>
+            <CardTitle className="text-sm font-medium">Avaliações</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalPropertyReviews}</div>
-            <p className="text-xs text-muted-foreground">Avaliações de imóveis</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Comentários no Blog</CardTitle>
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalArticleComments}</div>
-            <p className="text-xs text-muted-foreground">Comentários em artigos</p>
+            <div className="text-2xl font-bold">
+              {stats.totalPropertyReviews}
+            </div>
+            <p className="text-xs text-muted-foreground">Reviews de imóveis</p>
           </CardContent>
         </Card>
       </div>
@@ -177,23 +209,26 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Últimos Imóveis Adicionados</CardTitle>
+            <CardTitle>Últimos Imóveis</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestProperties.length === 0 ? (
-              <p className="text-muted-foreground">Nenhum imóvel adicionado recentemente.</p>
+            {stats.latestProperties.length === 0 ? (
+              <p className="text-muted-foreground">Nenhum imóvel cadastrado.</p>
             ) : (
               <ul className="space-y-2">
-                {latestProperties.map((property) => (
-                  <li key={property.id} className="flex justify-between items-center">
-                    <span>
-                      <Link href={`/admin/admin/imoveis/edit/${property.id}`} className="text-primary hover:underline">
-                        {property.titulo}
-                      </Link>{" "}
-                      - {property.localizacao}
+                {stats.latestProperties.map((property) => (
+                  <li
+                    key={property.id}
+                    className="flex justify-between items-center"
+                  >
+                    <span className="text-sm">
+                      {property.title} - {property.city}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(property.preco)}
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(property.price)}
                     </span>
                   </li>
                 ))}
@@ -204,23 +239,25 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Próximas Visitas</CardTitle>
+            <CardTitle>Últimos Clientes</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestVisits.length === 0 ? (
-              <p className="text-muted-foreground">Nenhuma visita agendada para breve.</p>
+            {stats.latestClients.length === 0 ? (
+              <p className="text-muted-foreground">
+                Nenhum cliente cadastrado.
+              </p>
             ) : (
               <ul className="space-y-2">
-                {latestVisits.map((visit) => (
-                  <li key={visit.id} className="flex justify-between items-center">
-                    <span>
-                      <Link href={`/admin/admin/visitas/edit/${visit.id}`} className="text-primary hover:underline">
-                        {visit.client.nome}
-                      </Link>{" "}
-                      para {visit.property.titulo}
+                {stats.latestClients.map((client) => (
+                  <li
+                    key={client.id}
+                    className="flex justify-between items-center"
+                  >
+                    <span className="text-sm">
+                      {client.name} ({client.email})
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {format(visit.dataHora, "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      {format(client.createdAt, "dd/MM/yyyy", { locale: ptBR })}
                     </span>
                   </li>
                 ))}
@@ -231,23 +268,23 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Últimos Leads</CardTitle>
+            <CardTitle>Últimos Artigos</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestLeads.length === 0 ? (
-              <p className="text-muted-foreground">Nenhum lead recente.</p>
+            {stats.latestArticles.length === 0 ? (
+              <p className="text-muted-foreground">Nenhum artigo publicado.</p>
             ) : (
               <ul className="space-y-2">
-                {latestLeads.map((lead) => (
-                  <li key={lead.id} className="flex justify-between items-center">
-                    <span>
-                      <Link href={`/admin/admin/leads/edit/${lead.id}`} className="text-primary hover:underline">
-                        {lead.nome}
-                      </Link>{" "}
-                      ({lead.email})
-                    </span>
+                {stats.latestArticles.map((article) => (
+                  <li
+                    key={article.id}
+                    className="flex justify-between items-center"
+                  >
+                    <span className="text-sm">{article.title}</span>
                     <span className="text-sm text-muted-foreground">
-                      {format(lead.createdAt, "dd/MM/yyyy", { locale: ptBR })}
+                      {format(article.createdAt, "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })}
                     </span>
                   </li>
                 ))}
@@ -258,94 +295,34 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Últimos Depoimentos</CardTitle>
+            <CardTitle>Gestão Rápida</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestTestimonials.length === 0 ? (
-              <p className="text-muted-foreground">Nenhum depoimento recente.</p>
-            ) : (
-              <ul className="space-y-2">
-                {latestTestimonials.map((testimonial) => (
-                  <li key={testimonial.id} className="flex justify-between items-center">
-                    <span>
-                      <Link
-                        href={`/admin/admin/depoimentos/edit/${testimonial.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {testimonial.authorName}
-                      </Link>{" "}
-                      ({testimonial.approved ? "Aprovado" : "Pendente"})
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {format(testimonial.createdAt, "dd/MM/yyyy", { locale: ptBR })}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimas Avaliações de Imóveis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {latestReviews.length === 0 ? (
-              <p className="text-muted-foreground">Nenhuma avaliação de imóvel recente.</p>
-            ) : (
-              <ul className="space-y-2">
-                {latestReviews.map((review) => (
-                  <li key={review.id} className="flex justify-between items-center">
-                    <span>
-                      <Link
-                        href={`/admin/admin/imoveis/edit/${review.property.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {review.property.titulo}
-                      </Link>{" "}
-                      por {review.user.name || review.user.email}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {format(review.createdAt, "dd/MM/yyyy", { locale: ptBR })}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimos Comentários no Blog</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {latestComments.length === 0 ? (
-              <p className="text-muted-foreground">Nenhum comentário recente no blog.</p>
-            ) : (
-              <ul className="space-y-2">
-                {latestComments.map((comment) => (
-                  <li key={comment.id} className="flex justify-between items-center">
-                    <span>
-                      <Link
-                        href={`/admin/admin/blog/edit/${comment.article.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {comment.article.title}
-                      </Link>{" "}
-                      por {comment.user.name || comment.user.email}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {format(comment.createdAt, "dd/MM/yyyy", { locale: ptBR })}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div className="space-y-2">
+              <Link href="/admin/imoveis/new" className="block">
+                <div className="text-sm text-primary hover:underline">
+                  + Adicionar Imóvel
+                </div>
+              </Link>
+              <Link href="/admin/usuarios/new" className="block">
+                <div className="text-sm text-primary hover:underline">
+                  + Adicionar Usuário
+                </div>
+              </Link>
+              <Link href="/admin/blog/new" className="block">
+                <div className="text-sm text-primary hover:underline">
+                  + Criar Artigo
+                </div>
+              </Link>
+              <Link href="/admin/leads/new" className="block">
+                <div className="text-sm text-primary hover:underline">
+                  + Adicionar Lead
+                </div>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
