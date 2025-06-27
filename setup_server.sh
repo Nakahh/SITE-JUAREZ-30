@@ -98,26 +98,26 @@ if [ ! -f ".env" ]; then
     echo -e "${YELLOW}Criando arquivo .env com valores padrão. Por favor, edite-o com suas variáveis de ambiente reais.${NC}"
     cat << EOF > .env
 # Variáveis para o Banco de Dados
-DATABASE_URL="postgresql://vitornakah:nakah123@postgres:5432/siqueira_db?schema=public"
-POSTGRES_USER=vitornakah
-POSTGRES_PASSWORD=nakah123
+DATABASE_URL="postgresql://USUARIO:SENHA@postgres:5432/siqueira_db?schema=public"
+POSTGRES_USER=USUARIO
+POSTGRES_PASSWORD=SENHA
 POSTGRES_DATABASE=siqueira_db
 
 # Variáveis do NextAuth
-NEXTAUTH_SECRET=4298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b
-NEXTAUTH_URL=https://siqueicamposimoveis.com.br # SEU DOMÍNIO REAL AQUI
+NEXTAUTH_SECRET=CHAVE_SECRETA_GERADA_ALEATORIAMENTE
+NEXTAUTH_URL=https://SEU_DOMINIO.com.br
 
 # Variáveis do MinIO (Vercel Blob)
-MINIO_ENDPOINT=https://storage.siqueicamposimoveis.com.br # SEU SUBDOMÍNIO REAL AQUI
-MINIO_ACCESS_KEY=Juarez
-MINIO_SECRET_KEY=Juarez.123
-MINIO_BUCKET_NAME=juarez-site
+MINIO_ENDPOINT=https://storage.SEU_DOMINIO.com.br
+MINIO_ACCESS_KEY=SEU_ACCESS_KEY
+MINIO_SECRET_KEY=SUA_SECRET_KEY
+MINIO_BUCKET_NAME=nome-do-bucket
 
 # Variáveis de API
-RESEND_API_KEY=re_WRyNRULE_Mezz7zLti92oMRJG8oq5jKuv
-OPENAI_API_KEY=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
-EVOLUTION_API_URL=https://evo.siqueicamposimoveis.com.br # SEU SUBDOMÍNIO REAL AQUI
-EVOLUTION_API_KEY=aeb9b8541f0567865fa02df9a0aea5a0
+RESEND_API_KEY=SUA_CHAVE_RESEND_API
+OPENAI_API_KEY=SUA_CHAVE_OPENAI_API
+EVOLUTION_API_URL=https://evo.SEU_DOMINIO.com.br
+EVOLUTION_API_KEY=SUA_CHAVE_EVOLUTION_API
 
 # Variáveis Públicas do Next.js (prefixadas com NEXT_PUBLIC_)
 NEXT_PUBLIC_BASE_URL=https://siqueicamposimoveis.com.br # SEU DOMÍNIO REAL AQUI
