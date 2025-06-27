@@ -8,7 +8,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, BedSingle, Ruler } from "lucide-react"; // Adicionado CheckCircle
+import { Home, BedSingle, Ruler } from "lucide-react";
 import { AddToFavoritesButton } from "./add-to-favorites-button";
 import { AddToCompareButton } from "./add-to-compare-button";
 
@@ -26,11 +26,16 @@ interface PropertyCardProps {
 
 const tipoImovelPortugues = (tipo: string) => {
   switch (tipo) {
-    case 'HOUSE': return 'Casa';
-    case 'APARTMENT': return 'Apartamento';
-    case 'COMMERCIAL': return 'Comercial';
-    case 'LAND': return 'Terreno';
-    default: return tipo;
+    case "HOUSE":
+      return "Casa";
+    case "APARTMENT":
+      return "Apartamento";
+    case "COMMERCIAL":
+      return "Comercial";
+    case "LAND":
+      return "Terreno";
+    default:
+      return tipo;
   }
 };
 
@@ -77,39 +82,42 @@ export function PropertyCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
       </CardHeader>
+      <CardContent className="p-4">
+        <CardTitle className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+          {titulo}
+        </CardTitle>
+        <p className="text-2xl font-bold text-primary mb-3">
+          R$ {preco.toLocaleString("pt-BR")}
+        </p>
+        {comodidades && comodidades.length > 0 && (
+          <div className="text-sm text-muted-foreground mb-3">
             {comodidades.slice(0, 3).join(", ")}
             {comodidades.length > 3 && "..."}
           </div>
         )}
         <div className="mt-2 flex items-center space-x-4 text-sm">
-            <div className="flex items-center">
-              <Home className="h-4 w-4 text-primary mr-1" />
-              <span>{tipoImovelPortugues(tipo)}</span>
-            </div>
           <div className="flex items-center">
-            <BedSingle className="h-4 w-4 mr-1 text-primary" />
-            <span>{quartos} Quartos</span>
+            <Home className="h-4 w-4 text-primary mr-1" />
+            <span>{tipoImovelPortugues(tipo)}</span>
           </div>
           <div className="flex items-center">
-            <Ruler className="h-4 w-4 mr-1 text-primary" />
+            <BedSingle className="h-4 w-4 text-primary mr-1" />
+            <span>{quartos} quartos</span>
+          </div>
+          <div className="flex items-center">
+            <Ruler className="h-4 w-4 text-primary mr-1" />
             <span>{area}m²</span>
           </div>
         </div>
-        <p className="mt-4 text-2xl font-bold text-primary">
-          {new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }).format(preco)}
-        </p>
+        <p className="text-sm text-muted-foreground mt-2">{localizacao}</p>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
-        <Link href={`/imoveis/${id}`} className="w-full">
-          <Button className="w-full">Ver Detalhes</Button>
-        </Link>
-        <div className="flex w-full gap-2">
-          <AddToFavoritesButton propertyId={id} />
-          <AddToCompareButton property={propertyData} />
-        </div>
+      <CardFooter className="p-4 pt-0 flex gap-2">
+        <Button asChild className="flex-1 ripple">
+          <Link href={`/imoveis/${id}`}>Ver Detalhes</Link>
+        </Button>
+        <Button variant="outline" asChild className="flex-1 ripple">
+          <Link href={`/contato?imovel=${id}`}>Contatar</Link>
+        </Button>
       </CardFooter>
     </Card>
   );

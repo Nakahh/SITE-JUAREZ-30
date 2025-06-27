@@ -224,36 +224,21 @@ async function main() {
     console.log("Client created:", clientExample.name);
   }
 
-  // Criar registros financeiros de exemplo
-  const existingFinancial1 = await prisma.financialRecord.findFirst({
-    where: { description: "Venda Apartamento Setor Bueno" },
-  });
-  if (!existingFinancial1) {
-    const financial1 = await prisma.financialRecord.create({
-      data: {
-        description: "Venda Apartamento Setor Bueno",
-        amount: 580000,
-        type: "INCOME",
-        date: new Date(),
-      },
-    });
-    console.log("Financial record created:", financial1.description);
-  }
-
-  const existingFinancial2 = await prisma.financialRecord.findFirst({
-    where: { description: "Despesas Operacionais Outubro" },
-  });
-  if (!existingFinancial2) {
-    const financial2 = await prisma.financialRecord.create({
-      data: {
-        description: "Despesas Operacionais Outubro",
-        amount: 15000,
-        type: "EXPENSE",
-        date: new Date(),
-      },
-    });
-    console.log("Financial record created:", financial2.description);
-  }
+  // Criar registros financeiros de exemplo (comentados - precisam de schema correto)
+  // const existingFinancial1 = await prisma.financialRecord.findFirst({
+  //   where: { description: "Venda Apartamento Setor Bueno" },
+  // });
+  // if (!existingFinancial1) {
+  //   const financial1 = await prisma.financialRecord.create({
+  //     data: {
+  //       description: "Venda Apartamento Setor Bueno",
+  //       amount: 580000,
+  //       type: "INCOME",
+  //       date: new Date(),
+  //     },
+  //   });
+  //   console.log("Financial record created:", financial1.description);
+  // }
 
   console.log("✅ Seed concluído com dados de Goiânia!");
 }
