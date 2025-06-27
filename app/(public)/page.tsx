@@ -47,27 +47,31 @@ export default async function HomePage() {
       </section>
 
       <section className="container py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">
+        <h2 className="text-3xl font-bold mb-8 text-center fade-in">
           Imóveis Recentes
         </h2>
         {latestProperties.length === 0 ? (
-          <p className="text-center text-muted-foreground">
+          <p className="text-center text-muted-foreground fade-in">
             Nenhum imóvel cadastrado ainda.
           </p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {latestProperties.map((property) => (
-              <PropertyCard
+            {latestProperties.map((property, index) => (
+              <div
                 key={property.id}
-                id={property.id}
-                titulo={property.title}
-                preco={property.price}
-                tipo={property.type}
-                quartos={property.bedrooms}
-                area={property.area}
-                localizacao={`${property.city}, ${property.state}`}
-                imageUrls={property.images ? JSON.parse(property.images) : []}
-              />
+                className={`stagger-${(index % 6) + 1} fade-in`}
+              >
+                <PropertyCard
+                  id={property.id}
+                  titulo={property.title}
+                  preco={property.price}
+                  tipo={property.type}
+                  quartos={property.bedrooms}
+                  area={property.area}
+                  localizacao={`${property.city}, ${property.state}`}
+                  imageUrls={property.images ? JSON.parse(property.images) : []}
+                />
+              </div>
             ))}
           </div>
         )}

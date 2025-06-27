@@ -26,16 +26,11 @@ interface PropertyCardProps {
 
 const tipoImovelPortugues = (tipo: string) => {
   switch (tipo) {
-    case "HOUSE":
-      return "Casa";
-    case "APARTMENT":
-      return "Apartamento";
-    case "COMMERCIAL":
-      return "Comercial";
-    case "LAND":
-      return "Terreno";
-    default:
-      return tipo;
+    case 'HOUSE': return 'Casa';
+    case 'APARTMENT': return 'Apartamento';
+    case 'COMMERCIAL': return 'Comercial';
+    case 'LAND': return 'Terreno';
+    default: return tipo;
   }
 };
 
@@ -65,31 +60,32 @@ export function PropertyCard({
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm shadow-md card-hover fade-in group">
       <CardHeader className="p-0">
-        <Image
-          src={displayImageUrl || "/placeholder.svg"}
-          alt={titulo}
-          width={300}
-          height={200}
-          className="w-full h-48 object-cover rounded-t-md"
-        />
+        <div className="relative overflow-hidden rounded-t-lg">
+          <Image
+            src={displayImageUrl}
+            alt={titulo}
+            width={300}
+            height={200}
+            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <AddToFavoritesButton propertyData={propertyData} />
+            <AddToCompareButton propertyData={propertyData} />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
       </CardHeader>
-      <CardContent className="p-4">
-        <CardTitle className="text-lg font-bold">{titulo}</CardTitle>
-        <p className="text-muted-foreground text-sm">{localizacao}</p>
-        {comodidades && comodidades.length > 0 && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            <span className="font-semibold">Comodidades:</span>{" "}
             {comodidades.slice(0, 3).join(", ")}
             {comodidades.length > 3 && "..."}
           </div>
         )}
         <div className="mt-2 flex items-center space-x-4 text-sm">
-          <div className="flex items-center">
-            <Home className="h-4 w-4 text-primary mr-1" />
-            <span>{tipoImovelPortugues(tipo)}</span>
-          </div>
+            <div className="flex items-center">
+              <Home className="h-4 w-4 text-primary mr-1" />
+              <span>{tipoImovelPortugues(tipo)}</span>
+            </div>
           <div className="flex items-center">
             <BedSingle className="h-4 w-4 mr-1 text-primary" />
             <span>{quartos} Quartos</span>
