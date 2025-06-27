@@ -31,7 +31,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <img
-            src="/placeholder-logo.svg"
+            src="/logo-siqueira.svg"
             alt="Siqueira Campos Imóveis"
             className="h-10 w-auto"
           />
@@ -39,7 +39,7 @@ export function Navbar() {
             Siqueira Campos
           </span>
         </Link>
-        <nav className="flex items-center space-x-4 lg:space-x-6">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
           {navigationItems.map((item) => (
             <Link
               key={item.href}
@@ -51,51 +51,31 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-        {session ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={session.user?.image || "/placeholder-user.svg"}
-                    alt={session.user?.name || "Usuário"}
-                  />
-                  <AvatarFallback>
-                    {session.user?.name?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/admin" className="flex items-center">
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Painel
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => signOut()}
-                className="flex items-center cursor-pointer"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Link href="/login">
-            <Button variant="outline">Entrar</Button>
-          </Link>
-        )}
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <Building className="mr-2 h-4 w-4" />
-                      Admin
-                    </Link>
-                  </DropdownMenuItem>
-                )}
+          {session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={session.user?.image || "/placeholder-user.svg"}
+                      alt={session.user?.name || "Usuário"}
+                    />
+                    <AvatarFallback>
+                      {session.user?.name?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/admin" className="flex items-center">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Painel
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: "/login" })}
+                  className="flex items-center cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
@@ -104,7 +84,7 @@ export function Navbar() {
             </DropdownMenu>
           ) : (
             <Link href="/login">
-              <Button variant="outline">Login</Button>
+              <Button variant="outline">Entrar</Button>
             </Link>
           )}
         </div>
