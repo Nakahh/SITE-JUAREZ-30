@@ -17,6 +17,7 @@
     "db:reset": "prisma db push --force-reset && npm run db:seed",
     "setup": "npm install && npm run db:generate && npm run db:push && npm run db:seed",
     "fix": "tsx scripts/fix-common-issues.ts",
+    "health": "tsx scripts/health-check.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
