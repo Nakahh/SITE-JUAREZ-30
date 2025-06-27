@@ -17,7 +17,7 @@ model User {
   role             Role               @default(USER)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  properties       Property[] // Imóveis atribuídos a este corretor
+  properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
   favoriteProperties FavoriteProperty[] // Relação com favoritos
   visits           Visit[]            @relation("UserVisits") // Relação com visitas (se o cliente for um User)
   articles         Article[]
@@ -45,7 +45,7 @@ model Property {
   description      String
   price            Float
   type             PropertyType
-  status           PropertyStatus
+  status           PropertyStatus   @default(FOR_SALE)
   address          String
   city             String
   state            String
@@ -53,16 +53,17 @@ model Property {
   bedrooms         Int
   bathrooms        Int
   area             Float
-  garage           Boolean
-  pool             Boolean
-  balcony          Boolean
+  garage           Boolean          @default(false)
+  pool             Boolean          @default(false)
+  balcony          Boolean          @default(false)
   images           String[]
-  userId           String // Corretor responsável
-  user             User             @relation(fields: [userId], references: [id])
+  agentId          String?          // Corretor responsável
+  agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   favoriteProperties FavoriteProperty[]
   reviews          PropertyReview[]
+  visits           Visit[]          @relation("PropertyVisits")
 }
 
 model FavoriteProperty {
@@ -79,9 +80,12 @@ model Visit {
   id        String    @id @default(cuid())
   date      DateTime
   notes     String?
-  userId    String? // Opcional, se a visita for de um User registrado
+  status    String    @default("PENDING")
+  propertyId String?  // Propriedade visitada
+  property  Property? @relation("PropertyVisits", fields: [propertyId], references: [id])
+  userId    String?   // Opcional, se a visita for de um User registrado
   user      User?     @relation("UserVisits", fields: [userId], references: [id])
-  clientId  String? // Opcional, se a visita for de um Client não registrado
+  clientId  String?   // Opcional, se a visita for de um Client não registrado
   client    Client?   @relation("ClientVisits", fields: [clientId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -168,6 +172,7 @@ enum Role {
   USER
   AGENT
   ADMIN
+  CLIENT
 }
 
 enum PropertyType {
