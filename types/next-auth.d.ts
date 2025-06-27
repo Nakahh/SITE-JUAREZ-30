@@ -1,20 +1,23 @@
 declare module "next-auth" {
   interface Session {
-    papel?: "ADMIN" | "CORRETOR" | "ASSISTENTE" | "CLIENTE"
     user: {
-      name?: string | null
-      email?: string | null
-      image?: string | null
-    }
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role?: "USER" | "AGENT" | "ADMIN" | "CLIENT";
+    };
   }
 
   interface User {
-    papel?: "ADMIN" | "CORRETOR" | "ASSISTENTE" | "CLIENTE"
+    id?: string;
+    role?: "USER" | "AGENT" | "ADMIN" | "CLIENT";
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    papel?: "ADMIN" | "CORRETOR" | "ASSISTENTE" | "CLIENTE"
+    role?: "USER" | "AGENT" | "ADMIN" | "CLIENT";
+    userId?: string;
   }
 }
