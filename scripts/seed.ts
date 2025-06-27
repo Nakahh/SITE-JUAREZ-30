@@ -74,7 +74,7 @@ async function main() {
       data: {
         email: "user@email.com",
         password: hashedPasswordUser,
-        name: "Usuário",
+        name: "Usu��rio",
         role: Role.USER,
       },
     });
@@ -102,116 +102,158 @@ async function main() {
   }
 
   // Criar alguns imóveis de exemplo se não existirem
-  const existingImovel1 = await prisma.property.findFirst({
-    where: { titulo: "Apartamento no Centro" },
+  const existingProperty1 = await prisma.property.findFirst({
+    where: { title: "Apartamento no Centro" },
   });
-  if (!existingImovel1) {
-    const imovel1 = await prisma.property.create({
+  if (!existingProperty1 && agent) {
+    const property1 = await prisma.property.create({
       data: {
-        titulo: "Apartamento no Centro",
-        descricao: "Lindo apartamento com vista panorâmica",
-        preco: 500000,
-        tipo: "Apartamento",
-        quartos: 3,
+        title: "Apartamento no Centro",
+        description: "Lindo apartamento com vista panorâmica",
+        price: 500000,
+        type: "APARTMENT",
+        bedrooms: 3,
+        bathrooms: 2,
         area: 120,
-        localizacao: "Centro",
-        imageUrls: [
+        address: "Rua das Flores, 123",
+        city: "Siqueira Campos",
+        state: "PR",
+        zipCode: "86400-000",
+        images: [
           "/placeholder.svg?height=500&width=700",
           "/placeholder.svg?height=100&width=150",
         ],
+        agentId: agent.id,
       },
     });
-    console.log("Property created:", imovel1.titulo);
+    console.log("Property created:", property1.title);
   } else {
-    console.log("Property already exists:", existingImovel1.titulo);
+    console.log("Property already exists or agent not found");
   }
 
-  const existingImovel2 = await prisma.property.findFirst({
-    where: { titulo: "Casa em Condomínio" },
+  const existingProperty2 = await prisma.property.findFirst({
+    where: { title: "Casa em Condomínio" },
   });
-  if (!existingImovel2) {
-    const imovel2 = await prisma.property.create({
+  if (!existingProperty2 && agent) {
+    const property2 = await prisma.property.create({
       data: {
-        titulo: "Casa em Condomínio",
-        descricao: "Casa espaçosa em condomínio fechado",
-        preco: 800000,
-        tipo: "Casa",
-        quartos: 4,
+        title: "Casa em Condomínio",
+        description: "Casa espaçosa em condomínio fechado",
+        price: 800000,
+        type: "HOUSE",
+        bedrooms: 4,
+        bathrooms: 3,
         area: 250,
-        localizacao: "Condomínio",
-        imageUrls: [
+        address: "Av. Principal, 456",
+        city: "Siqueira Campos",
+        state: "PR",
+        zipCode: "86400-000",
+        images: [
           "/placeholder.svg?height=500&width=700",
           "/placeholder.svg?height=100&width=150",
         ],
+        agentId: agent.id,
       },
     });
-    console.log("Property created:", imovel2.titulo);
+    console.log("Property created:", property2.title);
   } else {
-    console.log("Property already exists:", existingImovel2.titulo);
+    console.log("Property already exists or agent not found");
   }
 
   // Criar alguns artigos de blog de exemplo se não existirem
-  const existingArtigo1 = await prisma.article.findFirst({
-    where: { slug: "dicas-para-comprar-seu-primeiro-imovel" },
+  const existingArticle1 = await prisma.article.findFirst({
+    where: { title: "Dicas para comprar seu primeiro imóvel" },
   });
-  if (!existingArtigo1) {
-    const artigo1 = await prisma.article.create({
+  if (!existingArticle1 && admin) {
+    const article1 = await prisma.article.create({
       data: {
-        titulo: "Dicas para comprar seu primeiro imóvel",
-        slug: "dicas-para-comprar-seu-primeiro-imovel",
-        conteudo: "Conteúdo do artigo...",
+        title: "Dicas para comprar seu primeiro imóvel",
+        content:
+          "Conteúdo do artigo sobre dicas para comprar o primeiro imóvel...",
+        authorId: admin.id,
       },
     });
-    console.log("Article created:", artigo1.titulo);
+    console.log("Article created:", article1.title);
   } else {
-    console.log("Article already exists:", existingArtigo1.titulo);
+    console.log("Article already exists or admin not found");
   }
 
-  const existingArtigo2 = await prisma.article.findFirst({
-    where: { slug: "o-mercado-imobiliario-em-siqueira-campos" },
+  const existingArticle2 = await prisma.article.findFirst({
+    where: { title: "O mercado imobiliário em Siqueira Campos" },
   });
-  if (!existingArtigo2) {
-    const artigo2 = await prisma.article.create({
+  if (!existingArticle2 && admin) {
+    const article2 = await prisma.article.create({
       data: {
-        titulo: "O mercado imobiliario em Siqueira Campos",
-        slug: "o-mercado-imobiliario-em-siqueira-campos",
-        conteudo: "Conteúdo do artigo...",
+        title: "O mercado imobiliário em Siqueira Campos",
+        content: "Conteúdo do artigo sobre o mercado imobiliário...",
+        authorId: admin.id,
       },
     });
-    console.log("Article created:", artigo2.titulo);
+    console.log("Article created:", article2.title);
   } else {
-    console.log("Article already exists:", existingArtigo2.titulo);
+    console.log("Article already exists or admin not found");
   }
 
   // Criar alguns registros financeiros de exemplo se não existirem
+  const existingClient1 = await prisma.client.findFirst({
+    where: { email: "cliente.exemplo@email.com" },
+  });
+  let clientExample;
+  if (!existingClient1) {
+    clientExample = await prisma.client.create({
+      data: {
+        name: "Cliente Exemplo",
+        email: "cliente.exemplo@email.com",
+        phone: "(43) 99999-9999",
+        address: "Rua Exemplo, 123",
+      },
+    });
+    console.log("Client created:", clientExample.email);
+  } else {
+    clientExample = existingClient1;
+    console.log("Client already exists:", existingClient1.email);
+  }
+
   const existingFinancialRecord1 = await prisma.financialRecord.findFirst({
-    where: { tipo: "Receita", valor: 15000 },
+    where: {
+      type: "INCOME",
+      amount: 15000,
+      clientId: clientExample.id,
+    },
   });
   if (!existingFinancialRecord1) {
     await prisma.financialRecord.create({
       data: {
-        valor: 15000,
-        tipo: "Receita",
+        amount: 15000,
+        type: "INCOME",
+        description: "Comissão venda imóvel",
+        clientId: clientExample.id,
       },
     });
-    console.log("Financial record created: Receita 15000");
+    console.log("Financial record created: Income 15000");
   } else {
-    console.log("Financial record already exists: Receita 15000");
+    console.log("Financial record already exists: Income 15000");
   }
 
   const existingFinancialRecord2 = await prisma.financialRecord.findFirst({
-    where: { tipo: "Despesa", valor: 2000 },
+    where: {
+      type: "EXPENSE",
+      amount: 2000,
+      clientId: clientExample.id,
+    },
   });
   if (!existingFinancialRecord2) {
     await prisma.financialRecord.create({
       data: {
-        valor: 2000,
-        tipo: "Despesa",
+        amount: 2000,
+        type: "EXPENSE",
+        description: "Marketing digital",
+        clientId: clientExample.id,
       },
     });
-    console.log("Financial record created: Despesa 2000");
+    console.log("Financial record created: Expense 2000");
   } else {
-    console.log("Financial record already exists: Despesa 2000");
+    console.log("Financial record already exists: Expense 2000");
   }
 }
 
