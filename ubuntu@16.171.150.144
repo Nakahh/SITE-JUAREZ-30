@@ -1,0 +1,192 @@
+#!/bin/bash
+
+# Cores para o terminal
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}====================================================${NC}"
+echo -e "${BLUE}🚀 INICIANDO INSTALAÇÃO E DEPLOY AUTOMATIZADO DO SITE 🚀${NC}"
+echo -e "${BLUE}====================================================${NC}"
+echo -e "${PURPLE}Este script irá configurar seu ambiente, clonar o projeto e iniciar os serviços Docker.${NC}"
+echo -e "${PURPLE}Certifique-se de ter as permissões SSH configuradas para o GitHub.${NC}"
+echo -e "${BLUE}====================================================${NC}"
+
+# --- 0. Verificar se Docker está rodando ---
+echo -e "\n${CYAN}--- PASSO 0: Verificando se Docker está ativo ---${NC}"
+if ! systemctl is-active --quiet docker; then
+  echo -e "${RED}❌ Docker não está rodando. Inicie o serviço com: sudo systemctl start docker${NC}"
+  exit 1
+fi
+echo -e "${GREEN}✅ Docker está rodando.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 0.1 Verificar conexão SSH com Github ---
+echo -e "\n${CYAN}--- PASSO 0.1: Testando conexão SSH com o GitHub ---${NC}"
+ssh -T git@github.com -o StrictHostKeyChecking=no >/dev/null 2>&1
+if [ $? -ne 1 ]; then
+  echo -e "${RED}❌ Não foi possível conectar via SSH ao GitHub.${NC}"
+  echo -e "${YELLOW}Verifique se sua chave SSH pública está adicionada no GitHub e se o ssh-agent está rodando.${NC}"
+  exit 1
+fi
+echo -e "${GREEN}✅ Conexão SSH com GitHub funcionando.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 1. Atualizar o Sistema Operacional ---
+echo -e "\n${CYAN}--- PASSO 1: Atualizando o sistema operacional ---${NC}"
+echo -e "${YELLOW}Verificando e aplicando atualizações...${NC}"
+sudo apt update -y && sudo apt upgrade -y
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao atualizar o sistema. Por favor, verifique sua conexão e tente novamente.${NC}"; exit 1; fi
+echo -e "${GREEN}✅ Sistema operacional atualizado com sucesso.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 2. Instalar Docker Engine e Docker Compose Plugin ---
+echo -e "\n${CYAN}--- PASSO 2: Instalando Docker Engine e Docker Compose Plugin ---${NC}"
+echo -e "${YELLOW}Verificando e instalando dependências do Docker...${NC}"
+sudo apt install -y ca-certificates curl gnupg lsb-release
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao instalar dependências do Docker.${NC}"; exit 1; fi
+
+echo -e "${YELLOW}Adicionando chave GPG e repositório oficial do Docker...${NC}"
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao adicionar chave GPG do Docker.${NC}"; exit 1; fi
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao adicionar repositório do Docker.${NC}"; exit 1; fi
+
+sudo apt update -y
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao atualizar apt após adicionar repositório Docker.${NC}"; exit 1; fi
+
+echo -e "${YELLOW}Instalando pacotes Docker...${NC}"
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao instalar pacotes Docker. Verifique a saída acima.${NC}"; exit 1; fi
+
+sudo usermod -aG docker $USER
+echo -e "${GREEN}✅ Docker Engine e Docker Compose Plugin instalados e usuário adicionado ao grupo 'docker'.${NC}"
+echo -e "${YELLOW}⚠️ ATENÇÃO: Para usar Docker sem sudo, faça logout/login da sua sessão SSH ou execute: newgrp docker${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 3. Instalar Git ---
+echo -e "\n${CYAN}--- PASSO 3: Instalando Git ---${NC}"
+echo -e "${YELLOW}Verificando e instalando Git...${NC}"
+sudo apt install git -y
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao instalar Git.${NC}"; exit 1; fi
+echo -e "${GREEN}✅ Git instalado com sucesso.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 4. Adicionar Espaço de Swap (CRUCIAL para VMs com pouca RAM) ---
+echo -e "\n${CYAN}--- PASSO 4: Adicionando Espaço de Swap (2GB) ---${NC}"
+if grep -q "swapfile" /etc/fstab; then
+    echo -e "${YELLOW}Arquivo swap já existe. Pulando criação.${NC}"
+else
+    echo -e "${YELLOW}Criando e ativando arquivo swap de 2GB...${NC}"
+    sudo fallocate -l 2G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    echo -e "${GREEN}✅ Espaço de swap de 2GB adicionado e ativado.${NC}"
+fi
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 5. Clonar ou atualizar seu projeto no GitHub ---
+echo -e "\n${CYAN}--- PASSO 5: Clonando ou Atualizando seu Projeto do GitHub via SSH ---${NC}"
+PROJECT_REPO="git@github.com:Nakahh/SITE-JUAREZ-30.git" # URL SSH do seu repositório
+PROJECT_DIR="siqueira-campos-imoveis"
+
+if [ -d "$PROJECT_DIR" ]; then
+    echo -e "${YELLOW}Diretório existe, atualizando...${NC}"
+    cd "$PROJECT_DIR"
+    git pull origin main
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}❌ Erro ao atualizar o repositório. Verifique sua conexão e permissões.${NC}"
+      exit 1
+    fi
+else
+    echo -e "${YELLOW}Clonando o repositório: ${PROJECT_REPO} para ${PROJECT_DIR}...${NC}"
+    git clone "$PROJECT_REPO" "$PROJECT_DIR"
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}❌ Erro ao clonar o repositório. Verifique o URL e suas permissões SSH.${NC}"
+      exit 1
+    fi
+    cd "$PROJECT_DIR"
+fi
+
+echo -e "${GREEN}✅ Projeto pronto em '$PROJECT_DIR'.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 6. Configurar o Arquivo .env (Criar e Pausar para Edição) ---
+echo -e "\n${CYAN}--- PASSO 6: Configurando o arquivo .env ---${NC}"
+if [ ! -f ".env" ]; then
+    echo -e "${YELLOW}Criando arquivo .env com valores padrão. Por favor, edite-o com suas variáveis reais.${NC}"
+    cat << EOF > .env
+# Variáveis para o Banco de Dados
+DATABASE_URL="postgresql://vitornakah:nakah123@postgres:5432/siqueira_db?schema=public"
+POSTGRES_USER=vitornakah
+POSTGRES_PASSWORD=nakah123
+POSTGRES_DATABASE=siqueira_db
+
+# Variáveis do NextAuth
+NEXTAUTH_SECRET=4298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b
+NEXTAUTH_URL=https://siqueicamposimoveis.com.br
+
+# Variáveis do MinIO (Vercel Blob)
+MINIO_ENDPOINT=https://storage.siqueicamposimoveis.com.br
+MINIO_ACCESS_KEY=Juarez
+MINIO_SECRET_KEY=Juarez.123
+MINIO_BUCKET_NAME=juarez-site
+
+# Variáveis de API
+RESEND_API_KEY=re_WRyNRULE_Mezz7zLti92oMRJG8oq5jKuv
+OPENAI_API_KEY=SUA_OPENAI_API_KEY_AQUI
+EVOLUTION_API_URL=https://evo.siqueicamposimoveis.com.br
+EVOLUTION_API_KEY=SUA_EVOLUTION_API_KEY_AQUI
+
+# Variáveis Públicas do Next.js
+NEXT_PUBLIC_BASE_URL=https://siqueicamposimoveis.com.br
+NEXT_PUBLIC_WHATSAPP_NUMBER=556285563905
+NEXT_PUBLIC_DEVELOPER_INSTAGRAM=kryon.ix
+NEXT_PUBLIC_DEVELOPER_WHATSAPP=5517981805327
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=SUA_GOOGLE_MAPS_API_KEY_AQUI
+
+# Variáveis para o Traefik (Let's Encrypt)
+TRAEFIK_EMAIL=seu.email@exemplo.com
+TRAEFIK_DOMAIN=siqueicamposimoveis.com.br
+
+# Variável Secreta Geral
+SECRET_KEY=uma_chave_secreta_longa_e_complexa_aqui_gerada_aleatoriamente
+EOF
+    echo -e "${YELLOW}*** PAUSA PARA EDIÇÃO DO .ENV ***${NC}"
+    echo -e "${YELLOW}Por favor, edite o arquivo .env AGORA e salve (Ctrl+X, Y, Enter).${NC}"
+    nano .env
+    echo -e "${YELLOW}*** EDIÇÃO DO .ENV CONCLUÍDA. CONTINUANDO... ***${NC}"
+else
+    echo -e "${YELLOW}Arquivo .env já existe. Certifique-se de que está configurado corretamente.${NC}"
+    read -p "Pressione Enter para continuar..."
+fi
+echo -e "${GREEN}✅ Arquivo .env verificado/criado.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 7. Verificar e Atualizar Dockerfile e docker-compose.yml ---
+echo -e "\n${CYAN}--- PASSO 7: Verificando Dockerfile e docker-compose.yml ---${NC}"
+echo -e "${YELLOW}O script assume que Dockerfile e docker-compose.yml no repositório estão atualizados.${NC}"
+echo -e "${GREEN}✅ Dockerfile e docker-compose.yml assumidos como corretos no repositório.${NC}"
+echo -e "${BLUE}----------------------------------------------------${NC}"
+
+# --- 8. Executar o Deploy do Docker Compose ---
+echo -e "\n${CYAN}--- PASSO 8: Executando o Deploy do Docker Compose ---${NC}"
+echo -e "${YELLOW}Derrubando contêineres/volumes antigos (pode limpar dados do DB)...${NC}"
+docker compose down --volumes
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao derrubar contêineres antigos.${NC}"; exit 1; fi
+
+echo -e "${YELLOW}Reconstruindo imagens Docker (pode demorar)...${NC}"
+docker compose build --no-cache
+if [ $? -ne 0 ]; then echo -e "${RED}❌ Erro ao construir imagens Docker. Verifique os logs.${NC}"; exit 1; fi
+echo -e "${GREEN}✅ Imagens Docker construídas com sucesso.${NC}"
+
+echo -e "${YELLOW}Subindo os serviços...${NC}"
+docker compose up -
