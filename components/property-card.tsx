@@ -24,6 +24,21 @@ interface PropertyCardProps {
   comodidades?: string[];
 }
 
+const tipoImovelPortugues = (tipo: string) => {
+  switch (tipo) {
+    case "HOUSE":
+      return "Casa";
+    case "APARTMENT":
+      return "Apartamento";
+    case "COMMERCIAL":
+      return "Comercial";
+    case "LAND":
+      return "Terreno";
+    default:
+      return tipo;
+  }
+};
+
 export function PropertyCard({
   id,
   titulo,
@@ -72,8 +87,8 @@ export function PropertyCard({
         )}
         <div className="mt-2 flex items-center space-x-4 text-sm">
           <div className="flex items-center">
-            <Home className="h-4 w-4 mr-1 text-primary" />
-            <span>{tipo}</span>
+            <Home className="h-4 w-4 text-primary mr-1" />
+            <span>{tipoImovelPortugues(tipo)}</span>
           </div>
           <div className="flex items-center">
             <BedSingle className="h-4 w-4 mr-1 text-primary" />
