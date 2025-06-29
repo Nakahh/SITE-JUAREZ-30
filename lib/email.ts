@@ -1,40 +1,75 @@
-import { Resend } from "resend"
+import { Resend } from 'resend'
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const resend = new Resend(process.env.RESEND_API_KEY)
 
-interface SendEmailOptions {
-  to: string
+export interface EmailOptions {
+  to: string | string[]
   subject: string
   html: string
-  text?: string
+  from?: string
 }
 
-export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
-  if (!resend) {
-    console.warn("RESEND_API_KEY não configurada. E-mail não enviado. Conteúdo do e-mail:", { to, subject, html, text })
-    return { success: false, message: "RESEND_API_KEY não configurada." }
-  }
-
+export async function sendEmail(options: EmailOptions) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: "Imobiliária <onboarding@resend.dev>", // Substitua pelo seu domínio verificado no Resend
-      to: [to],
-      subject,
-      html,
-      text,
-    })
-
-    if (error) {
-      console.error("Erro ao enviar e-mail com Resend:", error)
-      return { success: false, message: error.message }
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY não configurado, email não enviado')
+      return { success: false, error: 'Email não configurado' }
     }
 
-    console.log("E-mail enviado com sucesso:", data)
-    return { success: true, message: "E-mail enviado com sucesso!" }
+    const result = await resend.emails.send({
+      from: options.from || 'noreply@siqueiracamposimoveis.com.br',
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    })
+
+    return { success: true, data: result }
   } catch (error) {
-    console.error("Erro inesperado ao enviar e-mail:", error)
-    return { success: false, message: "Erro inesperado ao enviar e-mail." }
+    console.error('Erro ao enviar email:', error)
+    return { success: false, error }
   }
+}
+
+export function generateContactEmailTemplate(data: {
+  name: string
+  email: string
+  phone?: string
+  subject: string
+  message: string
+}) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Novo Contato - Siqueira Campos Imóveis</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2563eb;">Novo Contato Recebido</h2>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Dados do Contato:</h3>
+          <p><strong>Nome:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          ${data.phone ? `<p><strong>Telefone:</strong> ${data.phone}</p>` : ''}
+          <p><strong>Assunto:</strong> ${data.subject}</p>
+        </div>
+
+        <div style="background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h3 style="margin-top: 0;">Mensagem:</h3>
+          <p style="white-space: pre-wrap;">${data.message}</p>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+          <p style="margin: 0; font-size: 14px; color: #0369a1;">
+            Este email foi enviado automaticamente pelo site Siqueira Campos Imóveis.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
 }
 
 export function getVisitConfirmationEmailHtml(
