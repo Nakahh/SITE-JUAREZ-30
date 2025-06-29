@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,7 +89,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             {formatCurrency(property.price)}
           </span>
         </div>
-        
+
         <div className="flex items-center gap-1 text-muted-foreground">
           <MapPin className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm truncate">

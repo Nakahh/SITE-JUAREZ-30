@@ -1,44 +1,53 @@
-import { withAuth } from "next-auth/middleware"
 
-export default withAuth(
-  function middleware(req) {
-    // Add any custom middleware logic here
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        // Allow access to public routes
-        if (req.nextUrl.pathname.startsWith('/api/auth') ||
-            req.nextUrl.pathname.startsWith('/_next') ||
-            req.nextUrl.pathname === '/' ||
-            req.nextUrl.pathname.startsWith('/imoveis') ||
-            req.nextUrl.pathname.startsWith('/blog') ||
-            req.nextUrl.pathname.startsWith('/contato') ||
-            req.nextUrl.pathname.startsWith('/sobre') ||
-            req.nextUrl.pathname.startsWith('/login') ||
-            req.nextUrl.pathname.startsWith('/register') ||
-            req.nextUrl.pathname.startsWith('/api/chat')) {
-          return true
-        }
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-        // Require authentication for admin routes
-        if (req.nextUrl.pathname.startsWith('/admin')) {
-          return !!token && (token.role === 'ADMIN' || token.role === 'OWNER')
-        }
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-        // Require authentication for dashboard routes
-        if (req.nextUrl.pathname.startsWith('/dashboard')) {
-          return !!token
-        }
+  // Permitir acesso a rotas públicas
+  const publicPaths = [
+    '/',
+    '/login',
+    '/register',
+    '/imoveis',
+    '/blog',
+    '/contato',
+    '/sobre',
+    '/depoimentos',
+    '/corretores',
+    '/simulador-financiamento',
+    '/desenvolvedor',
+    '/kryonix',
+    '/api/auth',
+    '/_next',
+    '/favicon.ico'
+  ]
 
-        return true
-      }
-    }
+  // Verificar se é uma rota pública
+  const isPublicPath = publicPaths.some(path => 
+    pathname === path || 
+    pathname.startsWith(path + '/') ||
+    pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.includes('.')
+  )
+
+  if (isPublicPath) {
+    return NextResponse.next()
   }
-)
+
+  // Para rotas administrativas, podemos adicionar verificação adicional no futuro
+  if (pathname.startsWith('/admin')) {
+    // Por enquanto, permitir acesso
+    return NextResponse.next()
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ]
+  ],
 }
