@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -126,13 +125,13 @@ export default function Navbar() {
                 <span>Goiânia - GO</span>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700">
                 <WhatsAppIcon className="h-4 w-4 mr-2" />
                 WhatsApp
               </Button>
-              
+
               {/* Theme Toggle */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -164,18 +163,18 @@ export default function Navbar() {
       {/* Main Navigation */}
       <nav className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          
+
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
-            <Image
-              src={theme === 'dark' ? '/siqueira campos para fundo escuro.png' : '/siqueira campos para fundo claro.png'}
-              alt="Siqueira Campos Imóveis"
-              width={180}
-              height={50}
-              className="h-8 lg:h-10 w-auto"
-              priority
-            />
-          </Link>
+          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <Image
+            src={theme === 'dark' ? '/siqueira campos para fundo escuro.png' : '/siqueira campos para fundo claro.png'}
+            alt="Siqueira Campos Imóveis"
+            width={200}
+            height={60}
+            className="h-12 w-auto animate-slide-up"
+            priority
+          />
+        </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
@@ -337,7 +336,7 @@ export default function Navbar() {
                       <item.icon className="h-4 w-4" />
                       <span>{item.label}</span>
                     </Link>
-                    
+
                     {item.submenu && (
                       <div className="ml-6 space-y-1">
                         {item.submenu.map((subItem) => (

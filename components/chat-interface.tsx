@@ -100,29 +100,27 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
         isMinimized ? "w-80 h-16" : "w-72 h-80"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-secondary text-white rounded-t-lg">
-          <div className="flex items-center space-x-2">
-            <Bot className="h-5 w-5" />
-            <span className="font-medium">Assistente Siqueira Campos</span>
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-secondary text-primary-foreground animate-gradient">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center animate-pulse-glow">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-semibold">Siqueira Campos Imóveis</h3>
+              <p className="text-xs opacity-90 flex items-center">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                Atendimento Online
+              </p>
+            </div>
           </div>
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMinimized(!isMinimized)}
-              className="h-7 w-7 p-0 text-white hover:bg-white/20"
-            >
-              {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-7 w-7 p-0 text-white hover:bg-white/20"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="text-primary-foreground hover:bg-white/20 hover:rotate-90 transition-transform duration-300"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         {!isMinimized && (
@@ -141,8 +139,8 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
                     <div
                       className={cn(
                         "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full text-white",
-                        message.sender === "user" 
-                          ? "bg-gradient-to-r from-primary to-secondary" 
+                        message.sender === "user"
+                          ? "bg-gradient-to-r from-primary to-secondary"
                           : "bg-muted"
                       )}
                     >

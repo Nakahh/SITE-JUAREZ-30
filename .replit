@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Desenvolvimento"
+runButton = "Desenvolvimento Otimizado"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -112,3 +112,63 @@ args = "npx tsx scripts/setup-environment.ts"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Desenvolvimento Completo"
+author = 44411791
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/health-check.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Desenvolvimento Otimizado"
+author = 44411791
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run auto-setup"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Setup Rápido"
+author = 44411791
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install --legacy-peer-deps"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma generate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma db push"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/seed.ts"
+
+[[workflows.workflow]]
+name = "Verificação Completa"
+author = 44411791
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/verify-system.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run auto-setup"
