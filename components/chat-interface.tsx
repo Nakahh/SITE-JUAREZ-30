@@ -97,7 +97,7 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
     <div className="fixed bottom-4 right-4 z-50">
       <Card className={cn(
         "transition-all duration-300 shadow-2xl border bg-background/95 backdrop-blur-md",
-        isMinimized ? "w-80 h-16" : "w-96 h-[500px]"
+        isMinimized ? "w-80 h-16" : "w-72 h-80"
       )}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-secondary text-white rounded-t-lg">
