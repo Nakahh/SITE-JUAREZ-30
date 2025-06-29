@@ -81,7 +81,7 @@ export function FloatingChatBubble() {
       >
         <Button
           onClick={toggleChat}
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-[#1a472a] to-[#2d5d3d] hover:from-[#2d5d3d] hover:to-[#1a472a] text-white rounded-full shadow-lg chat-bubble"
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg chat-bubble"
           size="icon"
         >
           {isOpen ? (
