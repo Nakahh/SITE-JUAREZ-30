@@ -1,4 +1,3 @@
-
 #!/usr/bin/env tsx
 
 import { execSync } from 'child_process'
@@ -19,16 +18,19 @@ const components = [
 components.forEach(file => {
   if (existsSync(file)) {
     const content = readFileSync(file, 'utf-8')
-    
+
     // Verificar se tem export default
     if (!content.includes('export default') && content.includes('function ')) {
       console.log(`🔧 Corrigindo export em ${file}`)
-      
+
       // Encontrar nome da função
-      const functionMatch = content.match(/function\s+(\w+)/);
+      const functionMatch = content.match(/function\s+(\w+)/)
       if (functionMatch) {
         const functionName = functionMatch[1]
-        const newContent = content + `\n\nexport default ${functionName}\nexport { ${functionName} }`
+        const newContent = content.replace(
+          `function ${functionName}`,
+          `export default function ${functionName}`
+        )
         writeFileSync(file, newContent)
         console.log(`✅ Export corrigido para ${functionName}`)
       }
@@ -88,5 +90,5 @@ if (existsSync('.env')) {
   console.log('⚠️ Arquivo .env não encontrado')
 }
 
-console.log('🎯 Correção automática concluída!')
+console.log('🎉 Correções concluídas!')
 console.log('🚀 Projeto otimizado e pronto!')

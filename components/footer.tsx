@@ -5,6 +5,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
+import SiqueiraLogo from '@/components/siqueira-logo'
+import KryonixLogo from '@/components/kryonix-logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -27,7 +29,7 @@ import {
   Shield
 } from 'lucide-react'
 
-function Footer() {
+export default function Footer() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { theme } = useTheme()
@@ -129,13 +131,7 @@ function Footer() {
             {/* Company Info */}
             <div className="lg:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
-                <Image
-                  src={theme === 'dark' ? '/siqueira campos para fundo escuro.png' : '/siqueira campos para fundo claro.png'}
-                  alt="Siqueira Campos Imóveis"
-                  width={200}
-                  height={60}
-                  className="h-12 w-auto"
-                />
+                <SiqueiraLogo width={200} height={60} className="h-12 w-auto" priority />
               </div>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 Há mais de 15 anos realizando sonhos e transformando vidas através do mercado imobiliário. 
@@ -253,16 +249,7 @@ function Footer() {
               </Link>
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-muted-foreground">Desenvolvido por</span>
-                <Link href="/desenvolvedor" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                  <Image
-                    src="/logo-kryonix.png"
-                    alt="Kryonix"
-                    width={24}
-                    height={24}
-                    className="rounded"
-                  />
-                  <span className="text-xs font-medium text-primary">Kryonix</span>
-                </Link>
+                <KryonixLogo width={24} height={24} linkTo="/desenvolvedor" />
               </div>
             </div>
           </div>
@@ -272,5 +259,4 @@ function Footer() {
   )
 }
 
-export default Footer
 export { Footer }
