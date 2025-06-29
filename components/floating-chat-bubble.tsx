@@ -1,250 +1,173 @@
+"use client";
 
-"use client"
-
-import { useState, useRef, useEffect } from "react"
-import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { notificationService } from "@/lib/notifications"
-
-interface Message {
-  id: string
-  text: string
-  isBot: boolean
-  timestamp: Date
-  type?: 'text' | 'property' | 'suggestion'
-  data?: any
-}
-
-const quickSuggestions = [
-  "🏠 Ver imóveis disponíveis",
-  "💰 Simular financiamento",
-  "📅 Agendar visita",
-  "📞 Falar com corretor",
-  "❤️ Meus favoritos"
-]
+import { useState } from "react";
+import { MessageCircle, X, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function FloatingChatBubble() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
     {
-      id: '1',
-      text: "Olá! 👋 Sou a assistente virtual da Siqueira Campos Imóveis. Como posso ajudá-lo hoje?",
+      id: 1,
+      text: "Olá! Eu sou a assistente virtual da Siqueira Campos Imóveis. Como posso ajudá-lo hoje?",
       isBot: true,
-      timestamp: new Date()
-    }
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const [isOnline, setIsOnline] = useState(true)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  const addMessage = (text: string, isBot: boolean, type?: string, data?: any) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isBot,
       timestamp: new Date(),
-      type: type as any,
-      data
+    },
+  ]);
+  const [inputMessage, setInputMessage] = useState("");
+
+  const toggleChat = () => {
+    setIsOpen(prev => !prev);
+  };
+
+  const sendMessage = () => {
+    if (!inputMessage.trim()) return;
+
+    const newMessage = {
+      id: messages.length + 1,
+      text: inputMessage,
+      isBot: false,
+      timestamp: new Date(),
+    };
+
+    setMessages([...messages, newMessage]);
+    setInputMessage("");
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponse = {
+        id: messages.length + 2,
+        text: getBotResponse(inputMessage),
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, botResponse]);
+    }, 1000);
+  };
+
+  const getBotResponse = (message: string) => {
+    const lowerMessage = message.toLowerCase();
+
+    if (lowerMessage.includes("preço") || lowerMessage.includes("valor")) {
+      return "Para informações sobre preços, entre em contato conosco pelo WhatsApp (62) 9 8556-3905 ou visite nossa página de imóveis para ver os valores atualizados.";
     }
-    setMessages(prev => [...prev, newMessage])
-    
-    if (isBot && !isOpen) {
-      notificationService.sendChatMessageNotification(text)
+
+    if (lowerMessage.includes("agendar") || lowerMessage.includes("visita")) {
+      return "Ótimo! Você pode agendar uma visita diretamente pelo nosso site na página do imóvel ou entrando em contato pelo WhatsApp (62) 9 8556-3905.";
     }
-  }
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return
-
-    addMessage(inputValue, false)
-    setInputValue("")
-    setIsTyping(true)
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: inputValue })
-      })
-
-      const data = await response.json()
-      
-      setTimeout(() => {
-        setIsTyping(false)
-        addMessage(data.message || "Desculpe, não consegui processar sua mensagem.", true, data.type, data.data)
-      }, 1000)
-
-    } catch (error) {
-      setIsTyping(false)
-      addMessage("Ops! Algo deu errado. Tente novamente ou fale com nosso atendimento humano.", true)
+    if (lowerMessage.includes("financiamento") || lowerMessage.includes("financiar")) {
+      return "Temos um simulador de financiamento em nosso site! Também podemos ajudar com as melhores opções de crédito. Fale conosco pelo WhatsApp (62) 9 8556-3905.";
     }
-  }
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInputValue(suggestion.replace(/[🏠💰📅📞❤️]/g, '').trim())
-    handleSendMessage()
-  }
+    if (lowerMessage.includes("localização") || lowerMessage.includes("endereço")) {
+      return "Nossos imóveis estão localizados em diversas regiões de Goiânia. Você pode filtrar por localização em nossa página de imóveis ou nos contar sua preferência pelo WhatsApp (62) 9 8556-3905.";
+    }
 
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          size="lg"
-          className="rounded-full h-16 w-16 shadow-lg hover:scale-110 transition-transform bg-primary hover:bg-primary/90 relative"
-        >
-          <MessageCircle className="h-6 w-6" />
-          {isOnline && (
-            <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
-          )}
-        </Button>
-      </div>
-    )
-  }
+    return "Entendi sua mensagem! Para um atendimento mais detalhado, recomendo entrar em contato conosco pelo WhatsApp (62) 9 8556-3905. Nossa equipe especializada está pronta para ajudá-lo!";
+  };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <Card className={`w-96 shadow-xl transition-all ${isMinimized ? 'h-16' : 'h-[500px]'}`}>
-        <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/logo-siqueira.svg" />
-              <AvatarFallback>SC</AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle className="text-sm">Assistente Virtual</CardTitle>
-              <div className="flex items-center space-x-1">
-                <div className={`h-2 w-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                <span className="text-xs text-muted-foreground">
-                  {isOnline ? 'Online' : 'Offline'}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMinimized(!isMinimized)}
-            >
-              {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
+    <>
+      {/* Chat Bubble Button */}
+      <motion.div
+        className="fixed bottom-6 right-6 z-50"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      >
+        <Button
+          onClick={toggleChat}
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg chat-bubble"
+          size="icon"
+        >
+          {isOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <MessageCircle className="h-6 w-6" />
+          )}
+        </Button>
+      </motion.div>
 
-        {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-[436px]">
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
-                  >
-                    <div className={`flex items-start space-x-2 max-w-[80%] ${message.isBot ? '' : 'flex-row-reverse space-x-reverse'}`}>
-                      <Avatar className="h-6 w-6">
-                        {message.isBot ? (
-                          <Bot className="h-4 w-4" />
-                        ) : (
-                          <User className="h-4 w-4" />
-                        )}
-                      </Avatar>
+      {/* Chat Window */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed bottom-24 right-6 z-40 w-80 md:w-96"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            <Card className="shadow-2xl border-0">
+              <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5" />
+                  Chat Siqueira Campos
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {/* Messages */}
+                <div className="h-80 overflow-y-auto p-4 space-y-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        message.isBot ? "justify-start" : "justify-end"
+                      }`}
+                    >
                       <div
-                        className={`rounded-lg p-3 ${
+                        className={`max-w-xs p-3 rounded-lg ${
                           message.isBot
-                            ? 'bg-muted text-muted-foreground'
-                            : 'bg-primary text-primary-foreground'
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-primary text-primary-foreground"
                         }`}
                       >
                         <p className="text-sm">{message.text}</p>
-                        <span className="text-xs opacity-70">
-                          {message.timestamp.toLocaleTimeString('pt-BR', {
-                            hour: '2-digit',
-                            minute: '2-digit'
+                        <span className="text-xs opacity-70 mt-1 block">
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </span>
                       </div>
                     </div>
+                  ))}
+                </div>
+
+                {/* Input */}
+                <div className="p-4 border-t">
+                  <div className="flex gap-2">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Digite sua mensagem..."
+                      onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                      className="flex-1"
+                    />
+                    <Button onClick={sendMessage} size="icon">
+                      <Send className="h-4 w-4" />
+                    </Button>
                   </div>
-                ))}
-
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="flex items-start space-x-2">
-                      <Avatar className="h-6 w-6">
-                        <Bot className="h-4 w-4" />
-                      </Avatar>
-                      <div className="bg-muted rounded-lg p-3">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mt-2 text-center">
+                    <a
+                      href="https://wa.me/5562985563905"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:underline"
+                    >
+                      💬 Fale direto no WhatsApp
+                    </a>
                   </div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
-            </ScrollArea>
-
-            {/* Quick Suggestions */}
-            <div className="p-2 border-t">
-              <div className="flex flex-wrap gap-1 mb-2">
-                {quickSuggestions.map((suggestion, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground text-xs"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Input */}
-            <div className="p-4 border-t">
-              <div className="flex space-x-2">
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Digite sua mensagem..."
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1"
-                />
-                <Button onClick={handleSendMessage} size="sm">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
-      </Card>
-    </div>
-  )
+      </AnimatePresence>
+    </>
+  );
 }
