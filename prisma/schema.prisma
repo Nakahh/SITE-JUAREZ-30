@@ -7,6 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 enum Role {
   USER
   AGENT
@@ -38,7 +72,8 @@ model User {
   role             Role               @default(USER)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
+// Relacionamentos
+  properties        Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
   favoriteProperties FavoriteProperty[] // Relação com favoritos
   visits           Visit[]            @relation("UserVisits") // Relação com visitas (se o cliente for um User)
   articles         Article[]
@@ -50,6 +85,9 @@ model User {
   commissions      Commission[]       @relation("AgentCommissions") // Comissões recebidas
   createdCommissions Commission[]     @relation("CreatedCommissions") // Comissões criadas
   financings       Financing[]        @relation("UserFinancings") // Financiamentos do usuário
+  chatMessages      ChatMessage[]
+  accounts          Account[]
+  sessions          Session[]
 }
 
 model Client {
@@ -193,7 +231,9 @@ model PropertyReview {
 model AppSetting {
   id    String @id @default(cuid())
   key   String @unique
-  value String // Armazenará "true" ou "false"
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ActivityLog {
@@ -270,4 +310,20 @@ model Financing {
   observations     String?
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  message     String
+  response    String
+  intent      String?
+  confidence  Float?
+  userId      String?
+  sessionId   String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+  @@index([createdAt])
 }

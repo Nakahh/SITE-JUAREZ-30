@@ -1,543 +1,441 @@
-'use client'
-
-import { Suspense } from "react"
-import Image from "next/image"
 import Link from "next/link"
-import { motion } from 'framer-motion'
+import { ArrowRight, MapPin, Phone, Star, TrendingUp, Users, Shield, Award, Search, Calculator, Heart, Calendar, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { PropertyCard } from "@/components/property-card"
 import { NewsletterForm } from "@/components/newsletter-form"
 import { FloatingChatBubble } from "@/components/floating-chat-bubble"
-import { WhatsAppIcon } from "@/components/whatsapp-icon"
-import { InstagramIcon } from "@/components/instagram-icon"
-import { 
-  Search, 
-  MapPin, 
-  Home, 
-  Building2, 
-  Key, 
-  Star, 
-  Calculator,
-  ChevronRight,
-  Users,
-  TrendingUp,
-  Shield,
-  Clock,
-  Phone,
-  Mail,
-  Heart,
-  Calendar,
-  MessageCircle,
-  Play
-} from "lucide-react"
-import { getProperties } from "@/app/actions/property-actions"
-import { getTestimonials } from "@/app/actions/testimonial-actions"
-import { getRecentArticles } from "@/app/actions/article-actions"
+import { prisma } from "@/lib/prisma"
+import Image from "next/image"
 
-// Dados mockados para demonstração
-const featuredProperties = [
-  {
-    id: "1",
-    title: "Casa Moderna no Condomínio Jardins",
-    price: 850000,
-    type: "HOUSE",
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 280,
-    address: "Jardins Residence, Goiânia - GO",
-    images: ["/imoveis/casa-condominio-1.jpg"],
-    status: "AVAILABLE"
-  },
-  {
-    id: "2", 
-    title: "Apartamento Luxuoso Centro",
-    price: 450000,
-    type: "APARTMENT",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    address: "Centro, Goiânia - GO",
-    images: ["/placeholder.jpg"],
-    status: "AVAILABLE"
-  },
-  {
-    id: "3",
-    title: "Sobrado Familiar Setor Oeste",
-    price: 680000,
-    type: "HOUSE",
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 350,
-    address: "Setor Oeste, Goiânia - GO", 
-    images: ["/placeholder.jpg"],
-    status: "AVAILABLE"
+async function getFeaturedProperties() {
+  try {
+    return await prisma.property.findMany({
+      where: { status: "FOR_SALE" },
+      take: 6,
+      orderBy: { createdAt: "desc" },
+      include: {
+        agent: {
+          select: { name: true, email: true }
+        }
+      }
+    })
+  } catch {
+    return []
   }
-]
+}
 
-const testimonials = [
-  {
-    id: "1",
-    name: "Maria Silva",
-    content: "Excelente atendimento! Encontrei minha casa dos sonhos rapidamente. A equipe foi muito profissional e atenciosa durante todo o processo.",
-    rating: 5,
-    image: "/placeholder-user.jpg",
-    location: "Goiânia - GO"
-  },
-  {
-    id: "2", 
-    name: "João Santos",
-    content: "Processo de compra muito tranquilo e transparente. Recomendo a Siqueira Campos para quem busca qualidade no atendimento.",
-    rating: 5,
-    image: "/placeholder-user.jpg",
-    location: "Aparecida de Goiânia - GO"
-  },
-  {
-    id: "3",
-    name: "Ana Costa",
-    content: "Venderam meu apartamento em tempo recorde! Profissionais competentes e dedicados. Muito satisfeita com o resultado.",
-    rating: 5,
-    image: "/placeholder-user.jpg",
-    location: "Senador Canedo - GO"
+async function getRecentArticles() {
+  try {
+    return await prisma.article.findMany({
+      take: 3,
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: { name: true }
+        }
+      }
+    })
+  } catch {
+    return []
   }
-]
+}
 
-const recentArticles = [
-  {
-    id: "1",
-    title: "Dicas para Primeira Compra de Imóvel",
-    excerpt: "Guia completo para quem está comprando o primeiro imóvel. Documentação, financiamento e muito mais.",
-    slug: "dicas-primeira-compra-imovel",
-    publishedAt: new Date("2024-01-15"),
-    image: "/placeholder.jpg"
-  },
-  {
-    id: "2",
-    title: "Mercado Imobiliário em Goiânia 2024",
-    excerpt: "Análise do mercado imobiliário local com tendências e oportunidades para investidores.",
-    slug: "mercado-imobiliario-goiania-2024", 
-    publishedAt: new Date("2024-01-10"),
-    image: "/placeholder.jpg"
-  },
-  {
-    id: "3",
-    title: "Financiamento Imobiliário: Como Escolher",
-    excerpt: "Comparativo entre SAC e Price, documentação necessária e dicas para aprovação.",
-    slug: "financiamento-imobiliario-como-escolher",
-    publishedAt: new Date("2024-01-05"),
-    image: "/placeholder.jpg"
+async function getTestimonials() {
+  try {
+    return await prisma.testimonial.findMany({
+      take: 3,
+      orderBy: { createdAt: "desc" }
+    })
+  } catch {
+    return []
   }
-]
+}
 
-const faqItems = [
-  {
-    question: "Como posso agendar uma visita ao imóvel?",
-    answer: "Você pode agendar uma visita diretamente pelo site clicando no botão 'Agendar Visita' na página do imóvel, ou entrando em contato conosco pelo WhatsApp (62) 9 8556-3905."
-  },
-  {
-    question: "Quais documentos preciso para financiamento?",
-    answer: "Para solicitar financiamento você precisará de: RG, CPF, comprovante de renda dos últimos 3 meses, comprovante de residência, extrato bancário e certidões negativas."
-  },
-  {
-    question: "Vocês trabalham com permuta?",
-    answer: "Sim! Trabalhamos com permuta de imóveis. Nossa equipe pode avaliar seu imóvel atual e encontrar opções que se adequem ao seu perfil."
-  },
-  {
-    question: "Qual a comissão para venda do meu imóvel?",
-    answer: "Nossa comissão é competitiva no mercado. Entre em contato para uma avaliação gratuita e conhecer nossas condições especiais."
-  },
-  {
-    question: "Oferecem consultoria para investimentos?",
-    answer: "Sim! Temos especialistas em investimentos imobiliários que podem orientá-lo nas melhores oportunidades do mercado."
-  }
-]
+export default async function HomePage() {
+  const [featuredProperties, recentArticles, testimonials] = await Promise.all([
+    getFeaturedProperties(),
+    getRecentArticles(),
+    getTestimonials()
+  ])
 
-export default function HomePage() {
+  const stats = [
+    { icon: Users, label: "Clientes Satisfeitos", value: "500+" },
+    { icon: Shield, label: "Anos de Experiência", value: "15+" },
+    { icon: Award, label: "Imóveis Vendidos", value: "1000+" },
+    { icon: TrendingUp, label: "Taxa de Sucesso", value: "98%" }
+  ]
+
   return (
-    <div className="min-h-screen">
-      <FloatingChatBubble />
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section com Background */}
+      <section className="relative bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10"></div>
 
-      <section className="relative w-full min-h-screen flex items-center justify-center text-center overflow-hidden">
-        {/* Background com gradiente animado */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-primary/90">
-          <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10 animate-pulse"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30"></div>
-        </div>
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-white/5 rounded-full animate-bounce"></div>
 
-        {/* Elementos flutuantes animados */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-bounce"></div>
-          <div className="absolute bottom-20 left-20 w-16 h-16 bg-white/10 rounded-full animate-ping"></div>
-          <div className="absolute bottom-40 right-10 w-24 h-24 bg-white/5 rounded-full animate-pulse delay-1000"></div>
-        </div>
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+                  🏆 Líderes em Goiânia
+                </Badge>
+                <h1 className="text-5xl font-bold leading-tight">
+                  Encontre o 
+                  <span className="block bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                    Imóvel dos Seus Sonhos
+                  </span>
+                </h1>
+                <p className="text-xl text-white/90 leading-relaxed">
+                  Mais de 15 anos conectando pessoas aos melhores imóveis de Goiânia. 
+                  Tecnologia, experiência e atendimento personalizado.
+                </p>
+              </div>
 
-        <div className="hero-content z-10 text-white space-y-6 max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-            Encontre o Imóvel dos Seus
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-100">
-              Sonhos
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed">
-            Milhares de imóveis disponíveis em Goiânia e região metropolitana. 
-            Sua nova casa está aqui!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/imoveis">
-              <Button size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300">
-                Ver Imóveis
-              </Button>
-            </Link>
-            <Link href="/simulador-financiamento">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 rounded-full">
-                Simular Financiamento
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Imóveis em Destaque */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Imóveis em Destaque
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Selecionamos os melhores imóveis para você. Qualidade, localização e preço justo.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {featuredProperties.map((property) => (
-              <Card key={property.id} className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <Image
-                    src={property.images[0]}
-                    alt={property.title}
-                    width={400}
-                    height={250}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-green-500 text-white">Destaque</Badge>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <Button size="sm" variant="outline" className="bg-white/90 hover:bg-white">
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
+              {/* Quick Search */}
+              <Card className="bg-white/10 backdrop-blur border-white/20">
                 <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-lg line-clamp-2">{property.title}</h3>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-green-600">
-                        R$ {property.price.toLocaleString('pt-BR')}
-                      </p>
-                    </div>
-                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Select>
+                      <SelectTrigger className="bg-white text-black">
+                        <SelectValue placeholder="Tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="casa">Casa</SelectItem>
+                        <SelectItem value="apartamento">Apartamento</SelectItem>
+                        <SelectItem value="terreno">Terreno</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <p className="text-muted-foreground mb-4 flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {property.address}
-                  </p>
+                    <Input placeholder="Localização" className="bg-white text-black" />
+                    <Input placeholder="Preço máximo" className="bg-white text-black" />
 
-                  <div className="flex justify-between text-sm text-muted-foreground mb-6">
-                    <span>{property.bedrooms} quartos</span>
-                    <span>{property.bathrooms} banheiros</span>
-                    <span>{property.area}m²</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button asChild className="flex-1">
-                      <Link href={`/imoveis/${property.id}`}>
-                        Ver Detalhes
+                    <Button asChild className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+                      <Link href="/imoveis">
+                        <Search className="mr-2 h-4 w-4" />
+                        Buscar
                       </Link>
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Agendar Visita
                     </Button>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90">
+                  <Link href="/imoveis">
+                    Ver Imóveis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+
+                <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white hover:text-primary">
+                  <Link href="/simulador-financiamento">
+                    <Calculator className="mr-2 h-5 w-5" />
+                    Simular Financiamento
+                  </Link>
+                </Button>
+
+                <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white hover:text-primary">
+                  <Link href="/contato">
+                    <Phone className="mr-2 h-5 w-5" />
+                    (62) 9 8556-3905
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Hero Image */}
+            <div className="relative">
+              <div className="relative z-10">
+                <Image
+                  src="/imoveis/luxury-property-hero.jpg"
+                  alt="Imóvel de luxo"
+                  width={600}
+                  height={400}
+                  className="rounded-lg shadow-2xl"
+                  priority
+                />
+                <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg">
+                  <div className="flex items-center space-x-2">
+                    <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                    <span className="text-sm font-medium">4.9/5 Avaliação</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Background decoration */}
+              <div className="absolute -top-4 -right-4 w-full h-full bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-lg -z-10"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-muted/50">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                  <stat.icon className="h-8 w-8 text-primary" />
+                </div>
+                <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="py-16">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4">🏠 Imóveis em Destaque</Badge>
+            <h2 className="text-4xl font-bold mb-4">Propriedades Selecionadas</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Confira nossa seleção especial de imóveis com as melhores localizações e preços de Goiânia
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {featuredProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
 
           <div className="text-center">
-            <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+            <Button asChild size="lg">
               <Link href="/imoveis">
                 Ver Todos os Imóveis
-                <ChevronRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Simulador de Financiamento */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-4">Simule seu Financiamento</h2>
-            <p className="text-lg text-muted-foreground mb-12">
-              Descubra quanto você pode financiar e qual será sua parcela mensal
-            </p>
-
-            <Card className="p-8 shadow-2xl">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Valor do Imóvel</label>
-                    <Input placeholder="R$ 500.000" className="text-lg" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Entrada</label>
-                    <Input placeholder="R$ 100.000" className="text-lg" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Prazo (anos)</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o prazo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="10">10 anos</SelectItem>
-                        <SelectItem value="15">15 anos</SelectItem>
-                        <SelectItem value="20">20 anos</SelectItem>
-                        <SelectItem value="25">25 anos</SelectItem>
-                        <SelectItem value="30">30 anos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button className="w-full" size="lg">
-                    <Calculator className="mr-2 h-4 w-4" />
-                    Simular Financiamento
-                  </Button>
-                </div>
-
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl">
-                  <div className="text-center">
-                    <Calculator className="h-16 w-16 mx-auto mb-4 text-blue-600" />
-                    <h3 className="text-xl font-semibold mb-2">Resultado da Simulação</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Parcela Mensal (SAC)</p>
-                        <p className="text-2xl font-bold text-green-600">R$ 2.847</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Parcela Mensal (PRICE)</p>
-                        <p className="text-2xl font-bold text-blue-600">R$ 3.012</p>
-                      </div>
-                    </div>
-                    <Button asChild variant="outline" className="mt-4">
-                      <Link href="/simulador-financiamento">
-                        Simulação Completa
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Depoimentos */}
-      <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">O que nossos clientes dizem</h2>
-            <p className="text-lg text-muted-foreground">
-              Histórias reais de quem realizou o sonho da casa própria conosco
+      {/* Services Section */}
+      <section className="py-16 bg-muted/50">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4">⚡ Nossos Serviços</Badge>
+            <h2 className="text-4xl font-bold mb-4">Soluções Completas</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Oferecemos todos os serviços que você precisa para comprar, vender ou alugar seu imóvel
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: Search,
+                title: "Busca Personalizada",
+                description: "Encontramos o imóvel perfeito baseado no seu perfil",
+                link: "/imoveis"
+              },
+              {
+                icon: Calculator,
+                title: "Simulador de Financiamento",
+                description: "Calcule prestações e condições de pagamento",
+                link: "/simulador-financiamento"
+              },
+              {
+                icon: Calendar,
+                title: "Agendamento Online",
+                description: "Agende visitas de forma rápida e prática",
+                link: "/imoveis"
+              },
+              {
+                icon: MessageCircle,
+                title: "Suporte 24/7",
+                description: "Atendimento via chat, WhatsApp e telefone",
+                link: "/contato"
+              }
+            ].map((service, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow group">
+                <CardHeader className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <service.icon className="h-8 w-8 text-primary" />
                   </div>
-
-                  <p className="text-muted-foreground mb-6 italic">
-                    "{testimonial.content}"
-                  </p>
-
-                  <div className="flex items-center">
-                    <Image
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      width={50}
-                      height={50}
-                      className="rounded-full mr-3"
-                    />
-                    <div>
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.location}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button asChild variant="outline" size="lg">
-              <Link href="/depoimentos">
-                Ver Todos os Depoimentos
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Blog/Artigos */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Blog Imobiliário</h2>
-            <p className="text-lg text-muted-foreground">
-              Dicas, tendências e informações valiosas sobre o mercado imobiliário
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {recentArticles.map((article) => (
-              <Card key={article.id} className="group hover:shadow-xl transition-all duration-300">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-
-                <CardContent className="p-6">
-                  <div className="text-sm text-muted-foreground mb-2">
-                    {article.publishedAt.toLocaleDateString('pt-BR')}
-                  </div>
-                  <h3 className="font-semibold text-lg mb-3 line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                  <Button asChild variant="link" className="p-0">
-                    <Link href={`/blog/${article.slug}`}>
-                      Ler mais <ChevronRight className="ml-1 h-4 w-4" />
-                    </Link>
+                  <CardTitle className="text-xl">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <CardDescription className="mb-4">{service.description}</CardDescription>
+                  <Button variant="outline" asChild className="w-full">
+                    <Link href={service.link}>Saiba Mais</Link>
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          <div className="text-center mt-12">
-            <Button asChild size="lg">
-              <Link href="/blog">
-                Ver Todos os Artigos
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Perguntas Frequentes</h2>
-              <p className="text-lg text-muted-foreground">
-                Tire suas dúvidas sobre nossos serviços
+      {/* Testimonials */}
+      {testimonials.length > 0 && (
+        <section className="py-16">
+          <div className="container">
+            <div className="text-center mb-12">
+              <Badge variant="outline" className="mb-4">💬 Depoimentos</Badge>
+              <h2 className="text-4xl font-bold mb-4">O Que Nossos Clientes Dizem</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                A satisfação dos nossos clientes é nossa maior conquista
               </p>
             </div>
 
-            <Accordion type="single" collapsible className="space-y-4">
-              {faqItems.map((item, index) => (
-                <AccordionItem key={index} value={`item-${index}`} className="bg-white dark:bg-gray-800 rounded-lg px-6">
-                  <AccordionTrigger className="text-left font-semibold">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
-                    {item.answer}
-                  </AccordionContent>
-                </AccordionItem>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.id} className="text-center">
+                  <CardContent className="p-6">
+                    <div className="flex justify-center mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 text-yellow-500 fill-current" />
+                      ))}
+                    </div>
+                    <blockquote className="text-lg italic mb-4">
+                      "{testimonial.content}"
+                    </blockquote>
+                    <div>
+                      <div className="font-semibold">{testimonial.name}</div>
+                      <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </Accordion>
+            </div>
 
-            <div className="text-center mt-12">
-              <p className="text-muted-foreground mb-4">
-                Não encontrou sua resposta?
-              </p>
-              <Button asChild size="lg">
-                <Link href="/contato">
-                  Entre em Contato
-                </Link>
+            <div className="text-center mt-8">
+              <Button asChild variant="outline">
+                <Link href="/depoimentos">Ver Todos os Depoimentos</Link>
               </Button>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Blog Section */}
+      {recentArticles.length > 0 && (
+        <section className="py-16 bg-muted/50">
+          <div className="container">
+            <div className="text-center mb-12">
+              <Badge variant="outline" className="mb-4">📰 Blog</Badge>
+              <h2 className="text-4xl font-bold mb-4">Últimas Notícias</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Fique por dentro das tendências do mercado imobiliário
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {recentArticles.map((article) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <Badge variant="secondary" className="w-fit">
+                      {new Date(article.createdAt).toLocaleDateString('pt-BR')}
+                    </Badge>
+                    <CardTitle className="line-clamp-2">
+                      <Link href={`/blog/${article.slug}`} className="hover:text-primary">
+                        {article.title}
+                      </Link>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="line-clamp-3 mb-4">
+                      {article.content.substring(0, 150)}...
+                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Por {article.author.name}
+                      </span>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/blog/${article.slug}`}>
+                          Ler Mais
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <Button asChild>
+                <Link href="/blog">Ver Todos os Artigos</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ Section */}
+      <section className="py-16">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4">❓ FAQ</Badge>
+            <h2 className="text-4xl font-bold mb-4">Perguntas Frequentes</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Tire suas dúvidas sobre compra, venda e financiamento de imóveis
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                question: "Como funciona o processo de compra?",
+                answer: "Nosso processo é simples: busca → visita → negociação → documentação → escritura. Te acompanhamos em cada etapa."
+              },
+              {
+                question: "Vocês ajudam com financiamento?",
+                answer: "Sim! Temos parcerias com os principais bancos e oferecemos simulação gratuita de financiamento."
+              },
+              {
+                question: "Posso agendar visitas online?",
+                answer: "Claro! Você pode agendar visitas diretamente pelo site ou WhatsApp de forma rápida e prática."
+              },
+              {
+                question: "Qual a documentação necessária?",
+                answer: "Depende do tipo de operação. Nossa equipe te orienta sobre todos os documentos necessários."
+              }
+            ].map((faq, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{faq.question}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{faq.answer}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Newsletter */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            Receba as Melhores Oportunidades
-          </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Cadastre-se e seja o primeiro a saber sobre novos imóveis e promoções exclusivas
-          </p>
-
-          <div className="max-w-md mx-auto">
-            <NewsletterForm />
+      <section className="py-16 bg-primary text-white">
+        <div className="container">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-4">Fique Por Dentro</h2>
+            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+              Receba as melhores oportunidades de imóveis diretamente no seu email
+            </p>
+            <div className="max-w-md mx-auto">
+              <NewsletterForm />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Final */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            Pronto para encontrar seu novo lar?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Nossa equipe está pronta para ajudá-lo em cada etapa. Entre em contato e realize seu sonho hoje mesmo.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button asChild size="lg" className="bg-gradient-to-r from-green-600 to-green-700">
-              <a href={`https://wa.me/5562985563905`} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="mr-2 h-5 w-5" />
-                WhatsApp: (62) 9 8556-3905
-              </a>
-            </Button>
-
-            <Button asChild size="lg" variant="outline">
-              <Link href="/contato">
-                <Mail className="mr-2 h-5 w-5" />
-                Formulário de Contato
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Floating Chat */}
+      <FloatingChatBubble />
     </div>
   )
 }
