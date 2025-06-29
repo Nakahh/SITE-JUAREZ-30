@@ -22,11 +22,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Siqueira Campos Imóveis",
+    default: "Siqueira Campos Imóveis | Encontre seu imóvel dos sonhos",
     template: "%s | Siqueira Campos Imóveis"
   },
-  description: "O melhor lugar para encontrar o seu imóvel em Siqueira Campos e região. Casas, apartamentos, terrenos e mais.",
-  keywords: ["imóveis", "Siqueira Campos", "casas", "apartamentos", "terrenos", "venda", "aluguel"],
+  description: "O melhor lugar para encontrar o seu imóvel em Siqueira Campos e região. Casas, apartamentos, terrenos e mais com o melhor atendimento.",
+  keywords: ["imóveis", "Siqueira Campos", "casas", "apartamentos", "terrenos", "venda", "aluguel", "corretores", "imobiliária"],
   authors: [{ name: "Siqueira Campos Imóveis" }],
   creator: "KRYONIX - Soluções Digitais",
   publisher: "Siqueira Campos Imóveis",
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html 
       lang="pt-BR" 
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <head>
@@ -93,18 +93,21 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo siqueira campos imoveis.png" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="color-scheme" content="light dark" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${inter.className} antialiased min-h-screen bg-background font-sans`}>
+      <body className={`${inter.className} antialiased min-h-screen bg-background font-sans overflow-x-hidden`}>
         <ThemeProvider 
           attribute="class" 
           defaultTheme="system" 
           enableSystem 
           disableTransitionOnChange={false}
+          storageKey="siqueira-theme"
         >
           <SessionProvider>
             <div className="relative flex min-h-screen flex-col">
-              <main className="flex-1">
+              <main className="flex-1 w-full">
                 {children}
               </main>
             </div>

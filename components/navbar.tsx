@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -34,7 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -53,6 +54,18 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen])
+
   if (!mounted) {
     return null
   }
@@ -68,34 +81,39 @@ export function Navbar() {
   ]
 
   return (
-    <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+    <nav className={cn(
+      "sticky top-0 z-50 w-full transition-all duration-300 border-b",
       isScrolled 
-        ? 'bg-background/80 backdrop-blur-xl border-b shadow-lg' 
-        : 'bg-background/95 backdrop-blur-md border-b'
-    } supports-[backdrop-filter]:bg-background/60`}>
-      <div className="container flex h-16 items-center justify-between px-4">
+        ? 'bg-background/80 backdrop-blur-xl shadow-lg border-border' 
+        : 'bg-background/95 backdrop-blur-md border-border/50',
+      'supports-[backdrop-filter]:bg-background/60'
+    )}>
+      <div className="container flex h-16 items-center justify-between">
         {/* Logo Enhanced */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-primary rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative h-10 w-10 rounded-lg bg-gradient-to-r from-primary to-secondary flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
               <Image 
                 src="/logo siqueira campos imoveis.png" 
                 alt="Siqueira Campos" 
-                width={24} 
-                height={24}
-                className="text-primary-foreground"
+                width={28} 
+                height={28}
+                className="rounded-md"
+                priority
               />
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xl text-gradient">Siqueira Campos</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Siqueira Campos
+            </span>
             <span className="text-xs text-muted-foreground -mt-1">Imóveis</span>
           </div>
         </Link>
 
         {/* Desktop Navigation Enhanced */}
-        <div className="hidden md:flex items-center space-x-1">
+        <div className="hidden lg:flex items-center space-x-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -105,22 +123,22 @@ export function Navbar() {
               <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
               <span>{item.label}</span>
               {item.badge && (
-                <Badge variant="secondary" className="text-xs bg-accent text-accent-foreground">
+                <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                   {item.badge}
                 </Badge>
               )}
-              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-primary group-hover:w-full transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></div>
             </Link>
           ))}
         </div>
 
         {/* Right Section Enhanced */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           {/* Notifications (if user is logged in) */}
           {session && (
-            <Button variant="ghost" size="sm" className="relative">
+            <Button variant="ghost" size="sm" className="relative hidden md:flex">
               <Bell className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-destructive">
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-destructive p-0">
                 3
               </Badge>
             </Button>
@@ -133,10 +151,10 @@ export function Navbar() {
           ) : session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-transparent hover:border-primary transition-colors">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-transparent hover:border-primary transition-colors">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={session.user?.image || ""} alt={session.user?.name || ""} />
-                    <AvatarFallback className="bg-gradient-primary text-primary-foreground">
+                    <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground text-sm font-semibold">
                       {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -145,7 +163,7 @@ export function Navbar() {
               <DropdownMenuContent className="w-64" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                    <p className="text-sm font-medium leading-none text-foreground">
                       {session.user?.name}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
@@ -172,7 +190,7 @@ export function Navbar() {
                   <Link href="/favoritos" className="flex items-center">
                     <Heart className="mr-3 h-4 w-4" />
                     Favoritos
-                    <Badge className="ml-auto">5</Badge>
+                    <Badge className="ml-auto text-xs">5</Badge>
                   </Link>
                 </DropdownMenuItem>
 
@@ -204,7 +222,7 @@ export function Navbar() {
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="flex items-center cursor-pointer text-destructive hover:text-destructive"
+                  className="flex items-center cursor-pointer text-destructive hover:text-destructive focus:text-destructive"
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   <LogOut className="mr-3 h-4 w-4" />
@@ -217,7 +235,7 @@ export function Navbar() {
               <Button variant="ghost" asChild className="hover:bg-accent/50">
                 <Link href="/login">Entrar</Link>
               </Button>
-              <Button asChild className="bg-gradient-primary hover:opacity-90 transition-opacity">
+              <Button asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground">
                 <Link href="/register">Cadastrar</Link>
               </Button>
             </div>
@@ -227,38 +245,43 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden relative"
+            className="lg:hidden relative p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <div className="relative w-6 h-6">
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
-                isMenuOpen ? 'rotate-45 translate-y-2' : 'translate-y-0'
-              }`} />
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${
+            <div className="relative w-6 h-6 flex flex-col justify-center">
+              <span className={cn(
+                "absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out",
+                isMenuOpen ? 'rotate-45' : '-translate-y-1.5'
+              )} />
+              <span className={cn(
+                "absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out",
                 isMenuOpen ? 'opacity-0' : 'opacity-100'
-              }`} />
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-4 ${
-                isMenuOpen ? '-rotate-45 -translate-y-2' : 'translate-y-0'
-              }`} />
+              )} />
+              <span className={cn(
+                "absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out",
+                isMenuOpen ? '-rotate-45' : 'translate-y-1.5'
+              )} />
             </div>
           </Button>
         </div>
       </div>
 
       {/* Mobile Navigation Enhanced */}
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${
+      <div className={cn(
+        "lg:hidden transition-all duration-300 ease-in-out overflow-hidden",
         isMenuOpen 
-          ? 'max-h-screen opacity-100 border-t bg-background/95 backdrop-blur-xl' 
-          : 'max-h-0 opacity-0 overflow-hidden'
-      }`}>
-        <div className="container px-4 py-4 space-y-2">
+          ? 'max-h-screen opacity-100 border-t border-border bg-background/95 backdrop-blur-xl' 
+          : 'max-h-0 opacity-0'
+      )}>
+        <div className="container px-4 py-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {navItems.map((item, index) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-300 transform ${
+              className={cn(
+                "flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-300 transform",
                 isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
-              }`}
+              )}
               style={{ transitionDelay: `${index * 50}ms` }}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -267,7 +290,7 @@ export function Navbar() {
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                   {item.badge}
                 </Badge>
               )}
@@ -275,14 +298,14 @@ export function Navbar() {
           ))}
 
           {!session && (
-            <div className="pt-4 space-y-2 border-t">
+            <div className="pt-4 space-y-2 border-t border-border">
               <Button variant="ghost" className="w-full justify-start" asChild>
                 <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                   <User className="mr-3 h-4 w-4" />
                   Entrar
                 </Link>
               </Button>
-              <Button className="w-full justify-start bg-gradient-primary" asChild>
+              <Button className="w-full justify-start bg-gradient-to-r from-primary to-secondary text-primary-foreground" asChild>
                 <Link href="/register" onClick={() => setIsMenuOpen(false)}>
                   <User className="mr-3 h-4 w-4" />
                   Cadastrar
