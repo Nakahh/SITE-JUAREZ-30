@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -10,8 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
-import { Building, LogOut, LayoutDashboard } from "lucide-react";
+import { Building, LogOut, LayoutDashboard, Menu } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -22,17 +24,15 @@ export function Navbar() {
     { href: "/simulador-financiamento", label: "Simulador" },
     { href: "/blog", label: "Blog" },
     { href: "/depoimentos", label: "Depoimentos" },
-    { href: "/corretores", label: "Corretores" },
     { href: "/contato", label: "Contato" },
-    { href: "/desenvolvedor", label: "Desenvolvedor" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <img
-            src="/logo-siqueira.svg"
+            src="/logo siqueira campos imoveis.png"
             alt="Siqueira Campos Imóveis"
             className="h-10 w-auto"
           />
@@ -40,6 +40,8 @@ export function Navbar() {
             Siqueira Campos
           </span>
         </Link>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
           {navigationItems.map((item) => (
             <Link
@@ -51,6 +53,29 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
+
+        {/* Mobile Navigation */}
+        <Sheet>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right">
+            <nav className="flex flex-col space-y-4 mt-6">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+
         <div className="flex items-center gap-4">
           {session ? (
             <DropdownMenu>

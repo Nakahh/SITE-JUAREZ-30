@@ -1,4 +1,3 @@
-
 "use server"
 
 import { PrismaClient } from "@prisma/client"
@@ -63,7 +62,7 @@ export async function calculatePRICE(
   const monthlyRate = annualRate / 12 / 100
   const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / 
                         (Math.pow(1 + monthlyRate, termMonths) - 1)
-  
+
   let balance = principal
   const payments = []
   let totalAmount = 0
@@ -108,9 +107,9 @@ export async function simulateFinancing(formData: FormData) {
     let calculation: FinancingCalculation
 
     if (type === "SAC") {
-      calculation = calculateSAC(financedAmount, interestRate, termMonths)
+      calculation = await calculateSAC(financedAmount, interestRate, termMonths)
     } else {
-      calculation = calculatePRICE(financedAmount, interestRate, termMonths)
+      calculation = await calculatePRICE(financedAmount, interestRate, termMonths)
     }
 
     return {
@@ -153,9 +152,9 @@ export async function createFinancing(formData: FormData) {
     let calculation: FinancingCalculation
 
     if (type === "SAC") {
-      calculation = calculateSAC(financedAmount, interestRate, termMonths)
+      calculation = await calculateSAC(financedAmount, interestRate, termMonths)
     } else {
-      calculation = calculatePRICE(financedAmount, interestRate, termMonths)
+      calculation = await calculatePRICE(financedAmount, interestRate, termMonths)
     }
 
     const financing = await prisma.financing.create({
@@ -178,7 +177,7 @@ export async function createFinancing(formData: FormData) {
 
     await logActivity(session.user.id, "createFinancing", `Financiamento criado: ${propertyId}`)
     revalidatePath("/admin/financiamentos")
-    
+
     return { success: true, message: "Financiamento criado com sucesso!", financing }
   } catch (error) {
     console.error("Erro ao criar financiamento:", error)
@@ -200,7 +199,7 @@ export async function updateFinancingStatus(id: string, status: "SIMULATING" | "
 
     await logActivity(session.user.id, "updateFinancingStatus", `Status do financiamento atualizado para: ${status}`)
     revalidatePath("/admin/financiamentos")
-    
+
     return { success: true, message: "Status atualizado com sucesso!", financing }
   } catch (error) {
     console.error("Erro ao atualizar status do financiamento:", error)
@@ -211,7 +210,7 @@ export async function updateFinancingStatus(id: string, status: "SIMULATING" | "
 export async function getFinancingReport(startDate?: Date, endDate?: Date) {
   try {
     const where: any = {}
-    
+
     if (startDate && endDate) {
       where.createdAt = {
         gte: startDate,

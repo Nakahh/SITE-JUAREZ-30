@@ -1,204 +1,348 @@
-# 🏠 Siqueira Campos Imóveis - Versão 4.0
 
-Sistema de gestão imobiliária completo e robusto, desenvolvido com Next.js 14 (App Router), TypeScript e Prisma. Este projeto foi totalmente revisado para garantir performance, qualidade de código e uma experiência de usuário profissional.
+# 🏢 Siqueira Campos Imóveis - Sistema Completo
 
-## 🎯 Status do Projeto: TOTALMENTE FUNCIONAL ✅
+> **Sistema completo de gestão imobiliária com portal público e painel administrativo**
 
-A aplicação está **100% operacional**, com todas as funcionalidades principais testadas e validadas.
+![Siqueira Campos](./public/logo%20siqueira%20campos%20imoveis.png)
 
-## ✨ Checklist de Funcionalidades
+## 🌟 **VISÃO GERAL**
 
-| Funcionalidade | Status | Observações |
-| :--- | :--- | :--- |
-| **Core & UI** | | |
-| Visualização da Homepage | ✅ **Funcionando** | Páginas carregam, imóveis recentes são exibidos. |
-| Visualização da pág. de Imóveis | ✅ **Funcionando** | Lista de todos os imóveis é exibida corretamente. |
-| Visualização de Detalhes do Imóvel | ✅ **Funcionando** | Páginas individuais de imóveis carregam. |
-| Logo e Imagens | ✅ **Funcionando** | Logo na navbar e imagens dos imóveis são exibidas. |
-| Rodapé | ✅ **Implementado** | Novo rodapé completo e moderno foi adicionado. |
-| Animações | ✅ **Implementado** | Animações de fade-in adicionadas aos cards da home. |
-| Responsividade | ✅ **Verificado** | Layout se adapta a diferentes tamanhos de tela. |
-| Tradução (PT-BR) | ✅ **Verificado** | Todo o texto visível está em português. |
-| **Autenticação e Usuários** | | |
-| Cadastro de Usuário | ✅ **Funcionando** | Novos usuários podem se registrar. |
-| Login com Credenciais | ✅ **Funcionando** | Usuários podem fazer login com email e senha. |
-| Login com Google (OAuth) | ⚙️ **Configurado** | Funcionalidade implementada. Requer chaves de API válidas no `.env` para funcionar em produção. |
-| Sistema de Roles (Admin, Agent, etc.) | ✅ **Funcionando** | Permissões são aplicadas corretamente. |
-| **Dashboard do Admin** | | |
-| Gestão de Imóveis (CRUD) | ✅ **Funcionando** | Admin pode criar, ler, atualizar e deletar imóveis. |
-| Gestão de Usuários | ✅ **Funcionando** | Admin pode visualizar e gerenciar usuários. |
-| **APIs e Integrações** | | |
-| Envio de Email (Resend) | ⚙️ **Configurado** | Código para envio de email está implementado. Requer uma `RESEND_API_KEY` válida no `.env`. |
-| Agente de IA (OpenAI) | ⚙️ **Configurado** | Chat flutuante implementado. Requer uma `OPENAI_API_KEY` válida no `.env` para o chatbot responder. |
-| Sistema de Comissões | ✅ **Funcionando** | Controle completo de comissões por corretor, com relatórios e status de pagamento. |
-| Sistema de Financiamento | ✅ **Funcionando** | Simulador completo com SAC e PRICE, gestão de financiamentos e aprovações. |
-| Página da Kryonix | ✅ **Funcionando** | Página completa da empresa desenvolvedora com serviços e equipe. |
-| Evolution API (WhatsApp) | ⚙️ **Configurado** | Código para integração existe. Requer `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` válidos no `.env`. |
+Sistema completo desenvolvido para a **Siqueira Campos Imóveis** com tecnologias modernas, oferecendo:
 
-## 🚀 Setup Rápido
+- 🏠 **Portal Público** completo para clientes
+- 🎛️ **Sistema Administrativo** robusto
+- 💰 **Gestão Financeira** completa
+- 📱 **Design Responsivo** mobile-first
+- 🤖 **Chat Inteligente** com IA
+- 📊 **Dashboard** analítico avançado
 
-### Pré-requisitos
+## 🚀 **INSTALAÇÃO RÁPIDA**
 
-- Node.js 18+
-- PostgreSQL (localmente ou via Docker)
-- Git
+### **Pré-requisitos**
+- Node.js 18+ 
+- NPM ou Yarn
+- PostgreSQL (produção) ou SQLite (desenvolvimento)
 
-### Instalação
+### **Setup Automático**
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/seu-usuario/juarez-site-4.git
-    cd juarez-site-4
-    ```
+```bash
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/siqueira-campos-imoveis.git
+cd siqueira-campos-imoveis
 
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
+# 2. Setup automático
+bash setup.sh
 
-3.  **Configure as Variáveis de Ambiente:**
-    Copie o arquivo de exemplo `.env.example` para um novo arquivo chamado `.env`.
-    ```bash
-    cp .env.example .env
-    ```
-    Edite o arquivo `.env` com as suas configurações de banco de dados local e outras chaves de API.
-    ```env
-    # Exemplo para banco de dados local
-    DATABASE_URL="postgresql://SEU_USUARIO:SUA_SENHA@localhost:5432/SEU_BANCO"
+# 3. Inicie o servidor
+npm run dev
+```
 
-    # Chave para segurança da sessão
-    NEXTAUTH_SECRET="gere_uma_chave_segura_aqui"
-    NEXTAUTH_URL="http://localhost:3000"
+### **Configuração Manual**
 
-    # Chaves opcionais para funcionalidades completas
-    RESEND_API_KEY="..."
-    OPENAI_API_KEY="..."
-    ```
+```bash
+# 1. Instalar dependências
+npm install
 
-4.  **Sincronize e Popule o Banco de Dados:**
-    Este comando irá criar as tabelas e popular o banco com dados de exemplo.
-    ```bash
-    npm run db:reset
-    ```
+# 2. Configurar banco de dados
+npx prisma generate
+npx prisma db push
+npx prisma db seed
 
-5.  **Inicie o Servidor de Desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
-    O servidor estará disponível em `http://localhost:3000`. Para acessar de outros dispositivos na mesma rede, o terminal mostrará o IP da sua rede (ex: `http://192.168.1.5:3000`).
+# 3. Configurar variáveis de ambiente
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
 
-## 👤 Credenciais de Acesso (Padrão)
+# 4. Iniciar desenvolvimento
+npm run dev
+```
 
-Após executar o seed, você pode usar:
+## 🎯 **ACESSO AO SISTEMA**
+
+### **URLs Principais:**
+
+- **Site**: http://localhost:3000
+- **Admin**: http://localhost:3000/admin
+- **Dashboard**: http://localhost:3000/dashboard
+- **Blog**: http://localhost:3000/blog
+- **Imóveis**: http://localhost:3000/imoveis
+- **Contato**: http://localhost:3000/contato
+
+### **Credenciais de Teste:**
 
 | Role   | Email                            | Senha      | Descrição       |
 | ------ | -------------------------------- | ---------- | --------------- |
-| OWNER  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Dono do Sistema |
+| ADMIN  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Owner principal |
 | ADMIN  | admin@email.com                  | admin123   | Administrador   |
 | AGENT  | agent@email.com                  | agent123   | Corretor        |
 | USER   | user@email.com                   | user123    | Usuário comum   |
 | CLIENT | client@email.com                 | client123  | Cliente         |
 
-## 🛠️ Tecnologias
+## 🏢 **FUNCIONALIDADES PRINCIPAIS**
 
-### Frontend/Backend
-- **Next.js 14** - Framework React com App Router
+### **Portal do Cliente:**
+- 🏠 Catálogo completo de imóveis com filtros avançados
+- 🔍 Busca por localização, preço, tipo, quartos, área
+- 📱 Galeria de fotos profissionais para cada imóvel
+- 📍 Mapa interativo com localização dos imóveis
+- 💬 Formulário de contato e interesse
+- 📞 Agendamento de visitas online
+- ⭐ Sistema de favoritos
+- 📊 Comparador de imóveis
+- 📧 Newsletter com novos imóveis
+- 💰 Simulador de financiamento
+- 🤖 Chat inteligente com IA
+
+### **Sistema Administrativo:**
+
+#### **Gestão de Imóveis:**
+- ➕ Cadastro completo de imóveis
+- 📸 Upload múltiplo de imagens
+- ✏️ Edição de informações
+- 🗑️ Exclusão com confirmação
+- 📋 Listagem com filtros avançados
+- 📊 Status (Disponível, Alugado, Vendido, Reservado)
+- 💰 Histórico de preços
+- 📄 Geração de fichas técnicas em PDF
+
+#### **Gestão Financeira:**
+- 💳 Controle de receitas e despesas
+- 📊 Dashboard financeiro completo
+- 💰 Gestão de comissões
+- 📈 Relatórios financeiros
+- 📅 Fluxo de caixa
+- 🎯 Orçamentos e metas
+- 📋 Controle de pagamentos
+
+#### **Gestão de Usuários:**
+- 👥 Níveis de acesso (Admin, Corretor, Assistente)
+- 🔐 Sistema de autenticação seguro
+- 📊 Log de atividades
+- 👤 Perfis personalizados
+
+#### **Dashboard e Relatórios:**
+- 📈 Estatísticas em tempo real
+- 📊 Gráficos de vendas/locações
+- 💹 Relatórios financeiros
+- 📅 Agenda de visitas
+- 🎯 Metas e performance
+- 📧 Leads e conversões
+- 📱 Relatórios de acessos mobile
+
+## 🛠️ **TECNOLOGIAS UTILIZADAS**
+
+### **Frontend/Backend:**
+- **Next.js 14** - App Router, Server Components
 - **TypeScript** - Tipagem estática
 - **Tailwind CSS** - Framework CSS utilitário
-- **Radix UI** - Componentes primitivos acessíveis
+- **Radix UI** - Componentes primitivos
+- **Framer Motion** - Animações
+- **React Hook Form** - Formulários
+- **Zod** - Validação de schemas
 
-### Banco de Dados
-- **PostgreSQL** - Banco de dados relacional
-- **Prisma** - ORM moderno para TypeScript
+### **Banco de Dados:**
+- **SQLite** (desenvolvimento) / **PostgreSQL** (produção)
+- **Prisma ORM** - Object-Relational Mapping
+- **Redis** - Cache e sessões
 
-### Autenticação
+### **Autenticação:**
 - **NextAuth.js** - Autenticação completa
-- **bcryptjs** - Hash de senhas
+- **Google OAuth** - Login social
+- **JWT** - Tokens seguros
 
-### APIs Externas
-- **OpenAI** - Chatbot inteligente
-- **Resend** - Envio de emails
-- **Evolution API** - WhatsApp Business
+### **Integrações:**
+- **WhatsApp Business API** - Comunicação
+- **Google Maps** - Geolocalização
+- **Vercel Blob** - Storage de imagens
+- **Nodemailer** - Envio de emails
 
-## 🔧 Scripts Disponíveis
+### **DevTools:**
+- **ESLint** - Linter
+- **Prettier** - Formatador
+- **Jest** - Testes
+- **TypeScript** - Verificação de tipos
+
+## 📁 **ESTRUTURA DO PROJETO**
+
+```
+siqueira-campos-imoveis/
+├── app/                    # App Router Next.js
+│   ├── (admin)/           # Rotas administrativas
+│   │   ├── admin/         # Dashboard admin
+│   │   ├── blog/          # Gestão de blog
+│   │   ├── imoveis/       # Gestão de imóveis
+│   │   ├── usuarios/      # Gestão de usuários
+│   │   ├── leads/         # Gestão de leads
+│   │   ├── visitas/       # Gestão de visitas
+│   │   ├── financeiro/    # Gestão financeira
+│   │   └── whatsapp/      # Integração WhatsApp
+│   ├── (public)/          # Rotas públicas
+│   │   ├── imoveis/       # Listagem de imóveis
+│   │   ├── blog/          # Blog público
+│   │   ├── contato/       # Formulário de contato
+│   │   ├── depoimentos/   # Depoimentos
+│   │   ├── comparar/      # Comparador de imóveis
+│   │   └── simulador-financiamento/
+│   ├── (app)/             # Dashboard do usuário
+│   ├── api/               # API Routes
+│   │   ├── auth/          # Autenticação
+│   │   ├── chat/          # Chatbot
+│   │   ├── upload/        # Upload de arquivos
+│   │   └── whatsapp-webhook/
+│   ├── actions/           # Server Actions
+│   └── globals.css        # Estilos globais
+├── components/            # Componentes React
+│   ├── ui/               # Componentes base (shadcn/ui)
+│   ├── navbar.tsx        # Navegação
+│   ├── footer.tsx        # Rodapé
+│   ├── property-card.tsx # Card de imóvel
+│   └── floating-chat-bubble.tsx
+├── lib/                  # Bibliotecas e utilitários
+│   ├── auth.ts          # Configuração autenticação
+│   ├── prisma.ts        # Cliente Prisma
+│   ├── utils.ts         # Utilitários
+│   └── email.ts         # Configuração email
+├── prisma/              # Schema e migrações
+│   ├── schema.prisma    # Modelo do banco
+│   └── migrations/      # Migrações
+├── public/              # Arquivos estáticos
+└── scripts/             # Scripts de automação
+```
+
+## 🔧 **COMANDOS DISPONÍVEIS**
 
 ```bash
 # Desenvolvimento
-npm run dev          # Inicia servidor de desenvolvimento (acessível na rede local)
-npm run build        # Compila o projeto para
+npm run dev              # Inicia servidor de desenvolvimento
+npm run build           # Build para produção
+npm run start           # Inicia servidor de produção
+npm run lint            # Executa linter
+npm run type-check      # Verifica tipos TypeScript
 
-# Banco de dados
-npx prisma generate  # Gerar cliente Prisma
-npx prisma db push   # Aplicar schema ao banco
-npx prisma studio    # Interface visual do banco
-npx tsx scripts/seed.ts  # Popular banco com dados
+# Banco de Dados
+npm run db:generate     # Gera cliente Prisma
+npm run db:push         # Aplica mudanças ao banco
+npm run db:seed         # Popula banco com dados iniciais
+npm run db:studio       # Abre Prisma Studio
+npm run db:reset        # Reseta banco de dados
 
-# Verificação e diagnóstico
-npm run health       # Verificação completa do sistema
-npm run fix          # Corrigir problemas comuns
+# Testes
+npm run test            # Executa testes
+npm run test:watch      # Executa testes em watch mode
+npm run test:coverage   # Gera relatório de cobertura
+
+# Deploy
+npm run deploy          # Deploy para produção
+npm run deploy:staging  # Deploy para staging
 ```
 
-## 🚀 Deploy
+## 🐳 **DOCKER**
 
-### Vercel (Recomendado)
-
-1. Conecte seu repositório ao Vercel
-2. Configure as variáveis de ambiente
-3. Deploy automático
-
-### VPS/Servidor
-
-Use o script de deploy incluído:
-
+### **Desenvolvimento**
 ```bash
-bash deploy.sh
+# Inicia todos os serviços
+docker-compose -f docker-compose.dev.yml up
+
+# Apenas o banco de dados
+docker-compose -f docker-compose.dev.yml up postgres
 ```
 
-O script irá:
-
-- Configurar servidor (Ubuntu/Debian)
-- Instalar dependências (Node.js, PostgreSQL, Nginx)
-- Configurar SSL com Let's Encrypt
-- Configurar PM2 para process management
-- Configurar backup automático
-
-## 🔒 Variáveis de Ambiente
-
-### Obrigatórias
-
-- `DATABASE_URL` - String de conexão PostgreSQL
-- `NEXTAUTH_SECRET` - Chave secreta para NextAuth
-- `NEXTAUTH_URL` - URL base da aplicação
-
-### Opcionais
-
-- `GOOGLE_CLIENT_ID` - OAuth Google
-- `GOOGLE_CLIENT_SECRET` - OAuth Google
-- `OPENAI_API_KEY` - Chatbot inteligente
-- `RESEND_API_KEY` - Envio de emails
-- `EVOLUTION_API_URL` - WhatsApp Business
-- `EVOLUTION_API_KEY` - WhatsApp Business
-
-## 🧪 Testes
-
+### **Produção**
 ```bash
-npm run test        # Executar todos os testes
-npm run test:watch  # Modo watch
-npm run test:coverage  # Cobertura de testes
+# Build e inicialização
+docker-compose up -d
+
+# Logs
+docker-compose logs -f app
 ```
 
-## 📖 Documentação da API
+## 🌍 **VARIÁVEIS DE AMBIENTE**
 
-### Endpoints principais
+```env
+# Domínio
+MAIN_DOMAIN=siqueicamposimoveis.com.br
 
-- `GET /api/properties` - Listar imóveis
-- `POST /api/properties` - Criar imóvel
-- `GET /api/users` - Listar usuários
-- `POST /api/auth/signin` - Login
-- `POST /api/chat` - Chatbot
-- `POST /api/whatsapp-webhook` - Webhook WhatsApp
+# JWT
+JWT_SECRET=seu_jwt_secret_aqui
+JWT_EXPIRES_IN=7d
+COOKIE_SECRET=seu_cookie_secret_aqui
 
-## 🤝 Contribuição
+# Banco de Dados
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/banco?schema=public"
+
+# Portas
+PORT=3000
+ADMIN_PORT=3001
+APP_PORT=3002
+NODE_ENV="production"
+
+# Email
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=siqueiraecamposimoveis@gmail.com
+EMAIL_PASS=sua_senha_app
+
+# Google OAuth
+GOOGLE_CLIENT_ID=seu_google_client_id
+GOOGLE_CLIENT_SECRET=seu_google_client_secret
+GOOGLE_CALLBACK_URL=https://seudominio.com/api/auth/google/callback
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# WhatsApp
+WHATSAPP_TOKEN=seu_whatsapp_token
+WHATSAPP_WEBHOOK_VERIFY=seu_webhook_verify_token
+
+# Backup
+BACKUP_DIR=/var/backups/siqueira-campos
+```
+
+## 📱 **RESPONSIVIDADE**
+
+- ✅ **Mobile First** - Design otimizado para mobile
+- ✅ **Tablet** - Layout adaptado para tablets
+- ✅ **Desktop** - Experiência completa em desktop
+- ✅ **PWA Ready** - Pronto para Progressive Web App
+
+## 🔒 **SEGURANÇA**
+
+- 🛡️ **Autenticação JWT** segura
+- 🔐 **Criptografia** de senhas com bcrypt
+- 🚫 **Proteção CSRF** integrada
+- 📝 **Validação** rigorosa de dados
+- 🔒 **HTTPS** enforced
+- 👤 **Controle de acesso** por roles
+
+## 🚀 **DEPLOY**
+
+### **Vercel (Recomendado)**
+```bash
+# Configurar Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+### **Servidor Próprio**
+```bash
+# Build
+npm run build
+
+# Iniciar
+npm start
+```
+
+## 📊 **MONITORAMENTO**
+
+- 📈 **Analytics** integrado
+- 🔍 **Logs** estruturados
+- ⚡ **Performance** monitoring
+- 🚨 **Error tracking** automático
+- 📱 **Uptime** monitoring
+
+## 🤝 **CONTRIBUIÇÃO**
 
 1. Fork o projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
@@ -206,28 +350,24 @@ npm run test:coverage  # Cobertura de testes
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 🐛 Reportar Bugs
-
-Encontrou um bug? Abra uma issue com:
-
-- Descrição detalhada
-- Steps para reproduzir
-- Ambiente (OS, Node.js, navegador)
-- Screenshots se aplicável
-
-## 📞 Suporte
-
-- **Desenvolvedor**: KRYONIX Development
-- **WhatsApp**: +55 17 98180-5327
-- **Instagram**: [@kryon.ix](https://instagram.com/kryon.ix)
-- **Email**: suporte@kryonix.dev
-
-## 📄 Licença
+## 📄 **LICENÇA**
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
+## 📞 **SUPORTE**
+
+- 📧 **Email**: siqueiraecamposimoveis@gmail.com
+- 📱 **WhatsApp**: (62) 9 8556-3905
+- 🌐 **Site**: https://siqueicamposimoveis.com.br
+
+## 🏆 **CRÉDITOS**
+
+**Desenvolvido por [KRYONIX](https://kryonix.dev)**
+
+- 🎨 **Design**: Interface moderna e responsiva
+- ⚡ **Performance**: Otimizado para velocidade
+- 🔧 **Manutenção**: Suporte técnico contínuo
+
 ---
 
-⭐ **Se este projeto te ajudou, deixe uma estrela!**
-
-Desenvolvido com ❤️ pela [KRYONIX Development](https://kryonix.dev)
+**© 2024 Siqueira Campos Imóveis - Todos os direitos reservados**
