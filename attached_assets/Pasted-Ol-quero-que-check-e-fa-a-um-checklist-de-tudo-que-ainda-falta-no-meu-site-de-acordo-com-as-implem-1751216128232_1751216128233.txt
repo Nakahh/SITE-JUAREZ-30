@@ -1,0 +1,209 @@
+Olá, quero que check e faça um checklist de tudo que ainda falta no meu site de acordo com as implementações e se tiver algo para agregar pode colocar e configurar tambem
+
+MAIN_DOMAIN=siqueicamposimoveis.com.br
+JWT_SECRET=468465454567653554546524
+JWT_EXPIRES_IN=7d
+COOKIE_SECRET=645454564867654575565
+
+DATABASE_URL="postgresql://sitejuarez:juarez123@localhost:5432/bdsitejuarez?schema=public"
+PORT=3000
+ADMIN_PORT=3001
+APP_PORT=3002
+NODE_ENV="development"
+
+# Email
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=siqueiraecamposimoveis@gmail.com
+EMAIL_PASS=Juarez.123
+
+# Google OAuth
+GOOGLE_CLIENT_ID=7452076957-v6740revpqo1s3f0ek25dr1tpua6q893.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=https://siqueicamposimoveis.com.br/api/auth/google/callback
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Backup
+BACKUP_DIR=/var/backups/siqueira-campos
+
+
+
+
+🏢 FUNCIONALIDADES DO SITE PÚBLICO:
+
+Portal do Cliente:
+🏠 Catálogo completo de imóveis com filtros avançados
+🔍 Busca por localização, preço, tipo, quartos, área
+📱 Galeria de fotos profissionais para cada imóvel
+📍 Mapa interativo com localização dos imóveis
+💬 Formulário de contato e interesse
+📞 Agendamento de visitas online
+⭐ Sistema de favoritos
+📊 Comparador de imóveis
+📧 Newsletter com novos imóveis
+💰 Simulador de financiamento
+
+Experiência do Usuário:
+📱 Design responsivo (mobile-first)
+⚡ Carregamento rápido e otimizado
+🎨 Interface moderna e intuitiva
+🔗 Integração com WhatsApp
+📧 Envio automático de emails
+
+🎛 SISTEMA DE GESTÃO ADMINISTRATIVO:
+
+Autenticação e Segurança:
+🔐 Sistema de login multi-usuário
+👥 Níveis de acesso (Admin, Corretor, Assistente)
+🛡 Criptografia de senhas
+📊 Log de atividades
+🔒 Sessões seguras
+
+Gestão de Imóveis:
+➕ Cadastro completo de imóveis
+📸 Upload múltiplo de imagens
+✏ Edição de informações
+🗑 Exclusão com confirmação
+📋 Listagem com filtros avançados
+📊 Status (Disponível, Alugado, Vendido, Reservado)
+💰 Histórico de preços
+📄 Geração de fichas técnicas em PDF
+
+Dashboard e Relatórios:
+📈 Estatísticas em tempo real
+📊 Gráficos de vendas/locações
+💹 Relatórios financeiros
+📅 Agenda de visitas
+🎯 Metas e performance
+📧 Leads e conversões
+📱 Relatórios de acessos mobile
+
+Gestão de Clientes:
+👤 Cadastro de clientes/leads 📞 Histórico de contatos
+📧 Comunicação automática
+🎯 Segmentação de clientes
+📊 Análise de comportamento💬 Chat interno
+
+Financeiro:
+💰 Controle de comissões
+📊 Relatórios de vendas
+💳 Controle de recebimentos
+📈 Análise de performance
+🧾 Geração de contratos
+📄 Documentos digitais
+
+Comunicação:
+📧 Email marketing automático📱 Integração WhatsApp Business
+🔔 Notificações push
+📊 Campanhas segmentadas
+📈 Análise de engajamento
+
+confira se tem tudo que está acima, se dá para criar tudo pelo dashboards, dashboard admin, dashboard corretor e que reflita no frontend para o cliente.
+
+
+
+- quero que veja e deixa tudo no modo claro com as cores da logo e o modo escuro tambem, quero que confira que as cores do fundo não vai ficar ruim para as cores de texto, nada que não possa enxergar. quero tudo visivel
+
+- veja se o chat e e a ia está configurada e respondendo se certifique que está funcionando e configurado.
+
+- veja se está criando imoveis, usuarios, todos os tipos de usuarios, artigos, se está gerando pdf
+
+- veja se todos os links estão direcionando para os lugares certos e se todos botões funcionando e direcionando para os lugares certo
+
+- veja se as logo kryonix e siqueira campos imoveis png que estão na pasta componentes estão no site em todas as areas propicias, como area login, dashboard.
+
+quero que crie ou modifique a pagina de desenvolvedor e crie uma pagina bem interesante e proficionais com muitas informações e completa, e deixa apenas o whatsapp e instagram e certifique que está direcionando para os mesmos.
+
+coloque mais animações no site
+
+certifique todos os menus, todas as paginas, todas as areas, todos o dashboards, dashboard admin, dashboard da area cliente se os menus dos mesmos estão corretos e que todos os links funcionanm
+
+coloque na home uma imagem no header uma imagem que tenha profundidade para não atraplhar o texto
+
+coloque na home imoveis em destaque
+
+
+veja se o chat ao vivo dentro do site está respondendo direito tanto no frontend quanto no backend
+
+veja coloca um layout mais moderno e com mais recursos, que seja mais completo e robusto possivel
+
+confira se todas as paginas estão funcionando, todos os links e botões de todas as paginas funcionam e estam direcionando para os lugares certos
+
+
+certifique tudo, faço o teste de tudo quanto automatizado quanto, testes manuais.
+
+novamente faça todo o checklist e veja se tudo foi implementado e funcionando, quero que coloque na area administrativa um link para fazer conexão com a evolution api e crie uma pagina de login e layout da evolution api, e coloque no dashboard se ta ou não funcionando a api, e coloque no dashboard tudo que está ativo e funcionando, coloque graficos e cards no dashboard admin
+
+
+certifique-se de tudo, veja se os instagram estão certos, tanto da siqueira campos quanto do desenvolvedor, whatsapp
+
+vou deixar todas informações para voce ja deixar configurado no meu banco de dados, com as fotos dos imoveis, header, e que tudo sempre funcione corretamente.
+
+faça artigos, depoimentos com fotos de pessoas ficticias brasileiras, coloque no menu sobre a empresa e crie uma pagina sobre a empresa, equipe, crie tudo pra mim
+
+
+certifique que tudo está funcional no backend e frontend tudo configurado.
+
+faça um checklist de tudo que está implementado, funcionando e configurado, e um checklist de coisas que não estão funcionando e configuradas
+
+mas deixe tudo configurado pra mim.
+
+coloque imoveis em destaque na home, coloque depoimentos, coloque faq, coloque o blog na home com os artigos criados, coloque o simulador de financiamento na home, o chat flutuante com a ia embarcada, faça um desing visual bem melhor, responsivo, moderno e que fique atraente tanto quanto os dois modos, escuro e claro.
+
+
+use ferramentas mais profissonais, que dê um ar de site impressionante e moderno, revolucionario na area.
+
+
+configure apenas a informações da empresa que te pedir:
+
+email, instagram e whatsapp. sem endereço e outras redes sociais.
+
+vou deixar todas as informações corretas pra deixar tudo correto e configurado no .env
+
+veja se o envio de emails ta certo, notificação por push.
+
+enfim, quero que dê uma varredura geral no site e conserte, configure tudo que tem que fazer.
+
+lembre-se da autenticação do google, se está funcionando, veja os mapas na pagina do imovel está funcionando, ao criar um imovel, cria-se uma pagina nova exclusiva para aquele imovel, com todas informações possiveis daquele imovel
+
+
+configure, o dominio e os sub dominios:
+
+dominio: www.siqueicamposimoveis.com.br
+
+subdominios:
+
+cliente.siqueicamposimoveis.com.br
+admin.siqueicamposimoveis.com.br
+corretor.siqueicamposimoveis.com.br
+assistente.siqueicamposimoveis.com.br
+
+entre os outros sub-dominios..
+
+sempre que criar um imovel novo, é para criar uma nova pagina e que fique acessivel mesmo sem login todas as paginas de imoveis.
+
+veja se está favoritando, quero que coloque nos cards de destaque de imoveis, colocar um botão de agendar visita e fazer todo o sistema e conseguir ver pelos dashboards.
+
+veja se as notificações push tanto para o cliente quanto para o admin, corretor e assistente estão funcionando.
+
+confira o chat, se está integrado com a ia e treinada para aderir tudo do site, e fazer o notificação em push sempre que precisar de um humano para responder em tempo real pelo dashboard.
+
+veja todas as paginas de app, public, admin estão com erro 404 e se as autenticações estão realmente funcionando
+
+
+o whatsapp é:(62) 9 8556-3905
+o instagram: imoveissiqueiracampos
+email:siqueiraecamposimoveis@gmail.com
+
+quero só essas informações sem endereço.
+
+
+faça botoes modernos e animados em todo o site e sistemas.
+
+
+certifique e coloque o sistema integrado no dashboard do admin e do corretor o a evolunion apei e ja configure tudo.
+
+confira e configure o email automatico com resend.
