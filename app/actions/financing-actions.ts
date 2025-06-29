@@ -21,7 +21,7 @@ interface FinancingCalculation {
   }>
 }
 
-export function calculateSAC(
+export async function calculateSAC(
   principal: number,
   annualRate: number,
   termMonths: number
@@ -55,7 +55,7 @@ export function calculateSAC(
   }
 }
 
-export function calculatePRICE(
+export async function calculatePRICE(
   principal: number,
   annualRate: number,
   termMonths: number

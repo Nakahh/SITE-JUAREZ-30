@@ -1,7 +1,9 @@
+'use client'
 
 import { Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -159,7 +161,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       <FloatingChatBubble />
-      
+
       {/* Hero Section com Background Profundo */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background com profundidade */}
@@ -167,7 +169,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
         </div>
-        
+
         {/* Elementos flutuantes animados */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-pulse"></div>
@@ -185,7 +187,7 @@ export default function HomePage() {
             <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in-delay">
               Mais de 15 anos conectando pessoas aos seus sonhos. Descubra imóveis únicos em Goiânia e região.
             </p>
-            
+
             {/* Busca Rápida */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 animate-slide-up">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -199,17 +201,17 @@ export default function HomePage() {
                     <SelectItem value="COMMERCIAL">Comercial</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Input 
                   placeholder="Localização" 
                   className="bg-white/20 border-white/30 text-white placeholder:text-gray-300"
                 />
-                
+
                 <Input 
                   placeholder="Preço máximo" 
                   className="bg-white/20 border-white/30 text-white placeholder:text-gray-300"
                 />
-                
+
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold">
                   <Search className="mr-2 h-4 w-4" />
                   Buscar
@@ -277,7 +279,7 @@ export default function HomePage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-semibold text-lg line-clamp-2">{property.title}</h3>
@@ -287,18 +289,18 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-4 flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
                     {property.address}
                   </p>
-                  
+
                   <div className="flex justify-between text-sm text-muted-foreground mb-6">
                     <span>{property.bedrooms} quartos</span>
                     <span>{property.bathrooms} banheiros</span>
                     <span>{property.area}m²</span>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Button asChild className="flex-1">
                       <Link href={`/imoveis/${property.id}`}>
@@ -366,7 +368,7 @@ export default function HomePage() {
                     Simular Financiamento
                   </Button>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl">
                   <div className="text-center">
                     <Calculator className="h-16 w-16 mx-auto mb-4 text-blue-600" />
@@ -413,11 +415,11 @@ export default function HomePage() {
                       <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-6 italic">
                     "{testimonial.content}"
                   </p>
-                  
+
                   <div className="flex items-center">
                     <Image
                       src={testimonial.image}
@@ -468,7 +470,7 @@ export default function HomePage() {
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
-                
+
                 <CardContent className="p-6">
                   <div className="text-sm text-muted-foreground mb-2">
                     {article.publishedAt.toLocaleDateString('pt-BR')}
@@ -546,7 +548,7 @@ export default function HomePage() {
           <p className="text-xl mb-8 text-blue-100">
             Cadastre-se e seja o primeiro a saber sobre novos imóveis e promoções exclusivas
           </p>
-          
+
           <div className="max-w-md mx-auto">
             <NewsletterForm />
           </div>
@@ -562,7 +564,7 @@ export default function HomePage() {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Nossa equipe está pronta para ajudá-lo em cada etapa. Entre em contato e realize seu sonho hoje mesmo.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button asChild size="lg" className="bg-gradient-to-r from-green-600 to-green-700">
               <a href={`https://wa.me/5562985563905`} target="_blank" rel="noopener noreferrer">
@@ -570,7 +572,7 @@ export default function HomePage() {
                 WhatsApp: (62) 9 8556-3905
               </a>
             </Button>
-            
+
             <Button asChild size="lg" variant="outline">
               <Link href="/contato">
                 <Mail className="mr-2 h-5 w-5" />

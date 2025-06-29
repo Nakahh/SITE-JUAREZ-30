@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -64,7 +63,7 @@ export function FloatingChatBubble() {
         sender: "bot", 
         timestamp: new Date()
       }
-      
+
       setMessages(prev => [...prev, botMessage])
       setIsTyping(false)
     }, 1500)
@@ -72,39 +71,39 @@ export function FloatingChatBubble() {
 
   const generateBotResponse = (userInput: string): string => {
     const input = userInput.toLowerCase()
-    
+
     if (input.includes("imovel") || input.includes("casa") || input.includes("apartamento")) {
       return "Temos diversos imóveis disponíveis! Você está procurando casa ou apartamento? Em qual região de Goiânia? Posso ajudá-lo a encontrar opções que se encaixem no seu perfil e orçamento. 🏠"
     }
-    
+
     if (input.includes("preço") || input.includes("valor") || input.includes("custo")) {
       return "Os valores variam conforme localização, tamanho e características do imóvel. Você tem um orçamento em mente? Posso mostrar opções dentro da sua faixa de preço. Para informações detalhadas, você também pode falar diretamente com nossos corretores! 💰"
     }
-    
+
     if (input.includes("financiamento") || input.includes("financiar")) {
       return "Trabalhamos com as melhores linhas de financiamento do mercado! Você pode usar nosso simulador online ou agendar uma consulta com nossa equipe especializada. Precisamos de alguns dados para encontrar a melhor opção para você. 📊"
     }
-    
+
     if (input.includes("visita") || input.includes("visitar") || input.includes("agendar")) {
       return "Posso ajudá-lo a agendar uma visita! Você já tem algum imóvel em mente ou gostaria que eu sugira alguns baseado no seu perfil? Nossos corretores estão disponíveis de segunda a sábado. 📅"
     }
-    
+
     if (input.includes("documentos") || input.includes("documentação")) {
       return "Para a compra de um imóvel você precisará de: RG, CPF, comprovante de renda, comprovante de residência e certidões negativas. Se for financiamento, alguns documentos adicionais podem ser necessários. Quer que eu envie uma lista completa? 📄"
     }
-    
+
     if (input.includes("localização") || input.includes("bairro") || input.includes("região")) {
       return "Atendemos toda Goiânia e região metropolitana! Temos imóveis em diversos bairros como Setor Oeste, Jardins, Bueno, Centro, entre outros. Qual região você tem preferência? 📍"
     }
-    
+
     if (input.includes("corretor") || input.includes("atendimento") || input.includes("humano")) {
       return "Claro! Vou conectá-lo com um de nossos corretores especializados. Você pode entrar em contato pelo WhatsApp (62) 9 8556-3905 ou aguardar que um corretor entre em contato. Em qual tipo de imóvel você tem interesse? 👨‍💼"
     }
-    
+
     if (input.includes("obrigad") || input.includes("thanks") || input.includes("valeu")) {
       return "Por nada! Foi um prazer ajudá-lo. Se precisar de mais alguma coisa, estarei aqui. Boa sorte na busca pelo seu imóvel dos sonhos! 😊🏡"
     }
-    
+
     if (input.includes("oi") || input.includes("olá") || input.includes("hello")) {
       return "Olá! Bem-vindo à Siqueira Campos Imóveis! Como posso ajudá-lo hoje? Está procurando um imóvel específico? 👋"
     }
@@ -216,7 +215,7 @@ export function FloatingChatBubble() {
                     </div>
                   </div>
                 ))}
-                
+
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg rounded-bl-none">
@@ -251,7 +250,7 @@ export function FloatingChatBubble() {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               {/* Quick Actions */}
               <div className="flex flex-wrap gap-1 mt-2">
                 <Badge 
