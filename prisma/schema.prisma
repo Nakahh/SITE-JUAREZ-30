@@ -1,381 +1,214 @@
-
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = env("DATABASE_PROVIDER")
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
-  role      Role     @default(CLIENT)
-  image     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  properties       Property[]
-  favorites        Favorite[]
-  reviews          PropertyReview[]
-  visits           Visit[]
-  savedSearches    SavedSearch[]
-  articleComments  ArticleComment[]
-  accounts         Account[]
-  sessions         Session[]
-
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
-}
-
 enum Role {
-  CLIENT
+  USER
   AGENT
   ADMIN
   OWNER
-}
-
-model Property {
-  id              String       @id @default(cuid())
-  title           String
-  description     String
-  price           Float
-  address         String
-  neighborhood    String
-  city            String
-  state           String
-  zipCode         String?
-  bedrooms        Int
-  bathrooms       Int
-  area            Float
-  parking         Int?
-  type            PropertyType
-  status          PropertyStatus @default(AVAILABLE)
-  saleType        SaleType
-  amenities       Json?
-  features        Json?
-  iptu            Float?
-  condominiumFee  Float?
-  coordinates     Json?
-  virtualTourUrl  String?
-  videoUrl        String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  
-  // Relations
-  agent           User         @relation(fields: [agentId], references: [id])
-  agentId         String
-  images          PropertyImage[]
-  favorites       Favorite[]
-  reviews         PropertyReview[]
-  visits          Visit[]
-
-  @@map("properties")
-}
-
-model PropertyImage {
-  id         String   @id @default(cuid())
-  url        String
-  alt        String?
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-  
-  // Relations
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId String
-
-  @@map("property_images")
-}
-
-enum PropertyType {
-  HOUSE
-  APARTMENT
-  COMMERCIAL
-  LAND
-  FARM
+  CLIENT // Adicionado para consistência com o seed script
 }
 
 enum PropertyStatus {
-  AVAILABLE
+  FOR_SALE
+  FOR_RENT
   SOLD
   RENTED
-  RESERVED
-}
-
-enum SaleType {
-  SALE
-  RENT
-  BOTH
-}
-
-model Favorite {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  
-  // Relations
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId String
-
-  @@unique([userId, propertyId])
-  @@map("favorites")
-}
-
-model PropertyReview {
-  id         String   @id @default(cuid())
-  rating     Int
-  comment    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  
-  // Relations
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId String
-
-  @@unique([userId, propertyId])
-  @@map("property_reviews")
-}
-
-model Visit {
-  id            String      @id @default(cuid())
-  scheduledDate DateTime
-  status        VisitStatus @default(SCHEDULED)
-  notes         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
-  // Relations
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  property      Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId    String
-
-  @@map("visits")
 }
 
 enum VisitStatus {
-  SCHEDULED
-  COMPLETED
-  CANCELLED
-  NO_SHOW
+  PENDING
+  CONFIRMED
+  CANCELED
 }
 
-model SavedSearch {
-  id            String   @id @default(cuid())
-  name          String
-  filters       Json
-  alertEnabled  Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  // Relations
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
+model User {
+  id               String             @id @default(cuid())
+  name             String?
+  email            String             @unique
+  emailVerified    DateTime?
+  image            String?
+  password         String?
+  role             Role               @default(USER)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
+  favoriteProperties FavoriteProperty[] // Relação com favoritos
+  visits           Visit[]            @relation("UserVisits") // Relação com visitas (se o cliente for um User)
+  articles         Article[]
+  comments         ArticleComment[]
+  reviews          PropertyReview[]
+  savedSearches    SavedSearch[]
+  testimonials     Testimonial[]
+  activityLogs     ActivityLog[]      @relation("UserActivityLogs", fields: [], references: [])
+  commissions      Commission[]       @relation("AgentCommissions") // Comissões recebidas
+  createdCommissions Commission[]     @relation("CreatedCommissions") // Comissões criadas
+  financings       Financing[]        @relation("UserFinancings") // Financiamentos do usuário
+}
 
-  @@map("saved_searches")
+model Client {
+  id               String             @id @default(cuid())
+  name             String
+  email            String             @unique
+  phone            String?
+  address          String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  visits           Visit[]            @relation("ClientVisits") // Relação com visitas (se o cliente for um Client)
+  financialRecords FinancialRecord[]
+  financings       Financing[]        // Financiamentos do cliente
+}
+
+model Property {
+  id               String           @id @default(cuid())
+  title            String
+  description      String
+  price            Float
+  type             String
+  status           PropertyStatus   @default(FOR_SALE)
+  address          String
+  city             String
+  state            String
+  zipCode          String?
+  bedrooms         Int
+  bathrooms        Int
+  area             Float
+  garage           Boolean          @default(false)
+  pool             Boolean          @default(false)
+  balcony          Boolean          @default(false)
+  images           Json // Usando o tipo nativo Json do PostgreSQL
+  agentId          String?          // Corretor responsável
+  agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  favoriteProperties FavoriteProperty[]
+  reviews          PropertyReview[]
+  visits           Visit[]          @relation("PropertyVisits")
+  commissions      Commission[]     // Comissões relacionadas
+  financings       Financing[]      // Financiamentos relacionados
+}
+
+model FavoriteProperty {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  user       User     @relation(fields: [userId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+  createdAt  DateTime @default(now())
+  @@unique([userId, propertyId])
+}
+
+model Visit {
+  id        String    @id @default(cuid())
+  date      DateTime
+  notes     String?
+  status    VisitStatus @default(PENDING)
+  propertyId String?  // Propriedade visitada
+  property  Property? @relation("PropertyVisits", fields: [propertyId], references: [id])
+  userId    String?   // Opcional, se a visita for de um User registrado
+  user      User?     @relation("UserVisits", fields: [userId], references: [id])
+  clientId  String?   // Opcional, se a visita for de um Client não registrado
+  client    Client?   @relation("ClientVisits", fields: [clientId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model FinancialRecord {
+  id          String        @id @default(cuid())
+  clientId    String
+  client      Client        @relation(fields: [clientId], references: [id])
+  type        String
+  amount      Float
+  description String?
+  date        DateTime      @default(now())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model Article {
-  id          String    @id @default(cuid())
-  title       String
-  slug        String    @unique
-  content     String
-  excerpt     String?
-  featuredImage String?
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  // Relations
-  comments    ArticleComment[]
-
-  @@map("articles")
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  author    User             @relation(fields: [authorId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  comments  ArticleComment[]
 }
 
 model ArticleComment {
   id        String   @id @default(cuid())
   content   String
-  approved  Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  // Relations
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  articleId String
+}
 
-  @@map("article_comments")
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model SavedSearch {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  criteria  Json // Usando o tipo nativo Json do PostgreSQL
+  createdAt DateTime @default(now())
 }
 
 model Testimonial {
   id        String   @id @default(cuid())
-  name      String
-  role      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   content   String
-  rating    Int      @default(5)
-  image     String?
-  isActive  Boolean  @default(true)
+  rating    Int
+  approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("testimonials")
 }
 
-model Contact {
-  id        String      @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String
-  message   String
-  status    ContactStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-
-  @@map("contacts")
+model PropertyReview {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
-enum ContactStatus {
-  PENDING
-  RESPONDED
-  CLOSED
+model AppSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String // Armazenará "true" ou "false"
 }
 
-model Newsletter {
+model ActivityLog {
   id        String   @id @default(cuid())
-  email     String   @unique
-  isActive  Boolean  @default(true)
+  userId    String?
+  user      User?    @relation("UserActivityLogs", fields: [userId], references: [id])
+  action    String
+  details   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("newsletters")
 }
 
-model Client {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  phone       String?
-  cpf         String?  @unique
-  rg          String?
-  birthDate   DateTime?
-  address     String?
-  city        String?
-  state       String?
-  zipCode     String?
-  profession  String?
-  income      Float?
-  notes       String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  financings  Financing[]
-  commissions Commission[]
-
-  @@map("clients")
-}
-
-model Financing {
-  id              String           @id @default(cuid())
-  propertyValue   Float
-  downPayment     Float
-  loanAmount      Float
-  interestRate    Float
-  term            Int              // in months
-  monthlyPayment  Float
-  status          FinancingStatus  @default(ANALYZING)
-  bankName        String?
-  notes           String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-
-  // Relations
-  client          Client           @relation(fields: [clientId], references: [id])
-  clientId        String
-
-  @@map("financings")
-}
-
-enum FinancingStatus {
-  ANALYZING
-  APPROVED
-  REJECTED
-  COMPLETED
-}
-
-model Commission {
-  id              String            @id @default(cuid())
-  propertyId      String?
-  propertyTitle   String
-  saleValue       Float
-  commissionRate  Float
-  commissionValue Float
-  status          CommissionStatus  @default(PENDING)
-  paidAt          DateTime?
-  notes           String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  // Relations
-  client          Client            @relation(fields: [clientId], references: [id])
-  clientId        String
-  agent           User              @relation(fields: [agentId], references: [id])
-  agentId         String
-
-  @@map("commissions")
+enum CommissionType {
+  SALE
+  RENT
 }
 
 enum CommissionStatus {
@@ -384,44 +217,57 @@ enum CommissionStatus {
   CANCELLED
 }
 
-model AppSettings {
-  id                    String   @id @default(cuid())
-  siteName              String   @default("Siqueira Campos Imóveis")
-  siteDescription       String   @default("Sua imobiliária de confiança")
-  logo                  String?
-  primaryColor          String   @default("#d97706")
-  secondaryColor        String   @default("#f59e0b")
-  phone                 String?
-  whatsapp              String?
-  email                 String?
-  address               String?
-  socialMedia           Json?
-  seoKeywords           String?
-  googleAnalyticsId     String?
-  facebookPixelId       String?
-  evolutionApiUrl       String?
-  evolutionApiKey       String?
-  emailSmtpHost         String?
-  emailSmtpPort         Int?
-  emailSmtpUser         String?
-  emailSmtpPassword     String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@map("app_settings")
+model Commission {
+  id                   String           @id @default(cuid())
+  propertyId           String
+  property             Property         @relation(fields: [propertyId], references: [id])
+  agentId              String
+  agent                User             @relation("AgentCommissions", fields: [agentId], references: [id])
+  saleValue            Float
+  commissionPercentage Float
+  commissionValue      Float
+  type                 CommissionType
+  status               CommissionStatus @default(PENDING)
+  paidAt               DateTime?
+  createdBy            String
+  createdByUser        User             @relation("CreatedCommissions", fields: [createdBy], references: [id])
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 }
 
-model WhatsAppMessage {
-  id          String   @id @default(cuid())
-  fromNumber  String
-  toNumber    String
-  message     String
-  messageType String   @default("text")
-  status      String   @default("pending")
-  instanceId  String?
-  messageId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum FinancingType {
+  SAC
+  PRICE
+  MIXED
+}
 
-  @@map("whatsapp_messages")
+enum FinancingStatus {
+  SIMULATING
+  PENDING
+  APPROVED
+  REJECTED
+  CONTRACTED
+}
+
+model Financing {
+  id               String           @id @default(cuid())
+  propertyId       String
+  property         Property         @relation(fields: [propertyId], references: [id])
+  clientId         String?
+  client           Client?          @relation(fields: [clientId], references: [id])
+  userId           String?
+  user             User?            @relation("UserFinancings", fields: [userId], references: [id])
+  propertyValue    Float
+  downPayment      Float
+  financedAmount   Float
+  interestRate     Float
+  termMonths       Int
+  monthlyPayment   Float
+  totalAmount      Float
+  type             FinancingType    @default(SAC)
+  status           FinancingStatus  @default(SIMULATING)
+  bankName         String?
+  observations     String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }

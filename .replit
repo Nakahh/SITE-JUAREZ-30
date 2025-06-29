@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Start Development"
+runButton = "Desenvolvimento"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -62,31 +62,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run setup"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-
-[[workflows.workflow]]
-name = "Start Development"
-author = 44405611
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm install"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx prisma generate"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx prisma db push"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run db:seed"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
