@@ -1,53 +1,32 @@
+import { withAuth } from "next-auth/middleware"
 
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+export default withAuth(
+  function middleware(req) {
+    // Middleware logic here if needed
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        // Admin routes
+        if (req.nextUrl.pathname.startsWith('/admin')) {
+          return token?.role === 'ADMIN'
+        }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+        // Protected routes
+        if (req.nextUrl.pathname.startsWith('/dashboard')) {
+          return !!token
+        }
 
-  // Permitir acesso a rotas públicas
-  const publicPaths = [
-    '/',
-    '/login',
-    '/register',
-    '/imoveis',
-    '/blog',
-    '/contato',
-    '/sobre',
-    '/depoimentos',
-    '/corretores',
-    '/simulador-financiamento',
-    '/desenvolvedor',
-    '/kryonix',
-    '/api/auth',
-    '/_next',
-    '/favicon.ico'
-  ]
-
-  // Verificar se é uma rota pública
-  const isPublicPath = publicPaths.some(path => 
-    pathname === path || 
-    pathname.startsWith(path + '/') ||
-    pathname.startsWith('/api/auth/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.includes('.')
-  )
-
-  if (isPublicPath) {
-    return NextResponse.next()
+        return true
+      },
+    },
   }
-
-  // Para rotas administrativas, podemos adicionar verificação adicional no futuro
-  if (pathname.startsWith('/admin')) {
-    // Por enquanto, permitir acesso
-    return NextResponse.next()
-  }
-
-  return NextResponse.next()
-}
+)
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+    '/admin/:path*',
+    '/dashboard/:path*',
+    '/api/admin/:path*'
+  ]
 }

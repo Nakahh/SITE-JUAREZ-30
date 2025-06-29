@@ -6,8 +6,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-const SYSTEM_PROMPT = `
-Você é um assistente virtual especializado em imóveis da Siqueira Campos Imóveis.
+const SYSTEM_PROMPT = `Você é um assistente virtual especializado em imóveis da Siqueira Campos Imóveis.
 
 INFORMAÇÕES DA EMPRESA:
 - Nome: Siqueira Campos Imóveis

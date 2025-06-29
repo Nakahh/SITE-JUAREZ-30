@@ -16,12 +16,16 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Setup Completo"
+runButton = "Desenvolvimento"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
 author = 44386455
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run setup"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

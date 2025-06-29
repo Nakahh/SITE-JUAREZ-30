@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
@@ -64,27 +63,42 @@ export default function ChatInterface({
         content: msg.content
       }))
 
+      const newMessage = input;
+
       const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message: input,
-          conversationHistory
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: newMessage,
+            context: 'property_consultation',
+            history: messages.slice(-5) // Send last 5 messages for context
+          }),
         })
-      })
 
-      const data = await response.json()
-
-      if (data.reply) {
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: data.reply,
-          isUser: false,
-          timestamp: new Date()
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || 'Falha ao enviar mensagem')
         }
-        setMessages(prev => [...prev, botMessage])
+
+        const data = await response.json()
+
+        const aiMessage: Message = {
+          id: Date.now() + 1,
+          content: data.message || 'Desculpe, não consegui processar sua mensagem. Tente novamente ou entre em contato conosco.',
+          isUser: false,
+          timestamp: new Date(),
+        }
+
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: aiMessage.content,
+        isUser: false,
+        timestamp: new Date()
       }
-    } catch (error) {
+      setMessages(prev => [...prev, botMessage])
+    } catch (error: any) {
       console.error('Erro ao enviar mensagem:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),

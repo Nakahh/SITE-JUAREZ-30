@@ -84,11 +84,22 @@ export async function scheduleVisit(formData: FormData) {
         "Visita agendada com sucesso! Entraremos em contato para confirmar.",
     };
   } catch (error) {
-    console.error("Erro ao agendar visita:", error);
-    return {
-      success: false,
-      message: "Erro ao agendar visita. Tente novamente.",
-    };
+    console.error('Erro ao agendar visita:', error)
+
+    // Log error for debugging
+    await prisma.errorLog.create({
+      data: {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : '',
+        context: 'scheduleVisit',
+        metadata: JSON.stringify(visitData)
+      }
+    }).catch(() => {}) // Ignore if error log fails
+
+    return { 
+      success: false, 
+      message: 'Erro ao agendar visita. Tente novamente ou entre em contato conosco.' 
+    }
   }
 }
 
