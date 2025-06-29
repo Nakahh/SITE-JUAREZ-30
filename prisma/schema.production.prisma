@@ -1,9 +1,10 @@
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -12,7 +13,7 @@ enum Role {
   AGENT
   ADMIN
   OWNER
-  CLIENT // Adicionado para consistência com o seed script
+  CLIENT
 }
 
 enum PropertyStatus {
@@ -39,18 +40,18 @@ model User {
   role             Role               @default(USER)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
-  favoriteProperties FavoriteProperty[] // Relação com favoritos
-  visits           Visit[]            @relation("UserVisits") // Relação com visitas (se o cliente for um User)
+  properties       Property[]         @relation("AgentProperties")
+  favoriteProperties FavoriteProperty[]
+  visits           Visit[]            @relation("UserVisits")
   articles         Article[]
   comments         ArticleComment[]
   reviews          PropertyReview[]
   savedSearches    SavedSearch[]
   testimonials     Testimonial[]
-  activityLogs     ActivityLog[]      @relation("UserActivityLogs", fields: [], references: [])
-  commissions      Commission[]       @relation("AgentCommissions") // Comissões recebidas
-  createdCommissions Commission[]     @relation("CreatedCommissions") // Comissões criadas
-  financings       Financing[]        @relation("UserFinancings") // Financiamentos do usuário
+  activityLogs     ActivityLog[]      @relation("UserActivityLogs")
+  commissions      Commission[]       @relation("AgentCommissions")
+  createdCommissions Commission[]     @relation("CreatedCommissions")
+  financings       Financing[]        @relation("UserFinancings")
 }
 
 model Client {
@@ -61,9 +62,9 @@ model Client {
   address          String?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  visits           Visit[]            @relation("ClientVisits") // Relação com visitas (se o cliente for um Client)
+  visits           Visit[]            @relation("ClientVisits")
   financialRecords FinancialRecord[]
-  financings       Financing[]        // Financiamentos do cliente
+  financings       Financing[]
 }
 
 model Property {
@@ -84,16 +85,16 @@ model Property {
   garage           Boolean          @default(false)
   pool             Boolean          @default(false)
   balcony          Boolean          @default(false)
-  images           Json? // Usando o tipo nativo Json do PostgreSQL
-  agentId          String?          // Corretor responsável
+  images           Json?
+  agentId          String?
   agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   favoriteProperties FavoriteProperty[]
   reviews          PropertyReview[]
   visits           Visit[]          @relation("PropertyVisits")
-  commissions      Commission[]     // Comissões relacionadas
-  financings       Financing[]      // Financiamentos relacionados
+  commissions      Commission[]
+  financings       Financing[]
 }
 
 model FavoriteProperty {
@@ -111,11 +112,11 @@ model Visit {
   date      DateTime
   notes     String?
   status    VisitStatus @default(PENDING)
-  propertyId String?  // Propriedade visitada
+  propertyId String?
   property  Property? @relation("PropertyVisits", fields: [propertyId], references: [id])
-  userId    String?   // Opcional, se a visita for de um User registrado
+  userId    String?
   user      User?     @relation("UserVisits", fields: [userId], references: [id])
-  clientId  String?   // Opcional, se a visita for de um Client não registrado
+  clientId  String?
   client    Client?   @relation("ClientVisits", fields: [clientId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -165,7 +166,7 @@ model SavedSearch {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  criteria  Json // Usando o tipo nativo Json do PostgreSQL
+  criteria  Json
   createdAt DateTime @default(now())
 }
 
@@ -195,7 +196,7 @@ model PropertyReview {
 model AppSetting {
   id    String @id @default(cuid())
   key   String @unique
-  value String // Armazenará "true" ou "false"
+  value String
 }
 
 model ActivityLog {

@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Setup e Desenvolvimento"
+runButton = "Setup Completo"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -87,6 +87,23 @@ args = "npx prisma db push"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx tsx scripts/seed.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Setup Completo"
+author = 44410647
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/setup-environment.ts"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

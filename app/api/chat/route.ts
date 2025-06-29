@@ -1,225 +1,158 @@
-
-import { NextRequest, NextResponse } from 'next/server'
-import { OpenAI } from 'openai'
+import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
 import { prisma } from '@/lib/prisma'
 
-// Configurar OpenAI com GPT-4o (modelo mais avançado)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-// Sistema de contexto inteligente para o chatbot
-const SYSTEM_CONTEXT = `
-Você é um assistente especializado em imóveis da Siqueira Campos Imóveis. 
+const SYSTEM_PROMPT = `
+Você é um assistente virtual especializado em imóveis da Siqueira Campos Imóveis.
+
+INFORMAÇÕES DA EMPRESA:
+- Nome: Siqueira Campos Imóveis
+- Especialidade: Venda e locação de imóveis residenciais e comerciais
+- Localização: Atendemos toda a região
+- WhatsApp: +55 62 98556-3905
+- Desenvolvedor: KRYONIX Development (WhatsApp: +55 17 98180-5327, Instagram: @kryon.ix)
 
 SUAS RESPONSABILIDADES:
-- Ajudar clientes a encontrar imóveis ideais
-- Fornecer informações sobre propriedades disponíveis
-- Agendar visitas
-- Explicar processos de compra e aluguel
-- Calcular financiamentos
-- Dar dicas sobre mercado imobiliário
+1. Ajudar clientes a encontrar imóveis ideais
+2. Fornecer informações sobre propriedades disponíveis
+3. Agendar visitas
+4. Calcular financiamentos
+5. Esclarecer dúvidas sobre documentação
+6. Conectar com corretores especializados
 
 DIRETRIZES:
 - Seja sempre cordial e profissional
-- Use linguagem clara e acessível
-- Faça perguntas para entender melhor as necessidades
-- Ofereça soluções práticas
-- Sempre que possível, direcione para contato direto com corretores
-- Mantenha o foco em imóveis e serviços da empresa
+- Use informações atualizadas do banco de dados
+- Sugira imóveis baseado nas necessidades do cliente
+- Ofereça agendamento de visitas
+- Forneça simulações de financiamento quando apropriado
+- Encaminhe para WhatsApp quando necessário contato direto
 
-INFORMAÇÕES DA EMPRESA:
-- Empresa: Siqueira Campos Imóveis
-- WhatsApp: (62) 98556-3905
-- Especializada em imóveis residenciais e comerciais
-- Atua em Goiânia e região metropolitana
-- Oferece serviços completos de compra, venda e locação
+TIPOS DE IMÓVEIS:
+- Casas residenciais
+- Apartamentos
+- Terrenos
+- Imóveis comerciais
+- Chácaras e sítios
 
-Responda sempre em português brasileiro de forma amigável e útil.
+Sempre mantenha o foco em ajudar o cliente a encontrar o imóvel perfeito!
 `
 
-interface ChatMessage {
-  role: 'user' | 'assistant' | 'system'
-  content: string
-}
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { message, userId, conversationId } = await request.json()
+    const { message, conversationHistory = [] } = await request.json()
 
-    if (!message || typeof message !== 'string') {
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: 'Mensagem é obrigatória' },
-        { status: 400 }
+        { error: 'OpenAI API key não configurada' },
+        { status: 500 }
       )
     }
 
-    // Buscar propriedades para contexto da IA
+    // Buscar imóveis disponíveis para contexto
     const properties = await prisma.property.findMany({
       where: {
-        status: 'AVAILABLE'
+        status: {
+          in: ['FOR_SALE', 'FOR_RENT', 'AVAILABLE']
+        }
       },
-      take: 5,
+      take: 10,
       orderBy: {
         createdAt: 'desc'
       },
-      select: {
-        id: true,
-        title: true,
-        type: true,
-        price: true,
-        bedrooms: true,
-        bathrooms: true,
-        area: true,
-        city: true,
-        address: true
+      include: {
+        agent: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
       }
     })
 
-    // Contexto dinâmico com propriedades disponíveis
-    const propertiesContext = properties.length > 0 
-      ? `\n\nPROPRIEDADES DISPONÍVEIS RECENTES:\n${properties.map(p => 
-          `- ${p.title} (${p.type}) - R$ ${p.price.toLocaleString('pt-BR')} - ${p.bedrooms} quartos, ${p.bathrooms} banheiros, ${p.area}m² - ${p.city}`
-        ).join('\n')}`
-      : ''
+    // Buscar corretores disponíveis
+    const agents = await prisma.user.findMany({
+      where: {
+        role: 'AGENT'
+      },
+      select: {
+        name: true,
+        email: true
+      }
+    })
 
-    // Preparar mensagens para a IA
-    const messages: ChatMessage[] = [
+    const propertyContext = properties.map(p => 
+      `Imóvel ID: ${p.id}
+       Título: ${p.title}
+       Tipo: ${p.type}
+       Preço: R$ ${p.price.toLocaleString('pt-BR')}
+       Status: ${p.status}
+       Endereço: ${p.address}, ${p.city}
+       Quartos: ${p.bedrooms}
+       Banheiros: ${p.bathrooms}
+       Área: ${p.area}m²
+       Descrição: ${p.description}
+       Corretor: ${p.agent?.name || 'Não atribuído'}`
+    ).join('\n\n')
+
+    const agentContext = agents.map(a => 
+      `Corretor: ${a.name} - Email: ${a.email}`
+    ).join('\n')
+
+    const messages = [
       {
         role: 'system',
-        content: SYSTEM_CONTEXT + propertiesContext
+        content: `${SYSTEM_PROMPT}
+
+IMÓVEIS DISPONÍVEIS:
+${propertyContext}
+
+CORRETORES DISPONÍVEIS:
+${agentContext}
+
+Data atual: ${new Date().toLocaleDateString('pt-BR')}
+`
       },
+      ...conversationHistory,
       {
         role: 'user',
         content: message
       }
     ]
 
-    // Chamar GPT-4o
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o', // Modelo mais avançado
-      messages: messages,
+      model: 'gpt-4o-mini',
+      messages: messages as any,
       max_tokens: 1000,
       temperature: 0.7,
-      frequency_penalty: 0.3,
-      presence_penalty: 0.3,
-      stream: false,
+      presence_penalty: 0.6,
+      frequency_penalty: 0.3
     })
 
-    const aiResponse = completion.choices[0]?.message?.content || 'Desculpe, não consegui processar sua mensagem.'
+    const reply = completion.choices[0]?.message?.content || 'Desculpe, não consegui processar sua mensagem.'
 
-    // Salvar conversa no banco de dados para melhorar contexto futuro
-    if (userId && conversationId) {
-      try {
-        await prisma.activityLog.create({
-          data: {
-            userId,
-            action: 'CHAT_MESSAGE',
-            details: JSON.stringify({
-              conversationId,
-              userMessage: message,
-              aiResponse: aiResponse.substring(0, 500) // Limitar para não sobrecarregar
-            })
-          }
-        })
-      } catch (error) {
-        console.error('Erro ao salvar conversa:', error)
+    // Log da conversa para análise
+    await prisma.activityLog.create({
+      data: {
+        action: 'CHAT_INTERACTION',
+        details: `Usuário: ${message} | IA: ${reply.substring(0, 200)}...`
       }
-    }
+    })
 
-    // Detectar intenções especiais para ações
-    const intent = detectIntent(message.toLowerCase())
-    const actions = generateActions(intent, message)
-
-    return NextResponse.json({
-      response: aiResponse,
-      intent,
-      actions,
+    return NextResponse.json({ 
+      reply,
       timestamp: new Date().toISOString()
     })
 
   } catch (error) {
     console.error('Erro no chat:', error)
-    
-    // Resposta de fallback mais inteligente
-    const fallbackResponse = generateFallbackResponse(message)
-    
-    return NextResponse.json({
-      response: fallbackResponse,
-      error: true,
-      timestamp: new Date().toISOString()
-    })
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
   }
-}
-
-// Detector de intenções melhorado
-function detectIntent(message: string): string {
-  const intents = {
-    'search_property': ['buscar', 'procurar', 'quero', 'imóvel', 'casa', 'apartamento'],
-    'schedule_visit': ['visita', 'agendar', 'ver', 'conhecer'],
-    'financing': ['financiamento', 'financiar', 'financiado', 'banco'],
-    'price_info': ['preço', 'valor', 'custa', 'quanto'],
-    'contact': ['contato', 'telefone', 'whatsapp', 'falar'],
-    'location': ['onde', 'localização', 'endereço', 'bairro']
-  }
-
-  for (const [intent, keywords] of Object.entries(intents)) {
-    if (keywords.some(keyword => message.includes(keyword))) {
-      return intent
-    }
-  }
-
-  return 'general'
-}
-
-// Gerador de ações baseado na intenção
-function generateActions(intent: string, message: string) {
-  const actions = []
-
-  switch (intent) {
-    case 'search_property':
-      actions.push({
-        type: 'link',
-        label: 'Ver Imóveis Disponíveis',
-        url: '/imoveis'
-      })
-      break
-    
-    case 'schedule_visit':
-      actions.push({
-        type: 'link',
-        label: 'Agendar Visita',
-        url: '/contato'
-      })
-      break
-    
-    case 'financing':
-      actions.push({
-        type: 'link',
-        label: 'Simular Financiamento',
-        url: '/simulador-financiamento'
-      })
-      break
-    
-    case 'contact':
-      actions.push({
-        type: 'whatsapp',
-        label: 'Falar no WhatsApp',
-        number: '5562985563905'
-      })
-      break
-  }
-
-  return actions
-}
-
-// Sistema de resposta de fallback inteligente
-function generateFallbackResponse(message: string): string {
-  const fallbacks = [
-    "Desculpe, estou com dificuldades técnicas no momento. Mas posso te ajudar! Entre em contato pelo WhatsApp (62) 98556-3905 para falar diretamente com nossos corretores.",
-    "Ops! Algo deu errado, mas não se preocupe. Nossa equipe está sempre disponível pelo WhatsApp (62) 98556-3905 para te atender da melhor forma.",
-    "Parece que houve um problema técnico. Enquanto isso, que tal dar uma olhada nos nossos imóveis disponíveis? Ou entre em contato pelo WhatsApp (62) 98556-3905!"
-  ]
-
-  return fallbacks[Math.floor(Math.random() * fallbacks.length)]
 }
