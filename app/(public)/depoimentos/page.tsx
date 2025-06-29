@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, Calendar } from "lucide-react"
+import { Star } from "lucide-react"
 
 export const dynamic = "force-dynamic" // Adicionado para evitar erro de conexão com DB no build
 
@@ -31,7 +30,7 @@ export default async function DepoimentosPage() {
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <Card className="overflow-hidden" key={testimonial.id}>
+            <Card key={testimonial.id} className="flex flex-col">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={testimonial.user.image || "/placeholder-user.jpg"} />
@@ -54,12 +53,6 @@ export default async function DepoimentosPage() {
               <CardContent className="flex-grow">
                 <p className="text-muted-foreground italic">"{testimonial.content}"</p>
               </CardContent>
-              <CardFooter className="pt-0 pb-6 px-6">
-                <Button className="w-full btn-siqueira">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Agendar Visita
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>

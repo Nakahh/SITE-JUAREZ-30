@@ -1,5 +1,7 @@
+
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { PropertyCard } from "@/components/property-card";
 import { ScheduleVisitForm } from "@/components/schedule-visit-form";
 import { PropertyReviewForm } from "@/components/property-review-form";
@@ -29,7 +31,7 @@ import {
 
 export default async function PropertyDetailPage({ params }: { params: { id: string } }) {
   const session = await auth();
-
+  
   const property = await prisma.property.findUnique({
     where: { id: params.id },
     include: {
@@ -83,7 +85,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
       RENTED: { text: 'Alugado', variant: 'secondary' as const },
       RESERVED: { text: 'Reservado', variant: 'outline' as const }
     };
-
+    
     return variants[status as keyof typeof variants] || variants.AVAILABLE;
   };
 
@@ -121,7 +123,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
               <span>{property.address}, {property.neighborhood} - {property.city}/{property.state}</span>
             </div>
           </div>
-
+          
           <div className="flex items-center gap-2">
             <AddToFavoritesButton 
               propertyId={property.id} 
@@ -164,7 +166,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                   className="w-full h-full object-cover"
                 />
               </div>
-
+              
               {property.images.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {property.images.slice(1, 5).map((image, index) => (
@@ -188,7 +190,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                 <TabsTrigger value="reviews">Avaliações</TabsTrigger>
                 <TabsTrigger value="virtual-tour">Tour Virtual</TabsTrigger>
               </TabsList>
-
+              
               <TabsContent value="details" className="space-y-6">
                 <Card>
                   <CardHeader>
@@ -203,7 +205,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                           <p className="font-semibold">{property.bedrooms}</p>
                         </div>
                       </div>
-
+                      
                       <div className="flex items-center gap-2">
                         <Bath className="h-5 w-5 text-primary" />
                         <div>
@@ -211,7 +213,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                           <p className="font-semibold">{property.bathrooms}</p>
                         </div>
                       </div>
-
+                      
                       <div className="flex items-center gap-2">
                         <Car className="h-5 w-5 text-primary" />
                         <div>
@@ -219,7 +221,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                           <p className="font-semibold">{property.parking || 0}</p>
                         </div>
                       </div>
-
+                      
                       <div className="flex items-center gap-2">
                         <Ruler className="h-5 w-5 text-primary" />
                         <div>
@@ -260,7 +262,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                   </Card>
                 )}
               </TabsContent>
-
+              
               <TabsContent value="location">
                 <Card>
                   <CardHeader>
@@ -276,7 +278,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                   </CardContent>
                 </Card>
               </TabsContent>
-
+              
               <TabsContent value="reviews">
                 <div className="space-y-6">
                   {session && (
@@ -288,7 +290,7 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                   <PropertyReviewsList reviews={property.reviews} />
                 </div>
               </TabsContent>
-
+              
               <TabsContent value="virtual-tour">
                 <Card>
                   <CardHeader>
@@ -334,9 +336,9 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                     </p>
                   </div>
                 </div>
-
+                
                 <Separator />
-
+                
                 <div className="space-y-2">
                   <Button className="w-full" size="lg">
                     <Phone className="h-4 w-4 mr-2" />

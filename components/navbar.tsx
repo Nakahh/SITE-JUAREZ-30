@@ -30,14 +30,38 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Mobile Menu Button - Left Side */}
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <img
+            src="/logo siqueira campos imoveis.png"
+            alt="Siqueira Campos Imóveis"
+            className="h-10 w-auto"
+          />
+          <span className="hidden sm:inline text-lg font-bold text-primary">
+            Siqueira Campos
+          </span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
+          {navigationItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Mobile Navigation */}
         <Sheet>
           <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon" className="order-1">
+            <Button variant="ghost" size="icon">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side="right">
             <nav className="flex flex-col space-y-4 mt-6">
               {navigationItems.map((item) => (
                 <Link
@@ -52,32 +76,7 @@ export function Navbar() {
           </SheetContent>
         </Sheet>
 
-        {/* Logo - Center on mobile, left on desktop */}
-        <Link href="/" className="flex items-center gap-2 font-semibold order-2 md:order-1 absolute left-1/2 transform -translate-x-1/2 md:relative md:left-0 md:transform-none">
-          <img
-            src="/logo siqueira campos imoveis.png"
-            alt="Siqueira Campos Imóveis"
-            className="h-10 w-auto"
-          />
-          <span className="hidden sm:inline text-lg font-bold text-primary">
-            Siqueira Campos
-          </span>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 order-2">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-4 order-3">
+        <div className="flex items-center gap-4">
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

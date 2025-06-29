@@ -162,17 +162,22 @@ export default function HomePage() {
     <div className="min-h-screen">
       <FloatingChatBubble />
 
-      {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center text-white">
-        <div className="absolute inset-0">
-          <img 
-            src="/imoveis/luxury-property-hero.jpg"
-            alt="Imóveis de Alto Padrão"
-            className="w-full h-full object-cover"
-          />
+      <section className="relative w-full min-h-screen flex items-center justify-center text-center overflow-hidden">
+        {/* Background com gradiente animado */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-primary/90">
+          <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10 animate-pulse"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30"></div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50" />
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+
+        {/* Elementos flutuantes animados */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-bounce"></div>
+          <div className="absolute bottom-20 left-20 w-16 h-16 bg-white/10 rounded-full animate-ping"></div>
+          <div className="absolute bottom-40 right-10 w-24 h-24 bg-white/5 rounded-full animate-pulse delay-1000"></div>
+        </div>
+
+        <div className="hero-content z-10 text-white space-y-6 max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold leading-tight">
             Encontre o Imóvel dos Seus
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-100">

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -143,15 +144,15 @@
   .container {
     @apply px-4;
   }
-
+  
   .property-card {
     @apply mx-2;
   }
-
+  
   .hero-content {
     @apply text-center px-4;
   }
-
+  
   .nav-menu {
     @apply text-sm;
   }
@@ -161,15 +162,15 @@
   .container {
     @apply px-2;
   }
-
+  
   .property-card .grid-cols-4 {
     @apply grid-cols-2;
   }
-
+  
   .text-5xl {
     @apply text-3xl;
   }
-
+  
   .text-3xl {
     @apply text-2xl;
   }

@@ -11,10 +11,7 @@ import {
   Ruler,
   Heart,
   Eye,
-  Share2,
-  Home,
-  Calendar,
-  Phone
+  Share2
 } from "lucide-react";
 
 interface PropertyCardProps {
@@ -102,58 +99,28 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="py-3 space-y-3">
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-              <Bed className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Quartos</p>
-              <p className="font-medium">{property.bedrooms}</p>
-            </div>
+      <CardContent className="py-3">
+        <div className="grid grid-cols-4 gap-3 text-sm">
+          <div className="flex items-center gap-1">
+            <Bed className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">{property.bedrooms}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-              <Bath className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Banheiros</p>
-              <p className="font-medium">{property.bathrooms}</p>
-            </div>
+          <div className="flex items-center gap-1">
+            <Bath className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">{property.bathrooms}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-              <Car className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Garagem</p>
-              <p className="font-medium">{property.parking || 0}</p>
-            </div>
+          <div className="flex items-center gap-1">
+            <Car className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">{property.parking || 0}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-              <Ruler className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Área</p>
-              <p className="font-medium">{property.area}m²</p>
-            </div>
+          <div className="flex items-center gap-1">
+            <Ruler className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">{property.area}m²</span>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 pb-4 flex flex-col gap-2">
-        <div className="flex gap-2 w-full">
-          <Button variant="outline" size="sm" className="flex-1">
-            <Phone className="h-4 w-4 mr-1" />
-            Ligar
-          </Button>
-          <Button variant="outline" size="sm" className="flex-1">
-            <Calendar className="h-4 w-4 mr-1" />
-            Agendar
-          </Button>
-        </div>
+      <CardFooter className="pt-3 pb-4">
         <Link href={`/imoveis/${property.id}`} className="w-full">
           <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
             <Eye className="h-4 w-4 mr-2" />
