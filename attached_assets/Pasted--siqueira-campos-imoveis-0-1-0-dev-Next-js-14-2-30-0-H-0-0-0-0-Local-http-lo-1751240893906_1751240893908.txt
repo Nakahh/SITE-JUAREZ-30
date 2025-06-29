@@ -1,0 +1,91 @@
+
+> siqueira-campos-imoveis@0.1.0 dev
+  ▲ Next.js 14.2.30.0 -H 0.0.0.0
+  - Local:        http://localhost:3000
+  - Network:      http://0.0.0.0:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.5s
+ ✓ Compiled /middleware in 186ms
+ ✓ Compiled (220 modules)
+ ○ Compiling / ...
+ ⚠ ./components/footer.tsx
+Attempted import error: '@/components/kryonix-logo' does not contain a default export (imported as 'KryonixLogo').
+
+Import trace for requested module:
+./components/footer.tsx
+
+./components/footer.tsx
+Attempted import error: '@/components/kryonix-logo' does not contain a default export (imported as 'KryonixLogo').
+
+Import trace for requested module:
+./components/footer.tsx
+
+./app/(public)/layout.tsx
+Attempted import error: 'Navbar' is not exported from '@/components/navbar' (imported as 'Navbar').
+
+Import trace for requested module:
+./app/(public)/layout.tsx
+
+./app/(public)/layout.tsx
+Attempted import error: 'FloatingChatBubble' is not exported from '@/components/floating-chat-bubble' (imported as 'FloatingChatBubble').
+
+Import trace for requested module:
+./app/(public)/layout.tsx
+
+./app/layout.tsx
+Attempted import error: 'FloatingChatBubble' is not exported from '@/components/floating-chat-bubble' (imported as 'FloatingChatBubble').
+
+Import trace for requested module:
+./app/layout.tsx
+Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+ ⨯ Error: Unsupported Server Component type: undefined
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+digest: "999994650"
+ ⨯ Error: Unsupported Server Component type: undefined
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+digest: "999994650"
+ ⨯ Error: Unsupported Server Component type: undefined
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+digest: "999994650"
+ ⨯ Error: Unsupported Server Component type: undefined
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+digest: "999994650"
+ GET / 500 in 19609ms
+ ⚠ ./components/footer.tsx
+Attempted import error: '@/components/kryonix-logo' does not contain a default export (imported as 'KryonixLogo').
+
+Import trace for requested module:
+./components/footer.tsx
+
+./components/footer.tsx
+Attempted import error: '@/components/kryonix-logo' does not contain a default export (imported as 'KryonixLogo').
+
+Import trace for requested module:
+./components/footer.tsx
+
+./app/(public)/layout.tsx
+Attempted import error: 'Navbar' is not exported from '@/components/navbar' (imported as 'Navbar').
+
+Import trace for requested module:
+./app/(public)/layout.tsx
+
+./app/(public)/layout.tsx
+Attempted import error: 'FloatingChatBubble' is not exported from '@/components/floating-chat-bubble' (imported as 'FloatingChatBubble').
+
+Import trace for requested module:
+./app/(public)/layout.tsx
+
+./app/layout.tsx
+Attempted import error: 'FloatingChatBubble' is not exported from '@/components/floating-chat-bubble' (imported as 'FloatingChatBubble').
+
+Import trace for requested module:
+./app/layout.tsx
+^C
