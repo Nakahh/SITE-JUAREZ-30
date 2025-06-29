@@ -82,7 +82,7 @@ model Property {
   garage           Boolean          @default(false)
   pool             Boolean          @default(false)
   balcony          Boolean          @default(false)
-  images           Json // Usando o tipo nativo Json do PostgreSQL
+  images           Json? // Usando o tipo nativo Json do PostgreSQL
   agentId          String?          // Corretor responsável
   agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())

@@ -2,54 +2,57 @@
 
 import { PrismaClient } from "@prisma/client"
 import { revalidatePath } from "next/cache"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth"
 
 const prisma = new PrismaClient()
 
-export async function createSavedSearch(formData: FormData) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return { success: false, message: "Você precisa estar logado para salvar uma busca." }
-  }
-
-  const searchParams: Record<string, any> = {}
-  for (const [key, value] of formData.entries()) {
-    if (key !== "userId" && value) {
-      searchParams[key] = value
-    }
-  }
-
+export async function createSavedSearch(data: {
+  title: string
+  filters: any
+  alertsEnabled: boolean
+}) {
   try {
-    await prisma.savedSearch.create({
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    const savedSearch = await prisma.savedSearch.create({
       data: {
+        ...data,
         userId: session.user.id,
-        searchParams: searchParams,
-      },
+      }
     })
-    revalidatePath("/dashboard/buscas-salvas")
-    return { success: true, message: "Busca salva com sucesso!" }
+
+    revalidatePath('/dashboard/buscas-salvas')
+    return { success: true, data: savedSearch }
   } catch (error) {
-    console.error("Erro ao salvar busca:", error)
-    return { success: false, message: "Erro ao salvar busca. Tente novamente." }
+    console.error('Erro ao criar busca salva:', error)
+    return { success: false, error: 'Erro ao criar busca salva' }
   }
 }
 
 export async function deleteSavedSearch(id: string) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return { success: false, message: "Você precisa estar logado para deletar uma busca." }
-  }
-
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      throw new Error('Usuário não autenticado')
+    }
+
     await prisma.savedSearch.delete({
-      where: { id, userId: session.user.id }, // Garante que o usuário só pode deletar suas próprias buscas
+      where: {
+        id,
+        userId: session.user.id
+      }
     })
-    revalidatePath("/dashboard/buscas-salvas")
-    return { success: true, message: "Busca salva removida." }
+
+    revalidatePath('/dashboard/buscas-salvas')
+    return { success: true }
   } catch (error) {
-    console.error("Erro ao deletar busca salva:", error)
-    return { success: false, message: "Erro ao deletar busca salva. Tente novamente." }
+    console.error('Erro ao deletar busca salva:', error)
+    return { success: false, error: 'Erro ao deletar busca salva' }
   }
 }
 
@@ -60,7 +63,8 @@ export async function checkAndNotifySavedSearches() {
   })
 
   for (const savedSearch of savedSearches) {
-    const { searchParams, user, lastNotifiedAt } = savedSearch
+    const { filters, user, lastNotifiedAt } = savedSearch
+    const searchParams = filters;
 
     // Converte os parâmetros de busca para o formato esperado pela função de busca de imóveis
     const where: any = {}

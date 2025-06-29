@@ -2,80 +2,65 @@
 
 import { PrismaClient } from "@prisma/client"
 import { revalidatePath } from "next/cache"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth"
 
 const prisma = new PrismaClient()
 
 export async function toggleFavorite(propertyId: string) {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await auth()
 
-  if (!session?.user?.email) {
-    return { success: false, message: "Você precisa estar logado para favoritar imóveis." }
-  }
+    if (!session?.user?.id) {
+      throw new Error('Usuário não autenticado')
+    }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    return { success: false, message: "Usuário não encontrado." }
-  }
-
-  const existingFavorite = await prisma.favoriteProperty.findUnique({
-    where: {
-      userId_propertyId: {
-        userId: user.id,
-        propertyId: propertyId,
-      },
-    },
-  })
-
-  if (existingFavorite) {
-    // Remove dos favoritos
-    await prisma.favoriteProperty.delete({
-      where: { id: existingFavorite.id },
+    const existingFavorite = await prisma.favorite.findUnique({
+      where: {
+        userId_propertyId: {
+          userId: session.user.id,
+          propertyId
+        }
+      }
     })
-    revalidatePath("/favoritos")
-    revalidatePath(`/imoveis/${propertyId}`)
-    return { success: true, message: "Imóvel removido dos favoritos." }
-  } else {
-    // Adiciona aos favoritos
-    await prisma.favoriteProperty.create({
-      data: {
-        userId: user.id,
-        propertyId: propertyId,
-      },
-    })
-    revalidatePath("/favoritos")
-    revalidatePath(`/imoveis/${propertyId}`)
-    return { success: true, message: "Imóvel adicionado aos favoritos!" }
+
+    if (existingFavorite) {
+      await prisma.favorite.delete({
+        where: { id: existingFavorite.id }
+      })
+    } else {
+      await prisma.favorite.create({
+        data: {
+          userId: session.user.id,
+          propertyId
+        }
+      })
+    }
+
+    revalidatePath('/favoritos')
+    revalidatePath('/imoveis')
+    return { success: true }
+  } catch (error) {
+    console.error('Erro ao alterar favorito:', error)
+    return { success: false, error: 'Erro ao alterar favorito' }
   }
 }
 
-export async function getFavoriteStatus(propertyId: string): Promise<boolean> {
-  const session = await getServerSession(authOptions)
+export async function getFavorites() {
+  try {
+    const session = await auth()
 
-  if (!session?.user?.email) {
-    return false
+    if (!session?.user?.id) {
+      return []
+    }
+
+    const favorites = await prisma.favorite.findMany({
+      where: { userId: session.user.id },
+      include: { property: true }
+    })
+
+    return favorites
+  } catch (error) {
+    console.error('Erro ao buscar favoritos:', error)
+    return []
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    return false
-  }
-
-  const existingFavorite = await prisma.favoriteProperty.findUnique({
-    where: {
-      userId_propertyId: {
-        userId: user.id,
-        propertyId: propertyId,
-      },
-    },
-  })
-
-  return !!existingFavorite
 }

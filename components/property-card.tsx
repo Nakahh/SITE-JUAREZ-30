@@ -1,132 +1,164 @@
-import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
+"use client"
+
+import Image from "next/image"
+import Link from "next/link"
+import { Property } from "@prisma/client"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { 
-  MapPin, 
-  Bed, 
+  BedDouble, 
   Bath, 
+  Square, 
   Car, 
-  Ruler,
+  MapPin, 
   Heart,
-  Eye,
-  Share2
-} from "lucide-react";
+  Share2,
+  Eye
+} from "lucide-react"
+import AddToFavoritesButton from "./add-to-favorites-button"
 
 interface PropertyCardProps {
-  property: {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    address: string;
-    city: string;
-    state: string;
-    bedrooms: number;
-    bathrooms: number;
-    area: number;
-    parking?: number;
-    type: string;
-    status: string;
-    images: { url: string }[];
-  };
+  property: Property
 }
 
-export function PropertyCard({ property }: PropertyCardProps) {
-  const formatCurrency = (value: number) => {
+export default function PropertyCard({ property }: PropertyCardProps) {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(value);
-  };
+    }).format(price)
+  }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'AVAILABLE':
-        return <Badge className="bg-green-500 text-white">Disponível</Badge>;
-      case 'SOLD':
-        return <Badge className="bg-red-500 text-white">Vendido</Badge>;
-      case 'RENTED':
-        return <Badge className="bg-blue-500 text-white">Alugado</Badge>;
-      case 'RESERVED':
-        return <Badge className="bg-yellow-500 text-white">Reservado</Badge>;
-      default:
-        return <Badge>Disponível</Badge>;
+  const getFirstImage = () => {
+    if (typeof property.images === 'string') {
+      try {
+        const images = JSON.parse(property.images)
+        return Array.isArray(images) && images.length > 0 ? images[0] : '/placeholder.jpg'
+      } catch {
+        return '/placeholder.jpg'
+      }
     }
-  };
+    if (Array.isArray(property.images) && property.images.length > 0) {
+      return property.images[0]
+    }
+    return '/placeholder.jpg'
+  }
 
   return (
-    <Card className="property-card group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
-      <div className="relative overflow-hidden">
-        <img 
-          src={property.images[0]?.url || "/placeholder-property.svg"}
+    <Card className="property-card overflow-hidden group">
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <Image
+          src={getFirstImage()}
           alt={property.title}
-          className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-          onError={(e) => {
-            e.currentTarget.src = "/placeholder-property.svg";
-          }}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute top-4 left-4">
-          {getStatusBadge(property.status)}
-        </div>
-        <div className="absolute top-4 right-4 flex gap-2">
-          <Button size="sm" variant="secondary" className="p-2 bg-white/90 hover:bg-white">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Badge de tipo */}
+        <Badge 
+          className="absolute top-3 left-3 bg-primary text-primary-foreground"
+          variant="default"
+        >
+          {property.type === 'SALE' ? 'Venda' : 'Aluguel'}
+        </Badge>
+
+        {/* Botões de ação no hover */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
             <Heart className="h-4 w-4" />
           </Button>
-          <Button size="sm" variant="secondary" className="p-2 bg-white/90 hover:bg-white">
+          <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
             <Share2 className="h-4 w-4" />
           </Button>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Preço destacado */}
+        <div className="absolute bottom-3 left-3">
+          <Badge className="bg-white/95 text-primary font-bold text-sm px-3 py-1">
+            {formatPrice(property.price)}
+          </Badge>
+        </div>
       </div>
 
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start gap-2">
-          <h3 className="font-semibold text-lg line-clamp-2 text-foreground">
-            {property.title}
-          </h3>
-          <span className="text-xl font-bold text-primary whitespace-nowrap">
-            {formatCurrency(property.price)}
-          </span>
-        </div>
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+              {property.title}
+            </h3>
+            <div className="flex items-center text-muted-foreground text-sm mt-1">
+              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+              <span className="line-clamp-1">
+                {property.neighborhood}, {property.city}
+              </span>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <MapPin className="h-4 w-4 flex-shrink-0" />
-          <span className="text-sm truncate">
-            {property.address}, {property.city}/{property.state}
-          </span>
-        </div>
-      </CardHeader>
+          {/* Características do imóvel */}
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center gap-4">
+              {property.bedrooms && property.bedrooms > 0 && (
+                <div className="flex items-center gap-1">
+                  <BedDouble className="h-4 w-4 icon-primary" />
+                  <span>{property.bedrooms}</span>
+                </div>
+              )}
+              {property.bathrooms && property.bathrooms > 0 && (
+                <div className="flex items-center gap-1">
+                  <Bath className="h-4 w-4 icon-primary" />
+                  <span>{property.bathrooms}</span>
+                </div>
+              )}
+              {property.area && property.area > 0 && (
+                <div className="flex items-center gap-1">
+                  <Square className="h-4 w-4 icon-primary" />
+                  <span>{property.area}m²</span>
+                </div>
+              )}
+              {property.parkingSpaces && property.parkingSpaces > 0 && (
+                <div className="flex items-center gap-1">
+                  <Car className="h-4 w-4 icon-primary" />
+                  <span>{property.parkingSpaces}</span>
+                </div>
+              )}
+            </div>
+          </div>
 
-      <CardContent className="py-3">
-        <div className="grid grid-cols-4 gap-3 text-sm">
-          <div className="flex items-center gap-1">
-            <Bed className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">{property.bedrooms}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Bath className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">{property.bathrooms}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Car className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">{property.parking || 0}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Ruler className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">{property.area}m²</span>
-          </div>
+          {/* Descrição resumida */}
+          {property.description && (
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {property.description}
+            </p>
+          )}
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 pb-4">
-        <Link href={`/imoveis/${property.id}`} className="w-full">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Eye className="h-4 w-4 mr-2" />
-            Ver Detalhes
+      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
+        <div className="flex w-full gap-2">
+          <Button asChild className="flex-1 btn-primary">
+            <Link href={`/imoveis/${property.id}`}>
+              <Eye className="h-4 w-4 mr-2" />
+              Ver Detalhes
+            </Link>
           </Button>
-        </Link>
+          <Button variant="outline" className="flex-1">
+            Agendar Visita
+          </Button>
+        </div>
+        
+        {/* Informações adicionais */}
+        <div className="flex justify-between items-center w-full text-xs text-muted-foreground">
+          <span>Cód: {property.id.slice(-6)}</span>
+          <span className="flex items-center gap-1">
+            <Eye className="h-3 w-3" />
+            0 visualizações
+          </span>
+        </div>
       </CardFooter>
     </Card>
-  );
+  )
 }
