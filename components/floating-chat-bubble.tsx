@@ -20,7 +20,7 @@ export function FloatingChatBubble() {
   const [inputMessage, setInputMessage] = useState("");
 
   const toggleChat = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(prev => !prev);
   };
 
   const sendMessage = () => {

@@ -1,6 +1,6 @@
 
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { PropertyCard } from "@/components/property-card";
 import { ScheduleVisitForm } from "@/components/schedule-visit-form";
@@ -133,6 +133,24 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
             <Button variant="outline" size="icon">
               <Share2 className="h-4 w-4" />
             </Button>
+          </div>
+        </div>
+
+        {/* Hero Image */}
+        <div className="relative h-96 mb-8 rounded-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 animate-pulse"></div>
+          <img 
+            src="/imoveis/casa-alto-padrao-hero.jpg"
+            alt="Imóvel de Alto Padrão"
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder-property.svg";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+          <div className="absolute bottom-6 left-6 text-white">
+            <h2 className="text-2xl font-bold mb-2">Imóveis de Alto Padrão</h2>
+            <p className="text-sm opacity-90">Encontre o imóvel dos seus sonhos</p>
           </div>
         </div>
 

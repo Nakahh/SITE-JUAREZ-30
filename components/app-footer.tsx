@@ -187,7 +187,11 @@ export function AppFooter() {
                 className="flex items-center space-x-2 text-gray-400 hover:text-[#4ade80] transition-colors duration-300 group"
               >
                 <span className="text-xs">Desenvolvido por</span>
-                <KryonixLogo className="h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
+                <img
+                  src="/logo-kryonix.png"
+                  alt="Kryonix Logo"
+                  className="h-6 w-6 group-hover:scale-110 transition-transform duration-300"
+                />
                 <span className="text-xs font-medium">KRYONIX</span>
               </Link>
             </div>

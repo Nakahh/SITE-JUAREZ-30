@@ -162,88 +162,44 @@ export default function HomePage() {
     <div className="min-h-screen">
       <FloatingChatBubble />
 
-      {/* Hero Section com Background Profundo */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background com profundidade */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-slate-900">
-          <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+      <section className="relative w-full min-h-screen flex items-center justify-center text-center overflow-hidden">
+        {/* Background com gradiente animado */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-primary/90">
+          <div className="absolute inset-0 bg-[url('/hero-bg.svg')] opacity-10 animate-pulse"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30"></div>
         </div>
 
         {/* Elementos flutuantes animados */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-32 h-32 bg-purple-500/20 rounded-full animate-bounce"></div>
-          <div className="absolute bottom-20 left-20 w-16 h-16 bg-pink-500/20 rounded-full animate-ping"></div>
-          <div className="absolute bottom-40 right-10 w-24 h-24 bg-cyan-500/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-bounce"></div>
+          <div className="absolute bottom-20 left-20 w-16 h-16 bg-white/10 rounded-full animate-ping"></div>
+          <div className="absolute bottom-40 right-10 w-24 h-24 bg-white/5 rounded-full animate-pulse delay-1000"></div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 text-center text-white">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-              Encontre Seu
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Lar Ideal</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in-delay">
-              Mais de 15 anos conectando pessoas aos seus sonhos. Descubra imóveis únicos em Goiânia e região.
-            </p>
-
-            {/* Busca Rápida */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 animate-slide-up">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Select>
-                  <SelectTrigger className="bg-white/20 border-white/30 text-white">
-                    <SelectValue placeholder="Tipo de Imóvel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="HOUSE">Casa</SelectItem>
-                    <SelectItem value="APARTMENT">Apartamento</SelectItem>
-                    <SelectItem value="COMMERCIAL">Comercial</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Input 
-                  placeholder="Localização" 
-                  className="bg-white/20 border-white/30 text-white placeholder:text-gray-300"
-                />
-
-                <Input 
-                  placeholder="Preço máximo" 
-                  className="bg-white/20 border-white/30 text-white placeholder:text-gray-300"
-                />
-
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold">
-                  <Search className="mr-2 h-4 w-4" />
-                  Buscar
-                </Button>
-              </div>
-            </div>
-
-            {/* Estatísticas */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
-              <div className="text-center animate-fade-in">
-                <div className="text-3xl font-bold text-blue-400">500+</div>
-                <div className="text-sm text-gray-300">Imóveis Vendidos</div>
-              </div>
-              <div className="text-center animate-fade-in">
-                <div className="text-3xl font-bold text-purple-400">15+</div>
-                <div className="text-sm text-gray-300">Anos de Experiência</div>
-              </div>
-              <div className="text-center animate-fade-in">
-                <div className="text-3xl font-bold text-pink-400">98%</div>
-                <div className="text-sm text-gray-300">Clientes Satisfeitos</div>
-              </div>
-              <div className="text-center animate-fade-in">
-                <div className="text-3xl font-bold text-cyan-400">24h</div>
-                <div className="text-sm text-gray-300">Suporte Online</div>
-              </div>
-            </div>
+        <div className="hero-content z-10 text-white space-y-6 max-w-4xl mx-auto px-4">
+          <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            Encontre o Imóvel dos Seus
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-100">
+              Sonhos
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+            Milhares de imóveis disponíveis em Goiânia e região metropolitana. 
+            Sua nova casa está aqui!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/imoveis">
+              <Button size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300">
+                Ver Imóveis
+              </Button>
+            </Link>
+            <Link href="/simulador-financiamento">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 rounded-full">
+                Simular Financiamento
+              </Button>
+            </Link>
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronRight className="w-6 h-6 text-white rotate-90" />
         </div>
       </section>
 
