@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/lib/prisma";
 import { Star } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-
-const prisma = new PrismaClient()
 
 interface PropertyReviewsListProps {
   propertyId: string

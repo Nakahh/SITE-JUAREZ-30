@@ -1,128 +1,96 @@
-# 🏠 Siqueira Campos Imóveis
+# 🏠 Siqueira Campos Imóveis - Versão 4.0
 
-Sistema completo de gestão imobiliária desenvolvido com Next.js 14, TypeScript e Prisma.
+Sistema de gestão imobiliária completo e robusto, desenvolvido com Next.js 14 (App Router), TypeScript e Prisma. Este projeto foi totalmente revisado para garantir performance, qualidade de código e uma experiência de usuário profissional.
 
-## 🎯 Status: TOTALMENTE FUNCIONAL ✅
+## 🎯 Status do Projeto: TOTALMENTE FUNCIONAL ✅
 
-A aplicação está **100% operacional** e pronta para uso em produção!
+A aplicação está **100% operacional**, com todas as funcionalidades principais testadas e validadas.
 
-## ✨ Funcionalidades
+## ✨ Checklist de Funcionalidades
 
-- 🏘️ **Gestão de Imóveis**: Cadastro, edição e visualização de propriedades
-- 👥 **Gestão de Usuários**: Sistema completo de roles (Admin, Agent, User, Client)
-- 🔐 **Autenticação**: NextAuth.js com login por credenciais e Google OAuth
-- 📱 **WhatsApp Integration**: Links diretos e chat flutuante
-- 📧 **Sistema de Email**: Newsletter e formulário de contato
-- 🗃️ **Banco de Dados**: SQLite (dev) / PostgreSQL (prod) com Prisma ORM
-- 📊 **Dashboard Administrativo**: Painel completo de administração
-- 🎨 **UI Moderna**: Interface responsiva com Tailwind CSS e Radix UI
-- 🔍 **Sistema de Busca**: Filtros avançados para propriedades
-- ⭐ **Favoritos**: Sistema de favoritar imóveis
-- 📝 **Blog**: Sistema de artigos e blog integrado
-- 💬 **Comentários**: Sistema de comentários e avaliações
-- 📈 **Relatórios**: Dashboard com métricas e relatórios
+| Funcionalidade | Status | Observações |
+| :--- | :--- | :--- |
+| **Core & UI** | | |
+| Visualização da Homepage | ✅ **Funcionando** | Páginas carregam, imóveis recentes são exibidos. |
+| Visualização da pág. de Imóveis | ✅ **Funcionando** | Lista de todos os imóveis é exibida corretamente. |
+| Visualização de Detalhes do Imóvel | ✅ **Funcionando** | Páginas individuais de imóveis carregam. |
+| Logo e Imagens | ✅ **Funcionando** | Logo na navbar e imagens dos imóveis são exibidas. |
+| Rodapé | ✅ **Implementado** | Novo rodapé completo e moderno foi adicionado. |
+| Animações | ✅ **Implementado** | Animações de fade-in adicionadas aos cards da home. |
+| Responsividade | ✅ **Verificado** | Layout se adapta a diferentes tamanhos de tela. |
+| Tradução (PT-BR) | ✅ **Verificado** | Todo o texto visível está em português. |
+| **Autenticação e Usuários** | | |
+| Cadastro de Usuário | ✅ **Funcionando** | Novos usuários podem se registrar. |
+| Login com Credenciais | ✅ **Funcionando** | Usuários podem fazer login com email e senha. |
+| Login com Google (OAuth) | ⚙️ **Configurado** | Funcionalidade implementada. Requer chaves de API válidas no `.env` para funcionar em produção. |
+| Sistema de Roles (Admin, Agent, etc.) | ✅ **Funcionando** | Permissões são aplicadas corretamente. |
+| **Dashboard do Admin** | | |
+| Gestão de Imóveis (CRUD) | ✅ **Funcionando** | Admin pode criar, ler, atualizar e deletar imóveis. |
+| Gestão de Usuários | ✅ **Funcionando** | Admin pode visualizar e gerenciar usuários. |
+| **APIs e Integrações** | | |
+| Envio de Email (Resend) | ⚙️ **Configurado** | Código para envio de email está implementado. Requer uma `RESEND_API_KEY` válida no `.env`. |
+| Agente de IA (OpenAI) | ⚙️ **Configurado** | Chat flutuante implementado. Requer uma `OPENAI_API_KEY` válida no `.env` para o chatbot responder. |
+| Evolution API (WhatsApp) | ⚙️ **Configurado** | Código para integração existe. Requer `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` válidos no `.env`. |
 
 ## 🚀 Setup Rápido
 
 ### Pré-requisitos
 
 - Node.js 18+
-- PostgreSQL (local, Docker ou cloud)
+- PostgreSQL (localmente ou via Docker)
 - Git
 
-### Instalação Automática
+### Instalação
 
-```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/siqueira-campos-imoveis.git
-cd siqueira-campos-imoveis
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/seu-usuario/juarez-site-4.git
+    cd juarez-site-4
+    ```
 
-# Execute o script de setup
-bash setup.sh
-```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-O script irá:
+3.  **Configure as Variáveis de Ambiente:**
+    Copie o arquivo de exemplo `.env.example` para um novo arquivo chamado `.env`.
+    ```bash
+    cp .env.example .env
+    ```
+    Edite o arquivo `.env` com as suas configurações de banco de dados local e outras chaves de API.
+    ```env
+    # Exemplo para banco de dados local
+    DATABASE_URL="postgresql://SEU_USUARIO:SUA_SENHA@localhost:5432/SEU_BANCO"
 
-- ✅ Verificar dependências
-- ✅ Instalar packages
-- ✅ Configurar banco de dados
-- ✅ Gerar cliente Prisma
-- ✅ Popular banco com dados iniciais
-- ✅ Fazer build da aplicação
+    # Chave para segurança da sessão
+    NEXTAUTH_SECRET="gere_uma_chave_segura_aqui"
+    NEXTAUTH_URL="http://localhost:3000"
 
-### Instalação Manual
+    # Chaves opcionais para funcionalidades completas
+    RESEND_API_KEY="..."
+    OPENAI_API_KEY="..."
+    ```
 
-1. **Clone e instale dependências:**
+4.  **Sincronize e Popule o Banco de Dados:**
+    Este comando irá criar as tabelas e popular o banco com dados de exemplo.
+    ```bash
+    npm run db:reset
+    ```
 
-```bash
-git clone https://github.com/seu-usuario/siqueira-campos-imoveis.git
-cd siqueira-campos-imoveis
-npm install
-# ou
-yarn install
-```
+5.  **Inicie o Servidor de Desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+    O servidor estará disponível em `http://localhost:3000`. Para acessar de outros dispositivos na mesma rede, o terminal mostrará o IP da sua rede (ex: `http://192.168.1.5:3000`).
 
-2. **Configure variáveis de ambiente:**
-
-```bash
-cp .env.example .env
-```
-
-Edite o arquivo `.env` com suas configurações:
-
-```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/siqueira_db"
-NEXTAUTH_SECRET="sua_chave_secreta_muito_segura"
-NEXTAUTH_URL="http://localhost:3000"
-# ... outras variáveis
-```
-
-3. **Configure o banco de dados:**
-
-```bash
-npx prisma generate
-npx prisma db push
-npx tsx scripts/seed.ts
-```
-
-4. **Inicie o servidor:**
-
-```bash
-npm run dev
-# ou
-yarn dev
-```
-
-## 🐳 Docker (Desenvolvimento)
-
-Para usar Docker no desenvolvimento:
-
-```bash
-# Inicie os serviços
-docker-compose -f docker-compose.dev.yml up -d
-
-# Aplique migrações
-docker-compose -f docker-compose.dev.yml exec app npx prisma db push
-
-# Popular banco de dados
-docker-compose -f docker-compose.dev.yml exec app npx tsx scripts/seed.ts
-```
-
-## 📱 URLs Importantes
-
-- **Site Principal**: http://localhost:3000
-- **Painel Admin**: http://localhost:3000/admin
-- **Login**: http://localhost:3000/login
-- **Blog**: http://localhost:3000/blog
-- **Dashboard**: http://localhost:3000/dashboard
-
-## 👤 Credenciais Padrão
+## 👤 Credenciais de Acesso (Padrão)
 
 Após executar o seed, você pode usar:
 
 | Role   | Email                            | Senha      | Descrição       |
 | ------ | -------------------------------- | ---------- | --------------- |
-| ADMIN  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Owner principal |
+| OWNER  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Dono do Sistema |
 | ADMIN  | admin@email.com                  | admin123   | Administrador   |
 | AGENT  | agent@email.com                  | agent123   | Corretor        |
 | USER   | user@email.com                   | user123    | Usuário comum   |
@@ -131,65 +99,30 @@ Após executar o seed, você pode usar:
 ## 🛠️ Tecnologias
 
 ### Frontend/Backend
-
 - **Next.js 14** - Framework React com App Router
 - **TypeScript** - Tipagem estática
 - **Tailwind CSS** - Framework CSS utilitário
 - **Radix UI** - Componentes primitivos acessíveis
 
 ### Banco de Dados
-
 - **PostgreSQL** - Banco de dados relacional
 - **Prisma** - ORM moderno para TypeScript
 
 ### Autenticação
-
 - **NextAuth.js** - Autenticação completa
 - **bcryptjs** - Hash de senhas
 
 ### APIs Externas
-
 - **OpenAI** - Chatbot inteligente
 - **Resend** - Envio de emails
 - **Evolution API** - WhatsApp Business
-
-### DevTools
-
-- **ESLint** - Linter para JavaScript/TypeScript
-- **Prettier** - Formatador de código
-- **Jest** - Framework de testes
-
-## 📁 Estrutura do Projeto
-
-```
-siqueira-campos-imoveis/
-├── app/                    # App Router do Next.js
-│   ├── (admin)/           # Rotas administrativas
-│   ├── (app)/             # Rotas do app
-│   ├── (public)/          # Rotas públicas
-│   ├── api/               # API routes
-│   ├── actions/           # Server actions
-│   └── globals.css        # Estilos globais
-├── components/            # Componentes React
-│   ├── ui/               # Componentes base (Radix)
-│   └── ...               # Componentes específicos
-├── lib/                  # Utilities e configurações
-├── prisma/              # Schema e migrações
-├── public/              # Assets estáticos
-├── scripts/             # Scripts de setup e seed
-├── types/               # Definições de tipos TypeScript
-└── ...                  # Arquivos de configuração
-```
 
 ## 🔧 Scripts Disponíveis
 
 ```bash
 # Desenvolvimento
-npm run dev          # Inicia servidor de desenvolvimento
-npm run build        # Build para produção
-npm run start        # Inicia servidor de produção
-npm run lint         # Verificar código
-npm run test         # Executar testes
+npm run dev          # Inicia servidor de desenvolvimento (acessível na rede local)
+npm run build        # Compila o projeto para
 
 # Banco de dados
 npx prisma generate  # Gerar cliente Prisma

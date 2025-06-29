@@ -3,6 +3,7 @@
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import { logActivity } from "@/lib/logger";
 
 const prisma = new PrismaClient();
 
@@ -64,9 +65,15 @@ export async function scheduleVisit(formData: FormData) {
       visitData.clientId = client.id;
     }
 
-    await prisma.visit.create({
+    const visit = await prisma.visit.create({
       data: visitData,
     });
+
+    await logActivity(
+      session?.user?.id || null,
+      "scheduleVisit",
+      `Visita agendada para imóvel ${propertyId} na data ${visitDateTime.toISOString()}`
+    );
 
     revalidatePath("/admin/visitas");
     revalidatePath("/dashboard/visitas");
@@ -97,6 +104,12 @@ export async function updateVisitStatus(visitId: string, status: string) {
       where: { id: visitId },
       data: { status },
     });
+
+    await logActivity(
+      session.user.id,
+      "updateVisitStatus",
+      `Status da visita ${visitId} atualizado para ${status}`
+    );
 
     revalidatePath("/admin/visitas");
     return { success: true, message: "Status da visita atualizado." };
@@ -130,8 +143,14 @@ export async function cancelVisit(visitId: string) {
 
     await prisma.visit.update({
       where: { id: visitId },
-      data: { status: "CANCELLED" },
+      data: { status: "CANCELED" },
     });
+
+    await logActivity(
+      session?.user?.id || null,
+      "cancelVisit",
+      `Visita ${visitId} cancelada`
+    );
 
     revalidatePath("/admin/visitas");
     revalidatePath("/dashboard/visitas");

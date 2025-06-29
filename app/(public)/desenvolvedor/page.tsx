@@ -40,7 +40,7 @@ export default function Desenvolvedor() {
             </div>
           </div>
         </div>
-        <Image src="/logo-kryonix.png" alt="Logo Kryonix" width={300} height={300} className="rounded-md" />
+        <Image src="/logo kryonix.png" alt="Logo Kryonix" width={300} height={300} className="rounded-md" />
       </div>
       {/* Adicionar animações e background estilizado aqui */}
     </section>

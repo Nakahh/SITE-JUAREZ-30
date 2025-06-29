@@ -1,15 +1,21 @@
-import { openai } from "@ai-sdk/openai"
-import { streamText } from "ai"
+import { OpenAI } from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
+  const { messages } = await req.json();
 
-  // Certifique-se de que OPENAI_API_KEY está configurada no seu .env
-  // Se não estiver, esta rota pode falhar.
-  const result = await streamText({
-    model: openai("gpt-4o"), // Usando OpenAI como fallback
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
     messages,
-  })
+  });
 
-  return result.toAIStreamResponse()
+  return new Response(JSON.stringify(response), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }

@@ -3,8 +3,29 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // Temporário para desenvolvimento - PostgreSQL em produção
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+  OWNER
+  CLIENT // Adicionado para consistência com o seed script
+}
+
+enum PropertyStatus {
+  FOR_SALE
+  FOR_RENT
+  SOLD
+  RENTED
+}
+
+enum VisitStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
 }
 
 model User {
@@ -14,7 +35,7 @@ model User {
   emailVerified    DateTime?
   image            String?
   password         String?
-  role             String             @default("USER")
+  role             Role               @default(USER)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   properties       Property[]         @relation("AgentProperties") // Imóveis atribuídos a este corretor
@@ -25,6 +46,7 @@ model User {
   reviews          PropertyReview[]
   savedSearches    SavedSearch[]
   testimonials     Testimonial[]
+  activityLogs     ActivityLog[]      @relation("UserActivityLogs", fields: [], references: [])
 }
 
 model Client {
@@ -45,7 +67,7 @@ model Property {
   description      String
   price            Float
   type             String
-  status           String           @default("FOR_SALE")
+  status           PropertyStatus   @default(FOR_SALE)
   address          String
   city             String
   state            String
@@ -56,7 +78,7 @@ model Property {
   garage           Boolean          @default(false)
   pool             Boolean          @default(false)
   balcony          Boolean          @default(false)
-  images           String // JSON string para SQLite
+  images           Json // Usando o tipo nativo Json do PostgreSQL
   agentId          String?          // Corretor responsável
   agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())
@@ -80,7 +102,7 @@ model Visit {
   id        String    @id @default(cuid())
   date      DateTime
   notes     String?
-  status    String    @default("PENDING")
+  status    VisitStatus @default(PENDING)
   propertyId String?  // Propriedade visitada
   property  Property? @relation("PropertyVisits", fields: [propertyId], references: [id])
   userId    String?   // Opcional, se a visita for de um User registrado
@@ -135,7 +157,7 @@ model SavedSearch {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  criteria  String // JSON string para SQLite
+  criteria  Json // Usando o tipo nativo Json do PostgreSQL
   createdAt DateTime @default(now())
 }
 
@@ -168,4 +190,12 @@ model AppSetting {
   value String // Armazenará "true" ou "false"
 }
 
-// Usando strings ao invés de enums para compatibilidade SQLite
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation("UserActivityLogs", fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

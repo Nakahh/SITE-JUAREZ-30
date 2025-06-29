@@ -11,6 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
 import { Building, LogOut, LayoutDashboard } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -83,9 +84,12 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/login">
-              <Button variant="outline">Entrar</Button>
-            </Link>
+            <>
+              <ThemeToggle />
+              <Link href="/login">
+                <Button variant="outline">Entrar</Button>
+              </Link>
+            </>
           )}
         </div>
       </div>

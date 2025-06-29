@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PropertyCard } from "@/components/property-card";
-import { PrismaClient } from "@prisma/client";
+import { PropertyCard } from "@/components/property-card"; 
+import prisma from "@/lib/prisma";
 
-export const dynamic = "force-dynamic"; // Adicionado para evitar erro de conexão com DB no build
-
-const prisma = new PrismaClient();
+export const dynamic = "force-dynamic"; // Garante que a página seja sempre renderizada dinamicamente
 
 export default async function HomePage() {
   let latestProperties = [];
@@ -19,7 +17,7 @@ export default async function HomePage() {
     });
   } catch (error) {
     console.error("Erro ao buscar propriedades:", error);
-    // Continue com array vazio se houver erro de conexão
+    // Continua com um array vazio para não quebrar a página
     latestProperties = [];
   }
 
@@ -69,7 +67,7 @@ export default async function HomePage() {
                   quartos={property.bedrooms}
                   area={property.area}
                   localizacao={`${property.city}, ${property.state}`}
-                  imageUrls={property.images ? JSON.parse(property.images) : []}
+                  imageUrls={Array.isArray(property.images) ? property.images : []}
                 />
               </div>
             ))}

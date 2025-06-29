@@ -1,134 +1,101 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
 
 export default function SimuladorFinanciamento() {
-  const [valorImovel, setValorImovel] = useState<number | string>("")
-  const [entrada, setEntrada] = useState<number | string>("")
-  const [taxaJurosAnual, setTaxaJurosAnual] = useState<number | string>("")
-  const [prazoAnos, setPrazoAnos] = useState<number | string>("")
-  const [parcelaMensal, setParcelaMensal] = useState<number | null>(null)
-  const [totalPago, setTotalPago] = useState<number | null>(null)
+  const [valor, setValor] = useState("");
+  const [juros, setJuros] = useState("");
+  const [prazo, setPrazo] = useState("");
+  const [resultado, setResultado] = useState<number | null>(null);
 
-  const calcularFinanciamento = () => {
-    const vImovel = Number(valorImovel)
-    const vEntrada = Number(entrada)
-    const tJurosAnual = Number(taxaJurosAnual)
-    const pAnos = Number(prazoAnos)
+  const calcularPrestacao = (valor: number, juros: number, prazo: number) => {
+    const taxaMensal = juros / 100 / 12;
+    const prestacao =
+      (valor * taxaMensal) / (1 - Math.pow(1 + taxaMensal, -prazo));
+    return prestacao;
+  };
 
-    if (isNaN(vImovel) || isNaN(vEntrada) || isNaN(tJurosAnual) || isNaN(pAnos) || vImovel <= 0 || pAnos <= 0) {
-      setParcelaMensal(null)
-      setTotalPago(null)
-      alert("Por favor, preencha todos os campos com valores válidos.")
-      return
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const valorNum = parseFloat(valor);
+    const jurosNum = parseFloat(juros);
+    const prazoNum = parseInt(prazo);
+
+    if (isNaN(valorNum) || isNaN(jurosNum) || isNaN(prazoNum)) {
+      setResultado(null);
+      return;
     }
 
-    const valorFinanciado = vImovel - vEntrada
-    const taxaJurosMensal = tJurosAnual / 100 / 12
-    const numeroParcelas = pAnos * 12
-
-    if (taxaJurosMensal === 0) {
-      const parcela = valorFinanciado / numeroParcelas
-      setParcelaMensal(parcela)
-      setTotalPago(parcela * numeroParcelas + vEntrada)
-    } else {
-      const parcela = valorFinanciado * (taxaJurosMensal / (1 - Math.pow(1 + taxaJurosMensal, -numeroParcelas)))
-      setParcelaMensal(parcela)
-      setTotalPago(parcela * numeroParcelas + vEntrada)
-    }
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
-  }
+    const prestacao = calcularPrestacao(valorNum, jurosNum, prazoNum);
+    setResultado(prestacao);
+  };
 
   return (
-    <section className="container py-12">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Simulador de Financiamento Imobiliário</h1>
-
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Calcule sua Parcela Mensal</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <label htmlFor="valorImovel" className="block text-sm font-medium text-gray-700">
-              Valor do Imóvel (R$)
-            </label>
-            <Input
-              id="valorImovel"
-              type="number"
-              value={valorImovel}
-              onChange={(e) => setValorImovel(e.target.value)}
-              placeholder="Ex: 300000"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="entrada" className="block text-sm font-medium text-gray-700">
-              Valor da Entrada (R$)
-            </label>
-            <Input
-              id="entrada"
-              type="number"
-              value={entrada}
-              onChange={(e) => setEntrada(e.target.value)}
-              placeholder="Ex: 60000"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="taxaJurosAnual" className="block text-sm font-medium text-gray-700">
-              Taxa de Juros Anual (%)
-            </label>
-            <Input
-              id="taxaJurosAnual"
-              type="number"
-              step="0.01"
-              value={taxaJurosAnual}
-              onChange={(e) => setTaxaJurosAnual(e.target.value)}
-              placeholder="Ex: 8.5"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="prazoAnos" className="block text-sm font-medium text-gray-700">
-              Prazo do Financiamento (Anos)
-            </label>
-            <Input
-              id="prazoAnos"
-              type="number"
-              value={prazoAnos}
-              onChange={(e) => setPrazoAnos(e.target.value)}
-              placeholder="Ex: 30"
-              required
-            />
-          </div>
-          <Button onClick={calcularFinanciamento} className="w-full">
-            Calcular Financiamento
-          </Button>
-
-          {parcelaMensal !== null && (
-            <div className="mt-8 p-4 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-bold mb-2">Resultados:</h3>
-              <p className="text-lg">
-                Parcela Mensal Estimada:{" "}
-                <span className="font-semibold text-primary">{formatCurrency(parcelaMensal)}</span>
-              </p>
-              <p className="text-lg">
-                Valor Total Pago (Estimado):{" "}
-                <span className="font-semibold text-primary">{formatCurrency(totalPago || 0)}</span>
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                *Este é um cálculo aproximado. Consulte um especialista financeiro para condições exatas.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </section>
-  )
+    <main className="container py-12 max-w-lg mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Simulador de Financiamento
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="valor" className="block font-medium mb-1">
+            Valor do Empréstimo (R$)
+          </label>
+          <input
+            type="number"
+            id="valor"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="juros" className="block font-medium mb-1">
+            Taxa de Juros Anual (%)
+          </label>
+          <input
+            type="number"
+            id="juros"
+            value={juros}
+            onChange={(e) => setJuros(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="prazo" className="block font-medium mb-1">
+            Prazo (meses)
+          </label>
+          <input
+            type="number"
+            id="prazo"
+            value={prazo}
+            onChange={(e) => setPrazo(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            min="1"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90 transition"
+        >
+          Calcular
+        </button>
+      </form>
+      {resultado !== null && (
+        <div className="mt-6 p-4 bg-green-100 rounded text-green-800 text-center">
+          Prestação mensal: R${" "}
+          {resultado.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </div>
+      )}
+    </main>
+  );
 }

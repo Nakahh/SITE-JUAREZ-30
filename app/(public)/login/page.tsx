@@ -63,6 +63,16 @@ export default function LoginPage() {
             {isSubmitting ? "Entrando..." : "Entrar"}
           </Button>
         </form>
+        <div className="mt-4 flex justify-center">
+          <Button
+            variant="outline"
+            onClick={() => signIn("google")}
+            className="w-full max-w-xs"
+            disabled={isSubmitting}
+          >
+            Entrar com Google
+          </Button>
+        </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Não tem uma conta?{" "}
           <Link href="/register" className="text-primary hover:underline">

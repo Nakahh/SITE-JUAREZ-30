@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -21,7 +21,7 @@ async function main() {
         email: "siqueiraecamposimoveis@gmail.com",
         password: hashedPasswordOwner,
         name: "Siqueira Campos Imóveis",
-        role: "ADMIN",
+        role: Role.ADMIN,
       },
     });
     console.log("Owner user created:", owner.email);
@@ -39,7 +39,7 @@ async function main() {
         email: "admin@email.com",
         password: hashedPasswordAdmin,
         name: "Administrador",
-        role: "ADMIN",
+        role: Role.ADMIN,
       },
     });
     console.log("Admin user created:", admin.email);
@@ -57,7 +57,7 @@ async function main() {
         email: "agent@email.com",
         password: hashedPasswordAgent,
         name: "Corretor Goiânia",
-        role: "AGENT",
+        role: Role.AGENT,
       },
     });
     console.log("Agent user created:", agent.email);
@@ -75,7 +75,7 @@ async function main() {
         email: "user@email.com",
         password: hashedPasswordUser,
         name: "Usuário Cliente",
-        role: "USER",
+        role: Role.USER,
       },
     });
     console.log("User created:", user.email);
@@ -93,7 +93,7 @@ async function main() {
         email: "client@email.com",
         password: hashedPasswordClient,
         name: "Cliente Goiânia",
-        role: "CLIENT",
+        role: Role.CLIENT,
       },
     });
     console.log("Client user created:", client.email);
@@ -121,10 +121,10 @@ async function main() {
         city: "Goiânia",
         state: "GO",
         zipCode: "74210-010",
-        images: JSON.stringify([
+        images: [
           "https://images.pexels.com/photos/7147286/pexels-photo-7147286.jpeg",
           "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-        ]),
+        ],
         agentId: agent.id,
       },
     });
@@ -144,10 +144,10 @@ async function main() {
         city: "Goiânia",
         state: "GO",
         zipCode: "74430-090",
-        images: JSON.stringify([
+        images: [
           "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
           "https://images.pexels.com/photos/323776/pexels-photo-323776.jpeg",
-        ]),
+        ],
         agentId: agent.id,
       },
     });
@@ -167,10 +167,10 @@ async function main() {
         city: "Goiânia",
         state: "GO",
         zipCode: "74120-060",
-        images: JSON.stringify([
+        images: [
           "https://images.pexels.com/photos/2581922/pexels-photo-2581922.jpeg",
           "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg",
-        ]),
+        ],
         agentId: agent.id,
       },
     });

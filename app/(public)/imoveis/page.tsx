@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { PropertyCard } from "@/components/property-card";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-
-const prisma = new PrismaClient();
 
 interface PropertiesPageProps {
   searchParams: {
@@ -231,7 +229,7 @@ export default async function PropertiesPage({
                   quartos={property.bedrooms}
                   area={property.area}
                   localizacao={`${property.city}, ${property.state}`}
-                  imageUrls={property.images ? JSON.parse(property.images) : []}
+                  imageUrls={Array.isArray(property.images) ? property.images : []}
                 />
               ))}
             </div>

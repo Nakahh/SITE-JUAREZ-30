@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import bcrypt from "bcryptjs";
+import { logActivity } from "@/lib/logger";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,7 @@ export async function createUser(formData: FormData) {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -27,6 +28,7 @@ export async function createUser(formData: FormData) {
         role,
       },
     });
+    await logActivity(user.id, "createUser", `Usuário criado: ${email}`);
     revalidatePath("/admin/usuarios");
     return { success: true, message: "Usuário criado com sucesso!" };
   } catch (error: any) {
@@ -71,6 +73,7 @@ export async function updateUser(id: string, formData: FormData) {
       where: { id },
       data: dataToUpdate,
     });
+    await logActivity(session.user.id, "updateUser", `Usuário atualizado: ${email}`);
     revalidatePath("/admin/usuarios");
     revalidatePath("/dashboard/perfil");
     return { success: true, message: "Usuário atualizado com sucesso!" };
@@ -97,6 +100,7 @@ export async function deleteUser(id: string) {
 
   try {
     await prisma.user.delete({ where: { id } });
+    await logActivity(session.user.id, "deleteUser", `Usuário excluído: ${id}`);
     revalidatePath("/admin/usuarios");
     return { success: true, message: "Usuário excluído com sucesso!" };
   } catch (error) {
