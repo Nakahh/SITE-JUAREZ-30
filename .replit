@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Setup e Desenvolvimento Premium"
+runButton = "Correção Segura e Dev"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -197,6 +197,31 @@ args = "npx prisma db push"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx tsx scripts/seed.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Correção Segura e Dev"
+author = 44411791
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install --legacy-peer-deps"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/fix-all-issues.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma generate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma db push"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

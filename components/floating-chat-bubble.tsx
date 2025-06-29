@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -59,27 +58,27 @@ export default function FloatingChatBubble() {
 
   const getBotResponse = (message: string): string => {
     const msg = message.toLowerCase()
-    
+
     if (msg.includes('olá') || msg.includes('oi') || msg.includes('bom dia') || msg.includes('boa tarde')) {
       return 'Olá! É um prazer falar com você. Estou aqui para ajudar com qualquer dúvida sobre nossos imóveis. O que você gostaria de saber?'
     }
-    
+
     if (msg.includes('apartamento') || msg.includes('casa') || msg.includes('imóvel') || msg.includes('comprar')) {
       return 'Temos diversos imóveis disponíveis! Você pode navegar pela nossa seção de imóveis ou me dizer que tipo de propriedade está procurando (apartamento, casa, terreno) e em qual região.'
     }
-    
+
     if (msg.includes('preço') || msg.includes('valor') || msg.includes('custo')) {
       return 'Os preços variam de acordo com o tipo, localização e características do imóvel. Posso te ajudar com uma simulação de financiamento também! Que tipo de imóvel você tem interesse?'
     }
-    
+
     if (msg.includes('financiamento') || msg.includes('financiar')) {
       return 'Oferecemos simulações de financiamento para facilitar sua compra! Você pode usar nosso simulador online ou falar diretamente com um de nossos corretores especializados.'
     }
-    
+
     if (msg.includes('contato') || msg.includes('telefone') || msg.includes('whatsapp')) {
       return 'Você pode entrar em contato conosco pelo WhatsApp: (62) 9 8556-3905 ou pelo e-mail: siqueiraecamposimoveis@gmail.com. Estamos sempre prontos para atender!'
     }
-    
+
     return 'Entendi! Para te ajudar melhor, recomendo que entre em contato com um de nossos corretores especializados pelo WhatsApp (62) 9 8556-3905. Eles poderão fornecer informações mais detalhadas sobre nossos imóveis.'
   }
 
@@ -137,7 +136,7 @@ export default function FloatingChatBubble() {
                       </div>
                     </div>
                   ))}
-                  
+
                   {isTyping && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-lg px-3 py-2 text-sm">
@@ -220,3 +219,6 @@ export default function FloatingChatBubble() {
     </div>
   )
 }
+
+export { FloatingChatBubble }
+export default FloatingChatBubble

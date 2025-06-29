@@ -424,3 +424,5 @@ export default function Navbar() {
     </header>
   )
 }
+export { Navbar }
+export default Navbar

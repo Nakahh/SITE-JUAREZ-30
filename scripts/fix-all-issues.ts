@@ -3,40 +3,63 @@
 import { execSync } from 'child_process'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 
-console.log('🔧 Iniciando correção automática de problemas...')
+console.log('🔧 Corrigindo apenas exports de componentes...')
 
-// 1. Verificar e corrigir exports de componentes
-console.log('📦 Verificando exports de componentes...')
-
+// Lista de componentes críticos
 const components = [
-  'components/footer.tsx',
   'components/navbar.tsx',
-  'components/chat-interface.tsx',
-  'components/floating-chat-bubble.tsx'
+  'components/floating-chat-bubble.tsx', 
+  'components/kryonix-logo.tsx',
+  'components/footer.tsx',
+  'components/app-footer.tsx'
 ]
 
-components.forEach(file => {
-  if (existsSync(file)) {
-    const content = readFileSync(file, 'utf-8')
+// Função para verificar e corrigir exports
+function fixComponentExports(filePath: string) {
+  if (!existsSync(filePath)) {
+    console.log(`⚠️  Arquivo não encontrado: ${filePath}`)
+    return
+  }
 
-    // Verificar se tem export default
-    if (!content.includes('export default') && content.includes('function ')) {
-      console.log(`🔧 Corrigindo export em ${file}`)
+  const content = readFileSync(filePath, 'utf-8')
 
-      // Encontrar nome da função
-      const functionMatch = content.match(/function\s+(\w+)/)
-      if (functionMatch) {
-        const functionName = functionMatch[1]
-        const newContent = content.replace(
-          `function ${functionName}`,
-          `export default function ${functionName}`
-        )
-        writeFileSync(file, newContent)
-        console.log(`✅ Export corrigido para ${functionName}`)
+  // Encontrar o nome da função principal
+  const functionMatch = content.match(/(?:export\s+default\s+)?function\s+(\w+)/)
+
+  if (functionMatch) {
+    const functionName = functionMatch[1]
+
+    // Verificar se já tem os exports corretos
+    const hasNamedExport = content.includes(`export { ${functionName} }`)
+    const hasDefaultExport = content.includes('export default')
+
+    if (!hasNamedExport || !hasDefaultExport) {
+      console.log(`🔧 Corrigindo exports em ${filePath}`)
+
+      let newContent = content
+
+      // Adicionar exports se não existirem
+      if (!hasNamedExport && !hasDefaultExport) {
+        newContent = newContent + `\n\nexport { ${functionName} }\nexport default ${functionName}`
+      } else if (!hasNamedExport) {
+        newContent = newContent + `\nexport { ${functionName} }`
+      } else if (!hasDefaultExport) {
+        newContent = newContent + `\nexport default ${functionName}`
       }
+
+      writeFileSync(filePath, newContent)
+      console.log(`✅ Exports corrigidos para ${functionName}`)
+    } else {
+      console.log(`✅ ${filePath} já tem exports corretos`)
     }
   }
-})
+}
+
+console.log('📦 Verificando exports dos componentes...')
+components.forEach(fixComponentExports)
+
+console.log('✅ Correção de exports concluída!')
+console.log('🚀 Todos os componentes mantêm suas funcionalidades originais')
 
 // 2. Verificar dependências
 console.log('📦 Verificando dependências...')
