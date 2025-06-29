@@ -137,20 +137,30 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
         </div>
 
         {/* Hero Image */}
-        <div className="relative h-96 mb-8 rounded-2xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 animate-pulse"></div>
+        <div className="relative h-96 mb-8 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1a472a]/20 via-transparent to-[#1a472a]/20"></div>
           <img 
-            src="/imoveis/casa-alto-padrao-hero.jpg"
-            alt="Imóvel de Alto Padrão"
+            src={property.images && property.images.length > 0 ? property.images[0].url : "/imoveis/casa-alto-padrao-hero.jpg"}
+            alt={property.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             onError={(e) => {
-              e.currentTarget.src = "/placeholder-property.svg";
+              e.currentTarget.src = "/imoveis/casa-alto-padrao-hero.jpg";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
           <div className="absolute bottom-6 left-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">Imóveis de Alto Padrão</h2>
-            <p className="text-sm opacity-90">Encontre o imóvel dos seus sonhos</p>
+            <h2 className="text-3xl font-bold mb-2 text-shadow-lg">{property.title}</h2>
+            <p className="text-lg opacity-90 flex items-center">
+              <MapPin className="h-5 w-5 mr-2" />
+              {property.city}, {property.state}
+            </p>
+          </div>
+          <div className="absolute top-6 right-6">
+            <div className="bg-[#1a472a]/90 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+              <span className="text-lg font-bold">
+                {formatCurrency(property.price)}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -272,8 +282,21 @@ export default async function PropertyDetailPage({ params }: { params: { id: str
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                      <p className="text-muted-foreground">Mapa será carregado aqui</p>
+                    <div className="aspect-video rounded-lg overflow-hidden">
+                      <MapEmbed 
+                        address={property.address}
+                        city={property.city}
+                        state={property.state}
+                      />
+                    </div>
+                    <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                      <h4 className="font-semibold mb-2 text-[#1a472a] dark:text-[#4ade80]">Pontos de Interesse Próximos</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Shopping centers e comércios</li>
+                        <li>• Escolas e universidades</li>
+                        <li>• Hospitais e clínicas</li>
+                        <li>• Transporte público</li>
+                      </ul>
                     </div>
                   </CardContent>
                 </Card>

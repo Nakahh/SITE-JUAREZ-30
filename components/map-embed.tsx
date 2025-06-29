@@ -1,43 +1,44 @@
-"use client"
 
-import { useEffect, useState } from "react"
+"use client";
+
+import { useEffect, useRef } from "react";
 
 interface MapEmbedProps {
-  location: string
+  address: string;
+  city: string;
+  state: string;
+  className?: string;
 }
 
-export function MapEmbed({ location }: MapEmbedProps) {
-  const [mapUrl, setMapUrl] = useState<string | null>(null)
+export function MapEmbed({ address, city, state, className = "" }: MapEmbedProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Codifica a localização para ser usada na URL do Google Maps
-    const encodedLocation = encodeURIComponent(location)
-    // URL de um iframe simples do Google Maps. Para mais controle, use a API JavaScript do Google Maps.
-    const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "your_google_maps_api_key_here"
-    const url = `https://www.google.com/maps/embed/v1/place?key=${googleMapsApiKey}&q=${encodedLocation}`
-    setMapUrl(url)
-  }, [location])
+    const loadMap = () => {
+      if (!mapRef.current) return;
 
-  if (!mapUrl) {
-    return (
-      <div className="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center text-muted-foreground">
-        Carregando mapa...
-      </div>
-    )
-  }
+      const fullAddress = `${address}, ${city}, ${state}, Brasil`;
+      const encodedAddress = encodeURIComponent(fullAddress);
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&q=${encodedAddress}`;
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.style.border = "0";
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "no-referrer-when-downgrade";
+
+      mapRef.current.appendChild(iframe);
+    };
+
+    loadMap();
+  }, [address, city, state]);
 
   return (
-    <div className="w-full h-64 bg-gray-200 rounded-md overflow-hidden">
-      <iframe
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-        src={mapUrl}
-        title={`Mapa de ${location}`}
-      ></iframe>
-    </div>
-  )
+    <div 
+      ref={mapRef} 
+      className={`w-full h-full min-h-[300px] rounded-lg overflow-hidden ${className}`}
+    />
+  );
 }

@@ -60,11 +60,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
     <Card className="property-card group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
       <div className="relative overflow-hidden">
         <img 
-          src={property.images[0]?.url || "/placeholder-property.svg"}
+          src={property.images && property.images.length > 0 ? property.images[0].url : "/imoveis/casa-alto-padrao-hero.jpg"}
           alt={property.title}
           className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
           onError={(e) => {
-            e.currentTarget.src = "/placeholder-property.svg";
+            e.currentTarget.src = "/imoveis/casa-alto-padrao-hero.jpg";
           }}
         />
         <div className="absolute top-4 left-4">
@@ -120,9 +120,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 pb-4">
+      <CardFooter className="pt-3 pb-4 px-4">
         <Link href={`/imoveis/${property.id}`} className="w-full">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button className="w-full bg-[#1a472a] hover:bg-[#2d5d3d] text-white transition-all duration-300 shadow-md hover:shadow-lg">
             <Eye className="h-4 w-4 mr-2" />
             Ver Detalhes
           </Button>

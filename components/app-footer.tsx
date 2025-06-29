@@ -52,11 +52,11 @@ export function AppFooter() {
               </a>
               <a
                 href={`https://wa.me/5562985563905`}
-                className="p-3 bg-green-500 rounded-full hover:bg-green-600 transform hover:scale-110 transition-all duration-300 shadow-lg"
+                className="p-3 whatsapp-green rounded-full hover:shadow-lg transform hover:scale-110 transition-all duration-300 shadow-md"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <WhatsAppIcon className="h-5 w-5 animate-bounce" />
+                <WhatsAppIcon className="h-5 w-5 animate-bounce text-white" />
               </a>
             </div>
           </div>
