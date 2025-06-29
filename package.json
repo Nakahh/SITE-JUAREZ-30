@@ -15,7 +15,10 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:studio": "prisma studio",
     "db:reset": "npm run db:push -- --force-reset && npm run db:seed",
-    "setup": "npm install && npm run db:generate && npm run db:push && npm run db:seed"
+    "setup": "tsx scripts/setup-environment.ts && npm run db:seed",
+    "setup:dev": "tsx scripts/setup-postgres.ts && npm run db:generate && npm run db:push && npm run db:seed",
+    "setup:prod": "tsx scripts/setup-production.ts && npm run db:generate && npm run db:push && npm run db:seed",
+    "env:setup": "tsx scripts/setup-environment.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",

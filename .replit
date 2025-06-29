@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Dev Server"
+runButton = "Development Server"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -31,6 +31,37 @@ args = "npm run dev"
 name = "Dev Server"
 author = 44405611
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Setup Development"
+author = 44405611
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run setup:dev"
+
+[[workflows.workflow]]
+name = "Setup Production"
+author = 44405611
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production npm run setup:prod"
+
+[[workflows.workflow]]
+name = "Development Server"
+author = 44405611
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run setup"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
