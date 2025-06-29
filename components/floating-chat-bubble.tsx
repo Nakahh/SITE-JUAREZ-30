@@ -1,48 +1,34 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import ChatInterface from './chat-interface'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChatInterface } from "@/components/chat-interface";
+import { cn } from "@/lib/utils";
 
 export function FloatingChatBubble() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(true)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return null
-  }
-
-  const handleToggle = () => {
-    if (isMinimized) {
-      setIsMinimized(false)
-      setIsOpen(true)
-    } else {
-      setIsMinimized(true)
-      setIsOpen(false)
-    }
-  }
-
-  const handleClose = () => {
-    setIsOpen(false)
-    setIsMinimized(true)
-  }
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed z-50">
-      <ChatInterface
-        isMinimized={isMinimized}
-        onToggleMinimize={handleToggle}
-        onClose={handleClose}
-        className={cn(
-          "transition-all duration-300 ease-in-out",
-          !isMinimized && "animate-in slide-in-from-bottom-4 fade-in-0"
-        )}
+    <>
+      {!isOpen && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className={cn(
+            "fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-lg",
+            "bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90",
+            "transition-all duration-300 hover:scale-110 animate-bounce"
+          )}
+          size="lg"
+        >
+          <MessageCircle className="h-6 w-6 text-white" />
+        </Button>
+      )}
+
+      <ChatInterface 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)} 
       />
-    </div>
-  )
+    </>
+  );
 }

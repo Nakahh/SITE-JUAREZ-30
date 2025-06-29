@@ -7,6 +7,7 @@ import Image from "next/image"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "next-themes"
 import { 
   Menu, 
   X, 
@@ -42,6 +43,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const { data: session, status } = useSession()
   const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     setMounted(true)
@@ -70,6 +72,11 @@ export function Navbar() {
     return null
   }
 
+  const isDark = resolvedTheme === 'dark'
+  const logoSrc = isDark 
+    ? "/siqueira campos para fundo escuro.png" 
+    : "/siqueira campos para fundo claro.png"
+
   const navItems = [
     { href: "/", label: "Início", icon: Home, badge: null },
     { href: "/imoveis", label: "Imóveis", icon: Building, badge: "Novo" },
@@ -92,23 +99,14 @@ export function Navbar() {
         {/* Logo Enhanced */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative h-10 w-10 rounded-lg bg-gradient-to-r from-primary to-secondary flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Image 
-                src="/logo siqueira campos imoveis.png" 
-                alt="Siqueira Campos" 
-                width={28} 
-                height={28}
-                className="rounded-md"
-                priority
-              />
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Siqueira Campos
-            </span>
-            <span className="text-xs text-muted-foreground -mt-1">Imóveis</span>
+            <Image 
+              src={logoSrc} 
+              alt="Siqueira Campos" 
+              width={180} 
+              height={60}
+              className="h-10 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+              priority
+            />
           </div>
         </Link>
 
