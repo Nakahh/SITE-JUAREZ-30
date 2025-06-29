@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,60 +6,60 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 142 70% 12%;
+    --foreground: 30 15% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 142 70% 12%;
+    --card-foreground: 30 15% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 142 70% 12%;
-    --primary: 142 69% 58%; /* Verde Siqueira Campos */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 142 20% 95%;
-    --secondary-foreground: 142 70% 12%;
-    --muted: 142 10% 95%;
-    --muted-foreground: 142 30% 35%;
-    --accent: 142 15% 92%;
-    --accent-foreground: 142 70% 12%;
+    --popover-foreground: 30 15% 15%;
+    --primary: 30 50% 40%; /* Marrom Siqueira Campos */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 30 20% 95%;
+    --secondary-foreground: 30 15% 15%;
+    --muted: 30 10% 95%;
+    --muted-foreground: 30 15% 45%;
+    --accent: 30 15% 92%;
+    --accent-foreground: 30 15% 15%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 142 20% 89%;
-    --input: 142 20% 89%;
-    --ring: 142 69% 58%;
-    --chart-1: 142 69% 58%;
-    --chart-2: 142 50% 48%;
-    --chart-3: 142 40% 38%;
-    --chart-4: 142 30% 28%;
-    --chart-5: 142 20% 18%;
+    --border: 30 20% 89%;
+    --input: 30 20% 89%;
+    --ring: 30 50% 40%;
+    --chart-1: 30 50% 40%;
+    --chart-2: 30 40% 50%;
+    --chart-3: 30 30% 60%;
+    --chart-4: 30 20% 70%;
+    --chart-5: 30 10% 80%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 142 30% 8%;
-    --foreground: 142 10% 95%;
-    --card: 142 25% 10%;
-    --card-foreground: 142 10% 95%;
-    --popover: 142 25% 10%;
-    --popover-foreground: 142 10% 95%;
-    --primary: 142 69% 58%;
-    --primary-foreground: 142 70% 12%;
-    --secondary: 142 20% 15%;
-    --secondary-foreground: 142 20% 85%;
-    --muted: 142 15% 15%;
-    --muted-foreground: 142 15% 65%;
-    --accent: 142 20% 20%;
-    --accent-foreground: 142 20% 85%;
+    --background: 30 15% 8%;
+    --foreground: 30 10% 95%;
+    --card: 30 15% 10%;
+    --card-foreground: 30 10% 95%;
+    --popover: 30 15% 10%;
+    --popover-foreground: 30 10% 95%;
+    --primary: 30 60% 55%;
+    --primary-foreground: 30 15% 10%;
+    --secondary: 30 15% 15%;
+    --secondary-foreground: 30 10% 85%;
+    --muted: 30 10% 15%;
+    --muted-foreground: 30 10% 65%;
+    --accent: 30 15% 20%;
+    --accent-foreground: 30 10% 85%;
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 142 20% 20%;
-    --input: 142 20% 20%;
-    --ring: 142 69% 58%;
-    --chart-1: 142 69% 58%;
-    --chart-2: 142 60% 65%;
-    --chart-3: 142 50% 72%;
-    --chart-4: 142 40% 78%;
-    --chart-5: 142 30% 85%;
+    --border: 30 15% 20%;
+    --input: 30 15% 20%;
+    --ring: 30 60% 55%;
+    --chart-1: 30 60% 55%;
+    --chart-2: 30 50% 65%;
+    --chart-3: 30 40% 75%;
+    --chart-4: 30 30% 85%;
+    --chart-5: 30 20% 95%;
   }
 
-  /* Siqueira Campos Developer Page Theme */
+  /* Kryonix theme para página do desenvolvedor */
   .kryonix-theme {
     --primary: 217 91% 60%; /* Azul Kryonix */
     --primary-foreground: 217 91% 10%;
@@ -126,11 +127,11 @@
   @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300;
 }
 
-/* Form improvements */
+/* Form inputs with background */
 .form-input {
-  @apply border border-input bg-background px-3 py-2 text-sm ring-offset-background 
+  @apply border border-input bg-background/80 backdrop-blur-sm px-3 py-2 text-sm ring-offset-background 
          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
-         focus-visible:ring-offset-2 transition-all duration-200;
+         focus-visible:ring-offset-2 transition-all duration-200 rounded-lg;
 }
 
 /* Loading states */

@@ -2,54 +2,51 @@
 
 import { PrismaClient } from "@prisma/client"
 import { revalidatePath } from "next/cache"
-import { auth } from "@/lib/auth"
 import { logActivity } from "@/lib/logger"
 
 const prisma = new PrismaClient()
 
-interface FinancingCalculation {
+export interface FinancingResult {
   monthlyPayment: number
   totalAmount: number
   totalInterest: number
-  payments: Array<{
-    month: number
+  payments: {
     payment: number
     principal: number
     interest: number
     balance: number
-  }>
+  }[]
 }
 
 export async function calculateSAC(
   principal: number,
   annualRate: number,
   termMonths: number
-): FinancingCalculation {
+): Promise<FinancingResult> {
   const monthlyRate = annualRate / 12 / 100
-  const principalPayment = principal / termMonths
+  const monthlyPrincipal = principal / termMonths
   let balance = principal
+  let totalInterest = 0
   const payments = []
-  let totalAmount = 0
 
-  for (let month = 1; month <= termMonths; month++) {
-    const interestPayment = balance * monthlyRate
-    const monthlyPayment = principalPayment + interestPayment
-    balance -= principalPayment
-    totalAmount += monthlyPayment
+  for (let i = 1; i <= termMonths; i++) {
+    const interest = balance * monthlyRate
+    const payment = monthlyPrincipal + interest
+    balance -= monthlyPrincipal
+    totalInterest += interest
 
     payments.push({
-      month,
-      payment: monthlyPayment,
-      principal: principalPayment,
-      interest: interestPayment,
-      balance: Math.max(0, balance)
+      payment: Math.round(payment * 100) / 100,
+      principal: Math.round(monthlyPrincipal * 100) / 100,
+      interest: Math.round(interest * 100) / 100,
+      balance: Math.round(balance * 100) / 100
     })
   }
 
   return {
-    monthlyPayment: payments[0].payment,
-    totalAmount,
-    totalInterest: totalAmount - principal,
+    monthlyPayment: Math.round((monthlyPrincipal + (principal * monthlyRate)) * 100) / 100,
+    totalAmount: Math.round((principal + totalInterest) * 100) / 100,
+    totalInterest: Math.round(totalInterest * 100) / 100,
     payments
   }
 }
@@ -58,34 +55,32 @@ export async function calculatePRICE(
   principal: number,
   annualRate: number,
   termMonths: number
-): FinancingCalculation {
+): Promise<FinancingResult> {
   const monthlyRate = annualRate / 12 / 100
-  const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / 
-                        (Math.pow(1 + monthlyRate, termMonths) - 1)
+  const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / (Math.pow(1 + monthlyRate, termMonths) - 1)
 
   let balance = principal
+  let totalInterest = 0
   const payments = []
-  let totalAmount = 0
 
-  for (let month = 1; month <= termMonths; month++) {
-    const interestPayment = balance * monthlyRate
-    const principalPayment = monthlyPayment - interestPayment
+  for (let i = 1; i <= termMonths; i++) {
+    const interest = balance * monthlyRate
+    const principalPayment = monthlyPayment - interest
     balance -= principalPayment
-    totalAmount += monthlyPayment
+    totalInterest += interest
 
     payments.push({
-      month,
-      payment: monthlyPayment,
-      principal: principalPayment,
-      interest: interestPayment,
-      balance: Math.max(0, balance)
+      payment: Math.round(monthlyPayment * 100) / 100,
+      principal: Math.round(principalPayment * 100) / 100,
+      interest: Math.round(interest * 100) / 100,
+      balance: Math.round(Math.max(0, balance) * 100) / 100
     })
   }
 
   return {
-    monthlyPayment,
-    totalAmount,
-    totalInterest: totalAmount - principal,
+    monthlyPayment: Math.round(monthlyPayment * 100) / 100,
+    totalAmount: Math.round((monthlyPayment * termMonths) * 100) / 100,
+    totalInterest: Math.round(totalInterest * 100) / 100,
     payments
   }
 }
@@ -104,7 +99,7 @@ export async function simulateFinancing(formData: FormData) {
       return { success: false, message: "Valor do financiamento deve ser positivo" }
     }
 
-    let calculation: FinancingCalculation
+    let calculation: FinancingResult
 
     if (type === "SAC") {
       calculation = await calculateSAC(financedAmount, interestRate, termMonths)
@@ -149,7 +144,7 @@ export async function createFinancing(formData: FormData) {
     const observations = formData.get("observations") as string || null
 
     const financedAmount = propertyValue - downPayment
-    let calculation: FinancingCalculation
+    let calculation: FinancingResult
 
     if (type === "SAC") {
       calculation = await calculateSAC(financedAmount, interestRate, termMonths)

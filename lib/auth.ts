@@ -1,20 +1,13 @@
-
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import prisma from "./prisma"
-import bcrypt from "bcryptjs"
+import { compare } from "bcryptjs"
+import { prisma } from "./prisma"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    Credentials({
+    CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -27,20 +20,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email as string
+            email: credentials.email
           }
         })
 
-        if (!user) {
-          return null
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        )
-
-        if (!isPasswordValid) {
+        if (!user || !(await compare(credentials.password, user.password))) {
           return null
         }
 
@@ -53,6 +37,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
+  session: {
+    strategy: "jwt"
+  },
+  pages: {
+    signIn: "/login"
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -61,14 +51,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session?.user) {
+      if (session.user) {
         session.user.id = token.sub!
         session.user.role = token.role as string
       }
       return session
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
+    }
+  }
 })
