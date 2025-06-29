@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -8,6 +9,10 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ['localhost'],
+  },
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client'],
   },
 }
 

@@ -1,44 +1,33 @@
-
 import { withAuth } from "next-auth/middleware"
 
 export default withAuth(
   function middleware(req) {
-    // Middleware logic
+    // Add any custom middleware logic here
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl
-
-        // Permitir rotas públicas
-        if (
-          pathname.startsWith('/api/auth') ||
-          pathname.startsWith('/_next') ||
-          pathname === '/' ||
-          pathname.startsWith('/imoveis') ||
-          pathname.startsWith('/blog') ||
-          pathname.startsWith('/contato') ||
-          pathname.startsWith('/sobre') ||
-          pathname.startsWith('/login') ||
-          pathname.startsWith('/register') ||
-          pathname.startsWith('/depoimentos') ||
-          pathname.startsWith('/corretores') ||
-          pathname.startsWith('/desenvolvedor') ||
-          pathname.startsWith('/kryonix') ||
-          pathname.startsWith('/simulador-financiamento') ||
-          pathname.startsWith('/comparar') ||
-          pathname.startsWith('/api/chat')
-        ) {
+        // Allow access to public routes
+        if (req.nextUrl.pathname.startsWith('/api/auth') ||
+            req.nextUrl.pathname.startsWith('/_next') ||
+            req.nextUrl.pathname === '/' ||
+            req.nextUrl.pathname.startsWith('/imoveis') ||
+            req.nextUrl.pathname.startsWith('/blog') ||
+            req.nextUrl.pathname.startsWith('/contato') ||
+            req.nextUrl.pathname.startsWith('/sobre') ||
+            req.nextUrl.pathname.startsWith('/login') ||
+            req.nextUrl.pathname.startsWith('/register') ||
+            req.nextUrl.pathname.startsWith('/api/chat')) {
           return true
         }
 
-        // Requerer autenticação para rotas admin
-        if (pathname.startsWith('/admin')) {
+        // Require authentication for admin routes
+        if (req.nextUrl.pathname.startsWith('/admin')) {
           return !!token && (token.role === 'ADMIN' || token.role === 'OWNER')
         }
 
-        // Requerer autenticação para dashboard
-        if (pathname.startsWith('/dashboard')) {
+        // Require authentication for dashboard routes
+        if (req.nextUrl.pathname.startsWith('/dashboard')) {
           return !!token
         }
 
