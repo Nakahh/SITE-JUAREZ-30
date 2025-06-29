@@ -1,16 +1,80 @@
+
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SessionProvider } from "@/components/session-provider" // Novo componente para o SessionProvider
+import { SessionProvider } from "@/components/session-provider"
+import { Toaster } from "@/components/ui/toaster"
+import { FloatingChatBubble } from "@/components/floating-chat-bubble"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "Siqueira Campos Imóveis",
-  description: "O melhor lugar para encontrar o seu imóvel em Siqueira Campos e região.",
-    generator: 'v0.dev'
+  title: {
+    default: "Siqueira Campos Imóveis",
+    template: "%s | Siqueira Campos Imóveis"
+  },
+  description: "O melhor lugar para encontrar o seu imóvel em Siqueira Campos e região. Casas, apartamentos, terrenos e mais.",
+  keywords: ["imóveis", "Siqueira Campos", "casas", "apartamentos", "terrenos", "venda", "aluguel"],
+  authors: [{ name: "Siqueira Campos Imóveis" }],
+  creator: "KRYONIX - Soluções Digitais",
+  publisher: "Siqueira Campos Imóveis",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://siqueiracamposimoveis.com.br"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "https://siqueiracamposimoveis.com.br",
+    siteName: "Siqueira Campos Imóveis",
+    title: "Siqueira Campos Imóveis - Seu Imóvel dos Sonhos",
+    description: "Encontre o imóvel perfeito em Siqueira Campos e região. Casas, apartamentos, terrenos e mais.",
+    images: [
+      {
+        url: "/logo siqueira campos imoveis.png",
+        width: 1200,
+        height: 630,
+        alt: "Siqueira Campos Imóveis",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Siqueira Campos Imóveis",
+    description: "Encontre o imóvel perfeito em Siqueira Campos e região.",
+    images: ["/logo siqueira campos imoveis.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
 }
 
 export default function RootLayout({
@@ -19,13 +83,33 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <html 
+      lang="pt-BR" 
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <link rel="icon" href="/logo siqueira campos imoveis.png" />
+        <link rel="apple-touch-icon" href="/logo siqueira campos imoveis.png" />
+        <meta name="theme-color" content="#3b82f6" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      </head>
+      <body className={`${inter.className} antialiased min-h-screen bg-background font-sans`}>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="system" 
+          enableSystem 
+          disableTransitionOnChange={false}
+        >
           <SessionProvider>
-            {" "}
-            {/* Envolve a aplicação com o SessionProvider */}
-            {children}
+            <div className="relative flex min-h-screen flex-col">
+              <main className="flex-1">
+                {children}
+              </main>
+            </div>
+            <FloatingChatBubble />
+            <Toaster />
           </SessionProvider>
         </ThemeProvider>
       </body>
