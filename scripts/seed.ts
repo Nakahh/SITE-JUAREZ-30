@@ -7,166 +7,169 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Iniciando seed do banco de dados...')
 
-  // Criar usuário admin
-  const hashedPassword = await bcrypt.hash('admin123', 10)
+  // Verificar se já existem usuários
+  const existingUsers = await prisma.user.count()
+  if (existingUsers > 0) {
+    console.log('✅ Banco de dados já foi populado')
+    return
+  }
+
+  // Criar usuários padrão
+  const hashedPassword = await bcrypt.hash('123456', 10)
   
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@siqueiracampos.com' },
-    update: {},
-    create: {
-      email: 'admin@siqueiracampos.com',
-      name: 'Administrador',
-      password: hashedPassword,
-      role: 'ADMIN'
-    },
+  console.log('👤 Criando usuários...')
+  
+  const owner = await prisma.user.create({
+    data: {
+      name: 'Siqueira Campos Imóveis',
+      email: 'siqueiraecamposimoveis@gmail.com',
+      password: await bcrypt.hash('Juarez.123', 10),
+      role: 'OWNER',
+    }
   })
 
-  console.log('✅ Usuário admin criado')
-
-  // Criar propriedades de exemplo
-  const properties = [
-    {
-      title: 'Casa de Alto Padrão no Centro',
-      description: 'Magnífica casa com 4 quartos, piscina e área gourmet. Localizada em área nobre da cidade.',
-      price: 850000,
-      type: 'SALE',
-      address: 'Rua das Palmeiras, 123',
-      neighborhood: 'Centro',
-      city: 'Juazeiro',
-      state: 'BA',
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 350,
-      parkingSpaces: 2,
-      images: ['/imoveis/casa-alto-padrao-hero.jpg', '/placeholder.jpg'],
-      featured: true,
-      latitude: -9.4111,
-      longitude: -40.4951
-    },
-    {
-      title: 'Apartamento Moderno Vista Rio',
-      description: 'Apartamento com vista panorâmica do Rio São Francisco. 3 quartos com suíte.',
-      price: 450000,
-      type: 'SALE',
-      address: 'Avenida Beira Rio, 456',
-      neighborhood: 'Orla',
-      city: 'Juazeiro',
-      state: 'BA',
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 120,
-      parkingSpaces: 1,
-      images: ['/imoveis/casa-condominio-1.jpg', '/placeholder.jpg'],
-      featured: true,
-      latitude: -9.4050,
-      longitude: -40.4900
-    },
-    {
-      title: 'Casa Condomínio Fechado',
-      description: 'Casa térrea em condomínio com segurança 24h, área de lazer completa.',
-      price: 3500,
-      type: 'RENT',
-      address: 'Condomínio Ville de France, 789',
-      neighborhood: 'Novo Horizonte',
-      city: 'Juazeiro',
-      state: 'BA',
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 180,
-      parkingSpaces: 2,
-      images: ['/placeholder.jpg'],
-      featured: true,
-      latitude: -9.4200,
-      longitude: -40.5000
+  const admin = await prisma.user.create({
+    data: {
+      name: 'Admin',
+      email: 'admin@email.com',
+      password: await bcrypt.hash('admin123', 10),
+      role: 'ADMIN',
     }
-  ]
+  })
 
-  for (const propertyData of properties) {
-    await prisma.property.upsert({
-      where: { 
-        title: propertyData.title 
-      },
-      update: {},
-      create: propertyData
-    })
-  }
-
-  console.log('✅ Propriedades criadas')
-
-  // Criar depoimentos
-  const testimonials = [
-    {
-      name: 'Maria Silva',
-      content: 'Excelente atendimento! Encontrei minha casa dos sonhos com a ajuda da equipe.',
-      rating: 5,
-      approved: true
-    },
-    {
-      name: 'João Santos',
-      content: 'Profissionais competentes e dedicados. Recomendo para todos.',
-      rating: 5,
-      approved: true
-    },
-    {
-      name: 'Ana Costa',
-      content: 'Processo de compra muito tranquilo e transparente. Parabéns!',
-      rating: 5,
-      approved: true
+  const agent = await prisma.user.create({
+    data: {
+      name: 'Corretor',
+      email: 'agent@email.com',
+      password: hashedPassword,
+      role: 'AGENT',
     }
-  ]
+  })
 
-  for (const testimonialData of testimonials) {
-    await prisma.testimonial.upsert({
-      where: { 
-        name: testimonialData.name 
-      },
-      update: {},
-      create: testimonialData
+  const user = await prisma.user.create({
+    data: {
+      name: 'Usuário Teste',
+      email: 'user@email.com',
+      password: hashedPassword,
+      role: 'USER',
+    }
+  })
+
+  console.log('🏠 Criando propriedades...')
+  
+  const properties = await Promise.all([
+    prisma.property.create({
+      data: {
+        title: 'Casa em Condomínio de Alto Padrão',
+        description: 'Linda casa com 4 quartos, 3 suítes, piscina e churrasqueira.',
+        price: 850000,
+        type: 'Casa',
+        status: 'FOR_SALE',
+        featured: true,
+        address: 'Rua das Flores, 123',
+        city: 'São Paulo',
+        state: 'SP',
+        zipCode: '01234-567',
+        bedrooms: 4,
+        bathrooms: 3,
+        area: 250,
+        garage: true,
+        pool: true,
+        balcony: true,
+        agentId: agent.id,
+        images: '["casa-condominio-1.jpg"]'
+      }
+    }),
+    prisma.property.create({
+      data: {
+        title: 'Apartamento Moderno Centro',
+        description: 'Apartamento moderno no centro da cidade com 2 quartos.',
+        price: 350000,
+        type: 'Apartamento',
+        status: 'FOR_SALE',
+        featured: false,
+        address: 'Av. Principal, 456',
+        city: 'São Paulo',
+        state: 'SP',
+        zipCode: '01234-890',
+        bedrooms: 2,
+        bathrooms: 2,
+        area: 80,
+        garage: true,
+        pool: false,
+        balcony: true,
+        agentId: agent.id,
+      }
     })
-  }
+  ])
 
-  console.log('✅ Depoimentos criados')
+  console.log('⚙️ Configurando aplicação...')
+  
+  await prisma.appSetting.createMany({
+    data: [
+      { key: 'whatsapp_integration_enabled', value: 'true' },
+      { key: 'ai_chat_enabled', value: 'true' },
+      { key: 'email_notifications_enabled', value: 'true' },
+      { key: 'push_notifications_enabled', value: 'true' },
+    ]
+  })
 
-  // Criar artigos do blog
-  const articles = [
-    {
-      title: 'Como Escolher o Imóvel Ideal',
+  console.log('📝 Criando artigo de exemplo...')
+  
+  await prisma.article.create({
+    data: {
+      title: 'Como escolher o imóvel ideal',
+      content: 'Guia completo para escolher o imóvel perfeito para sua família...',
       slug: 'como-escolher-imovel-ideal',
-      content: 'Guia completo para ajudar você a escolher o imóvel perfeito para sua família...',
-      excerpt: 'Dicas essenciais para fazer a escolha certa na hora de comprar seu imóvel.',
       published: true,
       authorId: admin.id,
-      featuredImage: '/blog/choosing-property.jpg'
-    },
-    {
-      title: 'Tendências do Mercado Imobiliário 2024',
-      slug: 'tendencias-mercado-imobiliario-2024',
-      content: 'Análise das principais tendências que vão influenciar o mercado imobiliário...',
-      excerpt: 'Conheça as tendências que vão moldar o mercado imobiliário em 2024.',
-      published: true,
-      authorId: admin.id,
-      featuredImage: '/blog/market-trends.jpg'
     }
-  ]
+  })
 
-  for (const articleData of articles) {
-    await prisma.article.upsert({
-      where: { 
-        slug: articleData.slug 
-      },
-      update: {},
-      create: articleData
-    })
-  }
+  console.log('💰 Criando comissão de exemplo...')
+  
+  await prisma.commission.create({
+    data: {
+      propertyId: properties[0].id,
+      agentId: agent.id,
+      saleValue: properties[0].price,
+      commissionPercentage: 6,
+      commissionValue: properties[0].price * 0.06,
+      type: 'SALE',
+      status: 'PAID',
+      createdBy: admin.id
+    }
+  })
 
-  console.log('✅ Artigos criados')
+  console.log('🏦 Criando financiamento de exemplo...')
+  
+  await prisma.financing.create({
+    data: {
+      propertyId: properties[0].id,
+      userId: user.id,
+      propertyValue: properties[0].price,
+      downPayment: properties[0].price * 0.2,
+      financedAmount: properties[0].price * 0.8,
+      interestRate: 9.5,
+      termMonths: 360,
+      monthlyPayment: 2800.50,
+      totalAmount: 1008180,
+      type: 'SAC',
+      status: 'APPROVED'
+    }
+  })
 
-  console.log('🎉 Seed concluído com sucesso!')
+  console.log('✅ Seed concluído com sucesso!')
+  console.log('\n📋 Credenciais criadas:')
+  console.log('Owner: siqueiraecamposimoveis@gmail.com / Juarez.123')
+  console.log('Admin: admin@email.com / admin123')
+  console.log('Agent: agent@email.com / 123456')
+  console.log('User: user@email.com / 123456')
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('❌ Erro no seed:', e)
     process.exit(1)
   })
   .finally(async () => {

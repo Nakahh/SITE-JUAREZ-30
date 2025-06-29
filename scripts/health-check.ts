@@ -145,3 +145,37 @@ if (require.main === module) {
 }
 
 export { runHealthCheck };
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function healthCheck() {
+  console.log('🔍 Verificando saúde da aplicação...')
+
+  try {
+    // Testar conexão com banco
+    await prisma.$connect()
+    console.log('✅ Banco de dados: Conectado')
+
+    // Verificar tabelas
+    const userCount = await prisma.user.count()
+    const propertyCount = await prisma.property.count()
+    
+    console.log(`✅ Usuários: ${userCount} registrados`)
+    console.log(`✅ Propriedades: ${propertyCount} cadastradas`)
+
+    // Verificar configurações
+    const settings = await prisma.appSetting.findMany()
+    console.log(`✅ Configurações: ${settings.length} definidas`)
+
+    console.log('🎉 Sistema funcionando corretamente!')
+
+  } catch (error) {
+    console.error('❌ Erro na verificação:', error)
+    process.exit(1)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+healthCheck()
