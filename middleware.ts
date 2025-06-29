@@ -1,57 +1,55 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+
+import { withAuth } from "next-auth/middleware"
 
 export default withAuth(
   function middleware(req) {
-    const { pathname } = req.nextUrl;
-    const { token } = req.nextauth;
-
-    // Redirecionar usuários não-ADMIN de rotas /admin
-    if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    // Redirecionar usuários não-ADMIN ou AGENT de rotas /admin/imoveis
-    if (
-      pathname.startsWith("/admin/imoveis") &&
-      token?.role !== "ADMIN" &&
-      token?.role !== "AGENT"
-    ) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    // Redirecionar usuários não-ADMIN ou AGENT de rotas /admin/leads e /admin/visitas
-    if (
-      (pathname.startsWith("/admin/leads") ||
-        pathname.startsWith("/admin/visitas")) &&
-      token?.role !== "ADMIN" &&
-      token?.role !== "AGENT"
-    ) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    // Redirecionar usuários não-ADMIN de rotas /admin/usuarios, /admin/blog e /admin/depoimentos
-    if (
-      (pathname.startsWith("/admin/usuarios") ||
-        pathname.startsWith("/admin/blog") ||
-        pathname.startsWith("/admin/depoimentos")) &&
-      token?.role !== "ADMIN"
-    ) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    return NextResponse.next();
+    // Middleware logic
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-    pages: {
-      signIn: "/login",
-    },
-  },
-);
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl
+
+        // Permitir rotas públicas
+        if (
+          pathname.startsWith('/api/auth') ||
+          pathname.startsWith('/_next') ||
+          pathname === '/' ||
+          pathname.startsWith('/imoveis') ||
+          pathname.startsWith('/blog') ||
+          pathname.startsWith('/contato') ||
+          pathname.startsWith('/sobre') ||
+          pathname.startsWith('/login') ||
+          pathname.startsWith('/register') ||
+          pathname.startsWith('/depoimentos') ||
+          pathname.startsWith('/corretores') ||
+          pathname.startsWith('/desenvolvedor') ||
+          pathname.startsWith('/kryonix') ||
+          pathname.startsWith('/simulador-financiamento') ||
+          pathname.startsWith('/comparar') ||
+          pathname.startsWith('/api/chat')
+        ) {
+          return true
+        }
+
+        // Requerer autenticação para rotas admin
+        if (pathname.startsWith('/admin')) {
+          return !!token && (token.role === 'ADMIN' || token.role === 'OWNER')
+        }
+
+        // Requerer autenticação para dashboard
+        if (pathname.startsWith('/dashboard')) {
+          return !!token
+        }
+
+        return true
+      }
+    }
+  }
+)
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*"], // Protege todas as rotas que começam com /admin e /dashboard
-};
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ]
+}
