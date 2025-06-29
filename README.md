@@ -262,12 +262,12 @@ docker-compose logs -f app
 MAIN_DOMAIN=siqueicamposimoveis.com.br
 
 # JWT
-JWT_SECRET=seu_jwt_secret_aqui
+JWT_SECRET=468465454567653554546524
 JWT_EXPIRES_IN=7d
-COOKIE_SECRET=seu_cookie_secret_aqui
+COOKIE_SECRET=645454564867654575565
 
 # Banco de Dados
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/banco?schema=public"
+DATABASE_URL="postgresql://sitejuarez:juarez123@localhost:5432/bdsitejuarez?schema=public"
 
 # Portas
 PORT=3000
@@ -282,9 +282,9 @@ EMAIL_USER=siqueiraecamposimoveis@gmail.com
 EMAIL_PASS=sua_senha_app
 
 # Google OAuth
-GOOGLE_CLIENT_ID=seu_google_client_id
-GOOGLE_CLIENT_SECRET=seu_google_client_secret
-GOOGLE_CALLBACK_URL=https://seudominio.com/api/auth/google/callback
+GOOGLE_CLIENT_ID=7452076957-v6740revpqo1s3f0ek25dr1tpua6q893.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=https://siqueicamposimoveis.com.br/api/auth/google/callback
 
 # Redis
 REDIS_HOST=localhost
@@ -293,6 +293,10 @@ REDIS_PORT=6379
 # WhatsApp
 WHATSAPP_TOKEN=seu_whatsapp_token
 WHATSAPP_WEBHOOK_VERIFY=seu_webhook_verify_token
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
 # Backup
 BACKUP_DIR=/var/backups/siqueira-campos
