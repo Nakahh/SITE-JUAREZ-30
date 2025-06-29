@@ -30,6 +30,9 @@ A aplicação está **100% operacional**, com todas as funcionalidades principai
 | **APIs e Integrações** | | |
 | Envio de Email (Resend) | ⚙️ **Configurado** | Código para envio de email está implementado. Requer uma `RESEND_API_KEY` válida no `.env`. |
 | Agente de IA (OpenAI) | ⚙️ **Configurado** | Chat flutuante implementado. Requer uma `OPENAI_API_KEY` válida no `.env` para o chatbot responder. |
+| Sistema de Comissões | ✅ **Funcionando** | Controle completo de comissões por corretor, com relatórios e status de pagamento. |
+| Sistema de Financiamento | ✅ **Funcionando** | Simulador completo com SAC e PRICE, gestão de financiamentos e aprovações. |
+| Página da Kryonix | ✅ **Funcionando** | Página completa da empresa desenvolvedora com serviços e equipe. |
 | Evolution API (WhatsApp) | ⚙️ **Configurado** | Código para integração existe. Requer `EVOLUTION_API_URL` e `EVOLUTION_API_KEY` válidos no `.env`. |
 
 ## 🚀 Setup Rápido

@@ -27,10 +27,16 @@ export default async function AdminDashboard() {
     totalNewsletterSubscribers: 0,
     totalPropertyReviews: 0,
     totalArticleComments: 0,
+    totalCommissions: 0,
+    totalFinancings: 0,
+    commissionsValue: 0,
+    financingsValue: 0,
     latestProperties: [],
     latestVisits: [],
     latestClients: [],
     latestArticles: [],
+    latestCommissions: [],
+    latestFinancings: [],
     totalRevenue: 0,
     totalExpenses: 0,
   };
@@ -47,6 +53,19 @@ export default async function AdminDashboard() {
       await prisma.newsletterSubscription.count();
     stats.totalPropertyReviews = await prisma.propertyReview.count();
     stats.totalArticleComments = await prisma.articleComment.count();
+    stats.totalCommissions = await prisma.commission.count();
+    stats.totalFinancings = await prisma.financing.count();
+
+    // Buscar valores de comissões e financiamentos
+    const commissionsSum = await prisma.commission.aggregate({
+      _sum: { commissionValue: true }
+    });
+    stats.commissionsValue = commissionsSum._sum.commissionValue || 0;
+
+    const financingsSum = await prisma.financing.aggregate({
+      _sum: { financedAmount: true }
+    });
+    stats.financingsValue = financingsSum._sum.financedAmount || 0;
 
     // Buscar registros recentes
     stats.latestProperties = await prisma.property.findMany({
@@ -72,6 +91,25 @@ export default async function AdminDashboard() {
       take: 5,
       include: {
         author: { select: { name: true } },
+      },
+    });
+
+    stats.latestCommissions = await prisma.commission.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        property: { select: { title: true } },
+        agent: { select: { name: true } },
+      },
+    });
+
+    stats.latestFinancings = await prisma.financing.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        property: { select: { title: true } },
+        client: { select: { name: true } },
+        user: { select: { name: true } },
       },
     });
 
