@@ -20,6 +20,7 @@ enum PropertyStatus {
   FOR_RENT
   SOLD
   RENTED
+  AVAILABLE
 }
 
 enum VisitStatus {
@@ -72,6 +73,7 @@ model Property {
   price            Float
   type             String
   status           PropertyStatus   @default(FOR_SALE)
+  featured         Boolean          @default(false)
   address          String
   city             String
   state            String

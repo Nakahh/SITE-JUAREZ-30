@@ -1,253 +1,214 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
-import { useSession } from "next-auth/react"
-import { useTheme } from "next-themes"
+import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
-import { 
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { 
   Menu, 
-  Search, 
-  Heart, 
-  User, 
-  Phone,
-  Home,
-  Building,
-  Calculator,
-  MessageSquare,
-  Users,
-  BookOpen,
-  Award
+  X, 
+  Home, 
+  Building, 
+  Users, 
+  MessageSquare, 
+  Phone, 
+  User,
+  LogOut,
+  Settings,
+  Heart,
+  Search,
+  FileText
 } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export default function Navbar() {
-  const { data: session } = useSession()
-  const { theme, resolvedTheme } = useTheme()
+export function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data: session, status } = useSession()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const isDark = mounted ? resolvedTheme === 'dark' : false
+  if (!mounted) {
+    return null
+  }
 
-  const logoSrc = isDark 
-    ? "/logo siqueira campos imoveis.png" // Logo para fundo escuro
-    : "/logo siqueira campos imoveis.png" // Logo para fundo claro
-
-  const navigationItems = [
-    {
-      title: "Imóveis",
-      href: "/imoveis",
-      icon: Home,
-      description: "Encontre seu imóvel ideal"
-    },
-    {
-      title: "Sobre",
-      href: "/sobre", 
-      icon: Building,
-      description: "Conheça nossa história"
-    },
-    {
-      title: "Serviços",
-      items: [
-        { title: "Simulador de Financiamento", href: "/simulador-financiamento", icon: Calculator },
-        { title: "Avaliação de Imóvel", href: "/contato", icon: Award },
-        { title: "Consultoria", href: "/contato", icon: MessageSquare }
-      ]
-    },
-    {
-      title: "Blog",
-      href: "/blog",
-      icon: BookOpen,
-      description: "Dicas e novidades do mercado"
-    },
-    {
-      title: "Equipe",
-      href: "/corretores",
-      icon: Users,
-      description: "Conheça nossos corretores"
-    },
-    {
-      title: "Contato",
-      href: "/contato",
-      icon: Phone,
-      description: "Fale conosco"
-    }
+  const navItems = [
+    { href: "/", label: "Início", icon: Home },
+    { href: "/imoveis", label: "Imóveis", icon: Building },
+    { href: "/corretores", label: "Corretores", icon: Users },
+    { href: "/blog", label: "Blog", icon: FileText },
+    { href: "/sobre", label: "Sobre", icon: MessageSquare },
+    { href: "/contato", label: "Contato", icon: Phone },
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="relative h-10 w-auto">
-              <Image
-                src={logoSrc}
-                alt="Siqueira Campos Imóveis"
-                height={40}
-                width={200}
-                className="object-contain"
-                priority
-              />
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList>
-              {navigationItems.map((item) => (
-                <NavigationMenuItem key={item.title}>
-                  {item.items ? (
-                    <>
-                      <NavigationMenuTrigger className="text-sm font-medium">
-                        {item.title}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="w-64 p-2">
-                          {item.items.map((subItem) => (
-                            <NavigationMenuLink
-                              key={subItem.title}
-                              asChild
-                            >
-                              <Link
-                                href={subItem.href}
-                                className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent transition-colors"
-                              >
-                                <subItem.icon className="h-5 w-5 text-primary" />
-                                <span className="text-sm font-medium">{subItem.title}</span>
-                              </Link>
-                            </NavigationMenuLink>
-                          ))}
-                        </div>
-                      </NavigationMenuContent>
-                    </>
-                  ) : (
-                    <Link href={item.href!} legacyBehavior passHref>
-                      <NavigationMenuLink className="text-sm font-medium px-3 py-2 rounded-md hover:bg-accent transition-colors">
-                        {item.title}
-                      </NavigationMenuLink>
-                    </Link>
-                  )}
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            {/* Search Button */}
-            <Button variant="ghost" size="sm" asChild className="hidden md:flex">
-              <Link href="/imoveis">
-                <Search className="h-4 w-4" />
-              </Link>
-            </Button>
-
-            {/* Favorites */}
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/favoritos">
-                <Heart className="h-4 w-4" />
-              </Link>
-            </Button>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* User Menu */}
-            {session ? (
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard">
-                  <User className="h-4 w-4" />
-                </Link>
-              </Button>
-            ) : (
-              <Button size="sm" asChild className="hidden md:flex">
-                <Link href="/login">
-                  Entrar
-                </Link>
-              </Button>
-            )}
-
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="lg:hidden">
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80">
-                <div className="flex flex-col space-y-4 mt-8">
-                  {/* Mobile Logo */}
-                  <div className="flex justify-center mb-8">
-                    <Image
-                      src={logoSrc}
-                      alt="Siqueira Campos Imóveis"
-                      height={40}
-                      width={160}
-                      className="object-contain"
-                    />
-                  </div>
-
-                  {/* Mobile Navigation */}
-                  {navigationItems.map((item) => (
-                    <div key={item.title} className="space-y-2">
-                      {item.items ? (
-                        <>
-                          <h3 className="font-semibold text-sm text-primary px-2">
-                            {item.title}
-                          </h3>
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.title}
-                              href={subItem.href}
-                              className="flex items-center space-x-3 p-2 rounded-md hover:bg-accent transition-colors"
-                            >
-                              <subItem.icon className="h-4 w-4 text-primary" />
-                              <span className="text-sm">{subItem.title}</span>
-                            </Link>
-                          ))}
-                        </>
-                      ) : (
-                        <Link
-                          href={item.href!}
-                          className="flex items-center space-x-3 p-2 rounded-md hover:bg-accent transition-colors"
-                        >
-                          <item.icon className="h-4 w-4 text-primary" />
-                          <span className="text-sm font-medium">{item.title}</span>
-                        </Link>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Mobile Actions */}
-                  <div className="pt-4 border-t space-y-2">
-                    {!session && (
-                      <Button asChild className="w-full">
-                        <Link href="/login">
-                          Entrar
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
+            <Building className="h-5 w-5 text-primary-foreground" />
           </div>
+          <span className="font-bold text-xl">Siqueira Campos</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            >
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </div>
+
+        {/* User Menu & Theme Toggle */}
+        <div className="flex items-center space-x-2">
+          <ThemeToggle />
+
+          {status === "loading" ? (
+            <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+          ) : session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={session.user?.image || ""} alt={session.user?.name || ""} />
+                    <AvatarFallback>
+                      {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {session.user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {session.user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard" className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href="/favoritos" className="flex items-center">
+                    <Heart className="mr-2 h-4 w-4" />
+                    Favoritos
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/buscas-salvas" className="flex items-center">
+                    <Search className="mr-2 h-4 w-4" />
+                    Buscas Salvas
+                  </Link>
+                </DropdownMenuItem>
+
+                {(session.user?.role === "ADMIN" || session.user?.role === "AGENT") && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Painel Admin
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="flex items-center cursor-pointer"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="hidden md:flex items-center space-x-2">
+              <Button variant="ghost" asChild>
+                <Link href="/login">Entrar</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register">Cadastrar</Link>
+              </Button>
+            </div>
+          )}
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
       </div>
-    </header>
+
+      {/* Mobile Navigation */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t bg-background">
+          <div className="container px-4 py-4 space-y-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.label}</span>
+              </Link>
+            ))}
+
+            {!session && (
+              <div className="pt-2 space-y-2">
+                <Button variant="ghost" className="w-full justify-start" asChild>
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    Entrar
+                  </Link>
+                </Button>
+                <Button className="w-full justify-start" asChild>
+                  <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                    Cadastrar
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
   )
 }
+
+export default Navbar
