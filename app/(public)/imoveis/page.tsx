@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { PropertyCard } from "@/components/property-card";
+import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -220,7 +220,7 @@ export default async function PropertiesPage({
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((property) => (
-                <PropertyCard
+                <EnhancedPropertyCard
                   key={property.id}
                   property={{
                     id: property.id,
@@ -236,6 +236,8 @@ export default async function PropertiesPage({
                     bathrooms: property.bathrooms,
                     area: property.area,
                     garage: property.garage,
+                    pool: property.pool || false,
+                    balcony: property.balcony || false,
                     images: Array.isArray(property.images)
                       ? property.images
                       : [],
