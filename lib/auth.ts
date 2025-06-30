@@ -92,3 +92,4 @@ export const authOptions: NextAuthOptions = {
 }
 
 export const auth = NextAuth(authOptions)
+export { authOptions }
