@@ -36,7 +36,8 @@ export default function HomePage() {
     {
       id: "1",
       title: "Casa Moderna Alto Padrão",
-      description: "Casa de luxo com 4 quartos, piscina e área gourmet completa. Projeto moderno com acabamentos de primeira qualidade.",
+      description:
+        "Casa de luxo com 4 quartos, piscina e área gourmet completa. Projeto moderno com acabamentos de primeira qualidade.",
       price: 850000,
       type: "HOUSE",
       status: "FOR_SALE",
@@ -49,18 +50,21 @@ export default function HomePage() {
       garage: true,
       pool: true,
       balcony: false,
-      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop"],
+      images: [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+      ],
       createdAt: new Date(),
       agent: {
         id: "agent1",
         name: "João Silva",
-        image: null
-      }
+        image: null,
+      },
     },
     {
       id: "2",
       title: "Apartamento Residencial Completo",
-      description: "Apartamento moderno com 2 quartos e área de lazer completa. Localização privilegiada no centro da cidade.",
+      description:
+        "Apartamento moderno com 2 quartos e área de lazer completa. Localização privilegiada no centro da cidade.",
       price: 320000,
       type: "APARTMENT",
       status: "FOR_SALE",
@@ -73,18 +77,21 @@ export default function HomePage() {
       garage: true,
       pool: false,
       balcony: true,
-      images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop"],
+      images: [
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
+      ],
       createdAt: new Date(),
       agent: {
         id: "agent2",
         name: "Maria Santos",
-        image: null
-      }
+        image: null,
+      },
     },
     {
       id: "3",
       title: "Terreno Comercial Premium",
-      description: "Terreno em localização privilegiada para investimento comercial. Área plana e com excelente potencial.",
+      description:
+        "Terreno em localização privilegiada para investimento comercial. Área plana e com excelente potencial.",
       price: 180000,
       type: "LAND",
       status: "FOR_SALE",
@@ -97,16 +104,15 @@ export default function HomePage() {
       garage: false,
       pool: false,
       balcony: false,
-      images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop"],
+      images: [
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop",
+      ],
       createdAt: new Date(),
       agent: {
         id: "agent3",
         name: "Carlos Oliveira",
-        image: null
-      }
-    }
-  ]
-      featured: true,
+        image: null,
+      },
     },
   ];
 
