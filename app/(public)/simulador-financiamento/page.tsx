@@ -1,327 +1,466 @@
+"use client";
 
-"use client"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Calculator,
+  Home,
+  TrendingUp,
+  PiggyBank,
+  DollarSign,
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  Download,
+  Share2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calculator, TrendingUp, PieChart, FileText, Info } from "lucide-react"
-import { simulateFinancing } from "@/app/actions/financing-actions"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Progress } from "@/components/ui/progress"
+interface FinancingResult {
+  monthlyPayment: number;
+  totalAmount: number;
+  totalInterest: number;
+  payments: {
+    month: number;
+    payment: number;
+    principal: number;
+    interest: number;
+    balance: number;
+  }[];
+}
 
-export default function SimuladorFinanciamento() {
-  const [formData, setFormData] = useState({
-    propertyValue: "",
-    downPayment: "",
-    interestRate: "9.5",
-    termMonths: "360",
-    type: "SAC"
-  })
-  
-  const [result, setResult] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+export default function FinancingSimulatorPage() {
+  const [propertyValue, setPropertyValue] = useState(300000);
+  const [downPayment, setDownPayment] = useState(60000);
+  const [downPaymentPercent, setDownPaymentPercent] = useState(20);
+  const [termYears, setTermYears] = useState(30);
+  const [interestRate, setInterestRate] = useState(10.5);
+  const [financingType, setFinancingType] = useState<"SAC" | "PRICE">("SAC");
+  const [results, setResults] = useState<FinancingResult | null>(null);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    
-    // Auto-calcular entrada baseada em 20% se não preenchida
-    if (field === "propertyValue" && value && !formData.downPayment) {
-      const autoDownPayment = (parseFloat(value) * 0.2).toString()
-      setFormData(prev => ({ ...prev, downPayment: autoDownPayment }))
-    }
-  }
+  // Atualizar entrada quando o percentual muda
+  useEffect(() => {
+    const newDownPayment = (propertyValue * downPaymentPercent) / 100;
+    setDownPayment(Math.round(newDownPayment));
+  }, [propertyValue, downPaymentPercent]);
 
-  const handleSimulate = async () => {
-    setLoading(true)
-    setError("")
-    
-    try {
-      const data = new FormData()
-      Object.entries(formData).forEach(([key, value]) => {
-        data.append(key, value)
-      })
-      
-      const response = await simulateFinancing(data)
-      
-      if (response.success) {
-        setResult(response.data)
-      } else {
-        setError(response.message || "Erro ao simular financiamento")
+  // Atualizar percentual quando a entrada muda
+  const handleDownPaymentChange = (value: number) => {
+    setDownPayment(value);
+    const percent = (value / propertyValue) * 100;
+    setDownPaymentPercent(Math.round(percent));
+  };
+
+  const calculateFinancing = () => {
+    const principal = propertyValue - downPayment;
+    const monthlyRate = interestRate / 100 / 12;
+    const totalPayments = termYears * 12;
+
+    if (financingType === "PRICE") {
+      // Sistema PRICE (Prestações fixas)
+      const monthlyPayment =
+        (principal * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments))) /
+        (Math.pow(1 + monthlyRate, totalPayments) - 1);
+
+      const payments = [];
+      let balance = principal;
+
+      for (let i = 1; i <= totalPayments; i++) {
+        const interestPayment = balance * monthlyRate;
+        const principalPayment = monthlyPayment - interestPayment;
+        balance -= principalPayment;
+
+        payments.push({
+          month: i,
+          payment: monthlyPayment,
+          principal: principalPayment,
+          interest: interestPayment,
+          balance: Math.max(0, balance),
+        });
       }
-    } catch (err) {
-      setError("Erro inesperado ao simular financiamento")
-    } finally {
-      setLoading(false)
+
+      const totalAmount = monthlyPayment * totalPayments;
+      const totalInterest = totalAmount - principal;
+
+      setResults({
+        monthlyPayment,
+        totalAmount,
+        totalInterest,
+        payments,
+      });
+    } else {
+      // Sistema SAC (Amortização constante)
+      const principalPayment = principal / totalPayments;
+      const payments = [];
+      let balance = principal;
+      let totalAmount = 0;
+
+      for (let i = 1; i <= totalPayments; i++) {
+        const interestPayment = balance * monthlyRate;
+        const monthlyPayment = principalPayment + interestPayment;
+        balance -= principalPayment;
+        totalAmount += monthlyPayment;
+
+        payments.push({
+          month: i,
+          payment: monthlyPayment,
+          principal: principalPayment,
+          interest: interestPayment,
+          balance: Math.max(0, balance),
+        });
+      }
+
+      const totalInterest = totalAmount - principal;
+
+      setResults({
+        monthlyPayment: payments[0].payment, // Primeira prestação (maior no SAC)
+        totalAmount,
+        totalInterest,
+        payments,
+      });
     }
-  }
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
-      currency: "BRL"
-    }).format(value)
-  }
+      currency: "BRL",
+    }).format(value);
+  };
 
-  const downPaymentPercentage = formData.propertyValue && formData.downPayment 
-    ? (parseFloat(formData.downPayment) / parseFloat(formData.propertyValue)) * 100 
-    : 0
+  const getRecommendation = () => {
+    const maxRecommendedPayment = propertyValue * 0.003; // 30% seria uma métrica mais realista
+    const currentPayment = results?.monthlyPayment || 0;
+
+    if (currentPayment > maxRecommendedPayment) {
+      return {
+        type: "warning",
+        message:
+          "A prestação está alta para este imóvel. Considere aumentar a entrada ou escolher um imóvel mais barato.",
+      };
+    } else if (downPaymentPercent < 20) {
+      return {
+        type: "info",
+        message:
+          "Recomendamos pelo menos 20% de entrada para melhores condições de financiamento.",
+      };
+    } else {
+      return {
+        type: "success",
+        message:
+          "Excelente! Este financiamento está dentro dos parâmetros recomendados.",
+      };
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-4">Simulador de Financiamento</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Simule seu financiamento imobiliário e compare diferentes modalidades para encontrar a melhor opção
+    <div className="container py-12">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <div className="flex items-center justify-center space-x-3 mb-4">
+          <Calculator className="h-8 w-8 text-primary" />
+          <h1 className="text-4xl font-bold tracking-tight">
+            Simulador de Financiamento
+          </h1>
+        </div>
+        <p className="text-muted-foreground text-lg">
+          Calcule as melhores condições para financiar seu imóvel
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Formulário de Simulação */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5" />
-              Dados para Simulação
-            </CardTitle>
-            <CardDescription>
-              Preencha os dados abaixo para simular seu financiamento
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="propertyValue">Valor do Imóvel</Label>
-              <Input
-                id="propertyValue"
-                type="number"
-                placeholder="R$ 300.000,00"
-                value={formData.propertyValue}
-                onChange={(e) => handleInputChange("propertyValue", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="downPayment">Valor da Entrada</Label>
-              <Input
-                id="downPayment"
-                type="number"
-                placeholder="R$ 60.000,00"
-                value={formData.downPayment}
-                onChange={(e) => handleInputChange("downPayment", e.target.value)}
-              />
-              {downPaymentPercentage > 0 && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {downPaymentPercentage.toFixed(1)}% do valor do imóvel
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="interestRate">Taxa de Juros (% ao ano)</Label>
-              <Input
-                id="interestRate"
-                type="number"
-                step="0.1"
-                placeholder="9.5"
-                value={formData.interestRate}
-                onChange={(e) => handleInputChange("interestRate", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="termMonths">Prazo (meses)</Label>
-              <Select value={formData.termMonths} onValueChange={(value) => handleInputChange("termMonths", value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="240">20 anos (240 meses)</SelectItem>
-                  <SelectItem value="300">25 anos (300 meses)</SelectItem>
-                  <SelectItem value="360">30 anos (360 meses)</SelectItem>
-                  <SelectItem value="420">35 anos (420 meses)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Sistema de Amortização</Label>
-              <Select value={formData.type} onValueChange={(value) => handleInputChange("type", value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SAC">SAC - Sistema de Amortização Constante</SelectItem>
-                  <SelectItem value="PRICE">PRICE - Sistema Francês</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button onClick={handleSimulate} disabled={loading} className="w-full">
-              {loading ? "Simulando..." : "Simular Financiamento"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Resultados */}
-        {result && (
+      <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+        {/* Formulário */}
+        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Resultado da Simulação
+              <CardTitle className="flex items-center space-x-2">
+                <Home className="h-5 w-5" />
+                <span>Dados do Imóvel</span>
               </CardTitle>
-              <CardDescription>
-                Sistema: {result.type} | Prazo: {result.termMonths} meses
-              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="resumo" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="resumo">Resumo</TabsTrigger>
-                  <TabsTrigger value="detalhes">Detalhes</TabsTrigger>
-                  <TabsTrigger value="graficos">Gráficos</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="resumo" className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">Valor Financiado</p>
-                      <p className="text-lg font-bold">{formatCurrency(result.financedAmount)}</p>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">Primeira Parcela</p>
-                      <p className="text-lg font-bold text-green-600">{formatCurrency(result.monthlyPayment)}</p>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">Total a Pagar</p>
-                      <p className="text-lg font-bold">{formatCurrency(result.totalAmount)}</p>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">Total de Juros</p>
-                      <p className="text-lg font-bold text-red-600">{formatCurrency(result.totalInterest)}</p>
-                    </div>
-                  </div>
-                  
-                  <Alert>
-                    <Info className="h-4 w-4" />
-                    <AlertDescription>
-                      {result.type === "SAC" 
-                        ? "No SAC, as parcelas diminuem ao longo do tempo. A primeira parcela é a maior."
-                        : "No PRICE, todas as parcelas têm o mesmo valor durante todo o financiamento."
-                      }
-                    </AlertDescription>
-                  </Alert>
-                </TabsContent>
+            <CardContent className="space-y-6">
+              {/* Valor do Imóvel */}
+              <div className="space-y-2">
+                <Label>Valor do Imóvel</Label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="number"
+                    value={propertyValue}
+                    onChange={(e) => setPropertyValue(Number(e.target.value))}
+                    className="pl-10"
+                    placeholder="300.000"
+                  />
+                </div>
+                <Slider
+                  value={[propertyValue]}
+                  onValueChange={(value) => setPropertyValue(value[0])}
+                  max={2000000}
+                  min={50000}
+                  step={10000}
+                  className="mt-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>R$ 50.000</span>
+                  <span className="font-medium">
+                    {formatCurrency(propertyValue)}
+                  </span>
+                  <span>R$ 2.000.000</span>
+                </div>
+              </div>
 
-                <TabsContent value="detalhes" className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Valor do Imóvel:</span>
-                      <span className="font-medium">{formatCurrency(result.propertyValue)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Entrada:</span>
-                      <span className="font-medium">{formatCurrency(result.downPayment)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Taxa de Juros:</span>
-                      <span className="font-medium">{result.interestRate}% ao ano</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Prazo:</span>
-                      <span className="font-medium">{result.termMonths} meses ({Math.floor(result.termMonths / 12)} anos)</span>
-                    </div>
-                  </div>
-                  
-                  <div className="border-t pt-4">
-                    <h4 className="font-medium mb-2">Evolução das Parcelas (primeiros 12 meses)</h4>
-                    <div className="space-y-1 max-h-48 overflow-y-auto">
-                      {result.payments.slice(0, 12).map((payment: any) => (
-                        <div key={payment.month} className="flex justify-between text-sm">
-                          <span>Mês {payment.month}:</span>
-                          <span>{formatCurrency(payment.payment)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </TabsContent>
+              {/* Entrada */}
+              <div className="space-y-2">
+                <Label>Entrada ({downPaymentPercent}%)</Label>
+                <div className="relative">
+                  <PiggyBank className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="number"
+                    value={downPayment}
+                    onChange={(e) =>
+                      handleDownPaymentChange(Number(e.target.value))
+                    }
+                    className="pl-10"
+                  />
+                </div>
+                <Slider
+                  value={[downPaymentPercent]}
+                  onValueChange={(value) => setDownPaymentPercent(value[0])}
+                  max={50}
+                  min={5}
+                  step={1}
+                  className="mt-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>5%</span>
+                  <span className="font-medium">
+                    {formatCurrency(downPayment)} ({downPaymentPercent}%)
+                  </span>
+                  <span>50%</span>
+                </div>
+              </div>
 
-                <TabsContent value="graficos" className="space-y-4">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2">Composição do Financiamento</h4>
-                      <div className="space-y-2">
-                        <div>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span>Principal</span>
-                            <span>{((result.financedAmount / result.totalAmount) * 100).toFixed(1)}%</span>
-                          </div>
-                          <Progress value={(result.financedAmount / result.totalAmount) * 100} className="h-2" />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span>Juros</span>
-                            <span>{((result.totalInterest / result.totalAmount) * 100).toFixed(1)}%</span>
-                          </div>
-                          <Progress value={(result.totalInterest / result.totalAmount) * 100} className="h-2" />
-                        </div>
-                      </div>
+              {/* Prazo */}
+              <div className="space-y-2">
+                <Label>Prazo (anos)</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="number"
+                    value={termYears}
+                    onChange={(e) => setTermYears(Number(e.target.value))}
+                    className="pl-10"
+                    min="5"
+                    max="35"
+                  />
+                </div>
+                <Slider
+                  value={[termYears]}
+                  onValueChange={(value) => setTermYears(value[0])}
+                  max={35}
+                  min={5}
+                  step={1}
+                  className="mt-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>5 anos</span>
+                  <span className="font-medium">
+                    {termYears} anos ({termYears * 12} meses)
+                  </span>
+                  <span>35 anos</span>
+                </div>
+              </div>
+
+              {/* Taxa de Juros */}
+              <div className="space-y-2">
+                <Label>Taxa de Juros (% ao ano)</Label>
+                <div className="relative">
+                  <TrendingUp className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(Number(e.target.value))}
+                    className="pl-10"
+                  />
+                </div>
+                <Slider
+                  value={[interestRate]}
+                  onValueChange={(value) => setInterestRate(value[0])}
+                  max={15}
+                  min={6}
+                  step={0.1}
+                  className="mt-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>6% a.a.</span>
+                  <span className="font-medium">{interestRate}% a.a.</span>
+                  <span>15% a.a.</span>
+                </div>
+              </div>
+
+              {/* Tipo de Financiamento */}
+              <div className="space-y-2">
+                <Label>Tipo de Financiamento</Label>
+                <Tabs
+                  value={financingType}
+                  onValueChange={(value) =>
+                    setFinancingType(value as "SAC" | "PRICE")
+                  }
+                >
+                  <TabsList className="w-full">
+                    <TabsTrigger value="SAC" className="flex-1">
+                      SAC
+                    </TabsTrigger>
+                    <TabsTrigger value="PRICE" className="flex-1">
+                      PRICE
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="SAC" className="mt-3">
+                    <div className="p-3 bg-muted/50 rounded-lg text-sm">
+                      <strong>SAC:</strong> Prestações decrescentes. Amortização
+                      constante, você paga menos juros ao longo do tempo.
                     </div>
-                    
-                    <div>
-                      <h4 className="font-medium mb-2">Comparação de Sistemas</h4>
-                      <div className="text-sm space-y-1">
-                        <p><strong>SAC:</strong> Parcelas decrescentes, menos juros no total</p>
-                        <p><strong>PRICE:</strong> Parcelas fixas, mais juros no total</p>
-                      </div>
+                  </TabsContent>
+                  <TabsContent value="PRICE" className="mt-3">
+                    <div className="p-3 bg-muted/50 rounded-lg text-sm">
+                      <strong>PRICE:</strong> Prestações fixas. Valor constante,
+                      facilita o planejamento financeiro.
                     </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              <Button onClick={calculateFinancing} size="lg" className="w-full">
+                <Calculator className="h-4 w-4 mr-2" />
+                Calcular Financiamento
+              </Button>
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
 
-      {/* Informações Importantes */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Informações Importantes
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-medium mb-2">Sistema SAC</h4>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Amortização constante do principal</li>
-              <li>• Parcelas decrescentes ao longo do tempo</li>
-              <li>• Menor valor total de juros</li>
-              <li>• Primeira parcela mais alta</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-2">Sistema PRICE</h4>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Parcelas fixas durante todo o período</li>
-              <li>• Mais juros no início, mais amortização no final</li>
-              <li>• Maior valor total de juros</li>
-              <li>• Melhor para planejamento financeiro</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Resultados */}
+        <div className="space-y-6">
+          {results && (
+            <>
+              {/* Resumo */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Resumo do Financiamento</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-primary/10 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        Valor Financiado
+                      </p>
+                      <p className="text-lg font-bold">
+                        {formatCurrency(propertyValue - downPayment)}
+                      </p>
+                    </div>
+                    <div className="text-center p-3 bg-green-500/10 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        {financingType === "SAC"
+                          ? "Primeira Prestação"
+                          : "Prestação Fixa"}
+                      </p>
+                      <p className="text-lg font-bold text-green-600">
+                        {formatCurrency(results.monthlyPayment)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Total Pago:</span>
+                      <span className="font-semibold">
+                        {formatCurrency(results.totalAmount + downPayment)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total de Juros:</span>
+                      <span className="font-semibold text-orange-600">
+                        {formatCurrency(results.totalInterest)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Última Prestação:</span>
+                      <span>
+                        {formatCurrency(
+                          results.payments[results.payments.length - 1].payment,
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Recomendação */}
+              <Card>
+                <CardContent className="pt-6">
+                  {(() => {
+                    const recommendation = getRecommendation();
+                    return (
+                      <div
+                        className={cn(
+                          "flex items-start space-x-3 p-3 rounded-lg",
+                          recommendation.type === "success" &&
+                            "bg-green-50 dark:bg-green-950/20",
+                          recommendation.type === "warning" &&
+                            "bg-orange-50 dark:bg-orange-950/20",
+                          recommendation.type === "info" &&
+                            "bg-blue-50 dark:bg-blue-950/20",
+                        )}
+                      >
+                        {recommendation.type === "success" && (
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                        )}
+                        {recommendation.type === "warning" && (
+                          <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                        )}
+                        {recommendation.type === "info" && (
+                          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                        )}
+                        <p className="text-sm">{recommendation.message}</p>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              {/* Ações */}
+              <div className="flex space-x-3">
+                <Button variant="outline" className="flex-1">
+                  <Download className="h-4 w-4 mr-2" />
+                  Baixar PDF
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Compartilhar
+                </Button>
+              </div>
+
+              {/* CTA */}
+              <Card className="bg-gradient-to-r from-primary/10 to-secondary/10">
+                <CardContent className="pt-6 text-center">
+                  <h3 className="font-semibold mb-2">Gostou da simulação?</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Fale com nossos especialistas para encontrar as melhores
+                    condições.
+                  </p>
+                  <Button className="w-full">Falar com Corretor</Button>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
