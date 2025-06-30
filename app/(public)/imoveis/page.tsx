@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import {
   Select,
   SelectContent,
@@ -85,11 +86,41 @@ export default async function PropertiesPage({
     properties = [];
   }
 
+  const presetFilters = [
+    { label: "Casas até R$ 500k", href: "/imoveis?type=HOUSE&maxPrice=500000" },
+    {
+      label: "Apartamentos 2 quartos",
+      href: "/imoveis?type=APARTMENT&bedrooms=2",
+    },
+    { label: "Terrenos", href: "/imoveis?type=LAND" },
+    { label: "Comercial", href: "/imoveis?type=COMMERCIAL" },
+    { label: "Para Alugar", href: "/imoveis?status=FOR_RENT" },
+    { label: "Luxo (R$ 1M+)", href: "/imoveis?minPrice=1000000" },
+  ];
+
   return (
     <section className="container py-12">
-      <h1 className="text-4xl font-bold tracking-tight text-center mb-10">
-        Imóveis Disponíveis
-      </h1>
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold tracking-tight mb-4">
+          Imóveis Disponíveis
+        </h1>
+        <p className="text-muted-foreground text-lg mb-6">
+          Encontre o imóvel dos seus sonhos em nossa seleção exclusiva
+        </p>
+
+        {/* Filtros pré-definidos */}
+        <div className="flex flex-wrap gap-2 justify-center mb-8">
+          {presetFilters.map((filter, index) => (
+            <Link
+              key={index}
+              href={filter.href}
+              className="px-4 py-2 text-sm bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors"
+            >
+              {filter.label}
+            </Link>
+          ))}
+        </div>
+      </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* Sidebar de Filtros */}
