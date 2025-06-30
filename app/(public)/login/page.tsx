@@ -1,108 +1,126 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useTheme } from 'next-themes'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
-import { Eye, EyeOff, Mail, Lock, LogIn, Home, Shield, User } from 'lucide-react'
+import { useState } from "react";
+import { signIn, getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  LogIn,
+  Home,
+  Shield,
+  User,
+} from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
-  const { theme } = useTheme()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const { theme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError('Email ou senha incorretos')
+        setError("Email ou senha incorretos");
       } else {
         // Aguardar um momento para a sessão ser estabelecida
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         // Verificar a sessão para determinar o redirecionamento
-        const session = await getSession()
+        const session = await getSession();
 
-        if (session?.user?.role === 'ADMIN') {
-          router.push('/admin')
+        if (session?.user?.role === "ADMIN") {
+          router.push("/admin");
         } else {
-          router.push('/dashboard')
+          router.push("/dashboard");
         }
-        router.refresh()
+        router.refresh();
       }
     } catch (error) {
-      setError('Erro inesperado. Tente novamente.')
+      setError("Erro inesperado. Tente novamente.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/dashboard' })
-  }
+    signIn("google", { callbackUrl: "/dashboard" });
+  };
 
   const quickLoginUsers = [
-    { 
-      email: 'siqueiraecamposimoveis@gmail.com', 
-      role: 'ADMIN', 
-      name: 'Proprietário',
-      icon: Shield
+    {
+      email: "admin@siqueiracampos.com",
+      role: "ADMIN",
+      name: "Administrador",
+      icon: Shield,
     },
-    { 
-      email: 'admin@email.com', 
-      role: 'ADMIN', 
-      name: 'Administrador',
-      icon: Shield
+    {
+      email: "corretor@siqueiracampos.com",
+      role: "AGENT",
+      name: "Corretor",
+      icon: User,
     },
-    { 
-      email: 'user@email.com', 
-      role: 'USER', 
-      name: 'Usuário Demo',
-      icon: User
-    }
-  ]
+    {
+      email: "usuario@teste.com",
+      role: "USER",
+      name: "Usuário",
+      icon: User,
+    },
+  ];
 
   const quickLogin = (userEmail: string) => {
-    setEmail(userEmail)
-    setPassword('123456') // Senha padrão para demo
-  }
+    setEmail(userEmail);
+    setPassword("123456"); // Senha padrão para demo
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-6">
-
         {/* Logo e Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-4"
         >
           <Link href="/" className="inline-block">
             <Image
-              src={theme === 'dark' ? '/siqueira campos para fundo escuro.png' : '/siqueira campos para fundo claro.png'}
+              src={
+                theme === "dark"
+                  ? "/siqueira campos para fundo escuro.png"
+                  : "/siqueira campos para fundo claro.png"
+              }
               alt="Siqueira Campos Imóveis"
               width={200}
               height={60}
@@ -111,7 +129,9 @@ export default function LoginPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Bem-vindo de volta!</h1>
-            <p className="text-muted-foreground">Entre com sua conta para continuar</p>
+            <p className="text-muted-foreground">
+              Entre com sua conta para continuar
+            </p>
           </div>
         </motion.div>
 
@@ -156,7 +176,9 @@ export default function LoginPage() {
         >
           <Card className="shadow-2xl border-border/50">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-xl font-bold text-center">Entrar</CardTitle>
+              <CardTitle className="text-xl font-bold text-center">
+                Entrar
+              </CardTitle>
               <CardDescription className="text-center">
                 Acesse sua conta para continuar
               </CardDescription>
@@ -191,7 +213,7 @@ export default function LoginPage() {
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="password"
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -238,9 +260,9 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <Button 
-                variant="outline" 
-                className="w-full" 
+              <Button
+                variant="outline"
+                className="w-full"
                 onClick={handleGoogleSignIn}
                 type="button"
               >
@@ -266,20 +288,20 @@ export default function LoginPage() {
               </Button>
 
               <div className="text-center space-y-2">
-                <Link 
-                  href="/register" 
+                <Link
+                  href="/register"
                   className="text-sm text-primary hover:underline block"
                 >
                   Não tem uma conta? Cadastre-se
                 </Link>
-                <Link 
-                  href="/forgot-password" 
+                <Link
+                  href="/forgot-password"
                   className="text-sm text-muted-foreground hover:underline block"
                 >
                   Esqueceu sua senha?
                 </Link>
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className="text-sm text-muted-foreground hover:underline flex items-center justify-center space-x-1"
                 >
                   <Home className="h-3 w-3" />
@@ -299,7 +321,10 @@ export default function LoginPage() {
         >
           <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
             <span>Desenvolvido por</span>
-            <Link href="/desenvolvedor" className="flex items-center space-x-1 hover:text-primary transition-colors">
+            <Link
+              href="/desenvolvedor"
+              className="flex items-center space-x-1 hover:text-primary transition-colors"
+            >
               <Image
                 src="/logo-kryonix.png"
                 alt="Kryonix"
@@ -313,5 +338,5 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
