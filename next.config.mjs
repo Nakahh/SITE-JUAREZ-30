@@ -1,4 +1,3 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -14,13 +13,22 @@ const nextConfig = {
         protocol: 'http',
         hostname: '**',
       },
-    ],
-    domains: [
-      'images.unsplash.com',
-      'unsplash.com',
-      'via.placeholder.com',
-      'picsum.photos',
-      'source.unsplash.com',
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+      },
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

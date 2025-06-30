@@ -1,4 +1,3 @@
-
 "use client"
 
 import Image from "next/image"
@@ -108,6 +107,7 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             onError={() => setImageError(true)}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -216,6 +216,7 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
                   width={20}
                   height={20}
                   className="rounded-full mr-2"
+                  sizes="20px"
                 />
               ) : (
                 <div className="w-5 h-5 bg-muted rounded-full mr-2 flex items-center justify-center">
