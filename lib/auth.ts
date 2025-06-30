@@ -20,30 +20,50 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // Validação de entrada mais rigorosa
         if (!credentials?.email || !credentials?.password) {
+          console.log("Missing email or password");
+          return null;
+        }
+
+        // Validação básica de formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(credentials.email)) {
+          console.log("Invalid email format");
           return null;
         }
 
         try {
+          console.log("Attempting to authenticate user:", credentials.email);
+
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email,
+              email: credentials.email.toLowerCase().trim(),
             },
           });
 
-          if (!user || !user.password) {
+          if (!user) {
+            console.log("User not found:", credentials.email);
             return null;
           }
 
+          if (!user.password) {
+            console.log("User has no password set:", credentials.email);
+            return null;
+          }
+
+          console.log("Comparing passwords for user:", credentials.email);
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password,
           );
 
           if (!isPasswordValid) {
+            console.log("Invalid password for user:", credentials.email);
             return null;
           }
 
+          console.log("Authentication successful for:", credentials.email);
           return {
             id: user.id,
             email: user.email,
@@ -63,32 +83,43 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // Incluir informações do usuário no token
       if (user) {
         token.role = user.role;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub;
-        session.user.role = token.role;
+      // Passar informações do token para a sessão
+      if (token && session.user) {
+        session.user.id = (token.id as string) || token.sub;
+        session.user.role = token.role as string;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Permite redirecionamentos para URLs relativas ou do mesmo domínio
+      // Redirecionamento seguro
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
+      if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
   },
   pages: {
     signIn: "/login",
-    signUp: "/register",
+    error: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  events: {
+    async signIn({ user, account, profile }) {
+      console.log("User signed in:", user.email);
+    },
+    async signOut({ session, token }) {
+      console.log("User signed out");
+    },
+  },
 };
 
 export const auth = NextAuth(authOptions);
