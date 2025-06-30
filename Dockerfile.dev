@@ -1,25 +1,31 @@
 FROM node:18-alpine
 
-WORKDIR /app
-
-# Instalar dependências do sistema
+# Install system dependencies
 RUN apk add --no-cache libc6-compat
 
-# Copiar arquivos de dependências
+# Set working directory
+WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-COPY yarn.lock* ./
+COPY yarn.lock ./
 
-# Instalar dependências
-RUN yarn install --frozen-lockfile
+# Install dependencies
+RUN yarn install
 
-# Copiar código fonte
+# Copy source code
 COPY . .
 
-# Gerar cliente Prisma
+# Generate Prisma client
 RUN npx prisma generate
 
-# Expor porta
+# Expose port
 EXPOSE 3000
 
-# Comando padrão
+# Set environment variables
+ENV NODE_ENV=development
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Start development server
 CMD ["yarn", "dev"]
