@@ -17,5 +17,4 @@ export function KryonixLogo({ className, width = 120, height = 40 }: {
   )
 }
 
-export { KryonixLogo }
 export default KryonixLogo
