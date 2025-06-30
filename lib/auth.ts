@@ -1,47 +1,47 @@
-import { NextAuthOptions } from 'next-auth'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
-import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-import NextAuth from 'next-auth'
+import { NextAuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import NextAuth from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         try {
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email
-            }
-          })
+              email: credentials.email,
+            },
+          });
 
-          if (!user || !user.hashedPassword) {
-            return null
+          if (!user || !user.password) {
+            return null;
           }
 
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
-            user.hashedPassword
-          )
+            user.password,
+          );
 
           if (!isPasswordValid) {
-            return null
+            return null;
           }
 
           return {
@@ -50,45 +50,45 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
             image: user.image,
-          }
+          };
         } catch (error) {
-          console.error('Auth error:', error)
-          return null
+          console.error("Auth error:", error);
+          return null;
         }
-      }
-    })
+      },
+    }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
+        token.role = user.role;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.sub
-        session.user.role = token.role
+        session.user.id = token.sub;
+        session.user.role = token.role;
       }
-      return session
+      return session;
     },
     async redirect({ url, baseUrl }) {
       // Permite redirecionamentos para URLs relativas ou do mesmo domínio
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
   pages: {
-    signIn: '/login',
-    signUp: '/register',
+    signIn: "/login",
+    signUp: "/register",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
-}
+  debug: process.env.NODE_ENV === "development",
+};
 
-export const auth = NextAuth(authOptions)
+export const auth = NextAuth(authOptions);
