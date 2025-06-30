@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -37,7 +36,7 @@ export default function Footer() {
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       // Implementar ação de newsletter aqui
       console.log('Newsletter subscription:', email)
@@ -127,7 +126,7 @@ export default function Footer() {
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+
             {/* Company Info */}
             <div className="lg:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
@@ -137,7 +136,7 @@ export default function Footer() {
                 Há mais de 15 anos realizando sonhos e transformando vidas através do mercado imobiliário. 
                 Sua confiança é nossa maior conquista.
               </p>
-              
+
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-sm">
@@ -194,7 +193,7 @@ export default function Footer() {
             {/* Social & Reviews */}
             <div>
               <h4 className="font-semibold mb-4 text-foreground">Conecte-se</h4>
-              
+
               {/* Social Links */}
               <div className="flex space-x-3 mb-6">
                 <Button size="sm" variant="outline" className="p-2">
@@ -239,7 +238,7 @@ export default function Footer() {
             <div className="text-sm text-muted-foreground">
               © 2024 Siqueira Campos Imóveis. Todos os direitos reservados.
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <Link href="/politica-privacidade" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Política de Privacidade
@@ -249,7 +248,9 @@ export default function Footer() {
               </Link>
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-muted-foreground">Desenvolvido por</span>
-                <KryonixLogo width={24} height={24} linkTo="/desenvolvedor" />
+                <Link href="https://kryonix.dev" target="_blank" className="hover:opacity-80 transition-opacity">
+                  <KryonixLogo width={24} height={24} />
+                </Link>
               </div>
             </div>
           </div>

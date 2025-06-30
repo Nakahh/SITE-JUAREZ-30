@@ -16,7 +16,7 @@ interface Message {
   timestamp: Date
 }
 
-export default function FloatingChatBubble() {
+export function FloatingChatBubble() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -97,7 +97,7 @@ export default function FloatingChatBubble() {
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-user.jpg" />
+                    <AvatarImage src="/logo-kryonix.png" />
                     <AvatarFallback>
                       <Bot className="h-4 w-4" />
                     </AvatarFallback>
@@ -220,5 +220,4 @@ export default function FloatingChatBubble() {
   )
 }
 
-export { FloatingChatBubble }
 export default FloatingChatBubble

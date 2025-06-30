@@ -56,7 +56,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppIcon } from '@/components/whatsapp-icon'
 
-export default function Navbar() {
+export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { data: session } = useSession()
@@ -167,8 +167,8 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <Image
-            src={theme === 'dark' ? '/siqueira campos para fundo escuro.png' : '/siqueira campos para fundo claro.png'}
-            alt="Siqueira Campos Imóveis"
+            src={'/logo-kryonix.png'}
+            alt="Kryonix"
             width={200}
             height={60}
             className="h-12 w-auto animate-slide-up"
@@ -424,5 +424,4 @@ export default function Navbar() {
     </header>
   )
 }
-export { Navbar }
 export default Navbar
