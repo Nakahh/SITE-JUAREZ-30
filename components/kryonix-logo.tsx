@@ -8,14 +8,13 @@ export function KryonixLogo({ className, width = 120, height = 40 }: {
 }) {
   return (
     <Image
-        src="/logo-kryonix.png"
-        alt="KRYONIX Development"
-        width={width}
-        height={height}
-        style={{ width: 'auto', height: 'auto' }}
-        className={cn("object-contain", className)}
-        priority={true}
-      />
+          src="/logo-kryonix.png"
+          alt="KRYONIX - Desenvolvimento Tecnológico"
+          width={120}
+          height={40}
+          style={{ width: 'auto', height: 'auto' }}
+          className="brightness-0 dark:brightness-100"
+        />
   )
 }
 

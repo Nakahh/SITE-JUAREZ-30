@@ -105,9 +105,9 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
             src={currentImage}
             alt={property.title}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             onError={() => setImageError(true)}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
