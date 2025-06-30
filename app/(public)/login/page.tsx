@@ -45,31 +45,68 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
+    // Validações do cliente
+    if (!email || !password) {
+      setError("Por favor, preencha todos os campos");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Por favor, insira um email válido");
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      console.log("Attempting login for:", email);
+
       const result = await signIn("credentials", {
-        email,
+        email: email.toLowerCase().trim(),
         password,
         redirect: false,
       });
 
+      console.log("Login result:", result);
+
       if (result?.error) {
-        setError("Email ou senha incorretos");
-      } else {
+        console.error("Login error:", result.error);
+
+        if (result.error === "CredentialsSignin") {
+          setError("Email ou senha incorretos. Verifique suas credenciais.");
+        } else {
+          setError("Erro na autenticação. Tente novamente.");
+        }
+      } else if (result?.ok) {
+        console.log("Login successful, getting session...");
+
         // Aguardar um momento para a sessão ser estabelecida
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Verificar a sessão para determinar o redirecionamento
         const session = await getSession();
+        console.log("Session retrieved:", session);
 
-        if (session?.user?.role === "ADMIN") {
-          router.push("/admin");
+        if (session?.user) {
+          if (session.user.role === "ADMIN") {
+            console.log("Redirecting admin to /admin");
+            router.push("/admin");
+          } else {
+            console.log("Redirecting user to /dashboard");
+            router.push("/dashboard");
+          }
+          router.refresh();
         } else {
-          router.push("/dashboard");
+          setError("Erro ao estabelecer sessão. Tente novamente.");
         }
-        router.refresh();
+      } else {
+        setError("Erro inesperado durante o login.");
       }
     } catch (error) {
-      setError("Erro inesperado. Tente novamente.");
+      console.error("Login exception:", error);
+      setError("Erro de conexão. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
