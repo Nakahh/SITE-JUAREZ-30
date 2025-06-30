@@ -489,19 +489,17 @@ export function Navbar() {
                           variant="outline"
                           className="w-full justify-start"
                           asChild
-                          onClick={() => setIsOpen(false)}
                         >
-                          <Link href="/login">
+                          <Link href="/login" onClick={() => setIsOpen(false)}>
                             <LogIn className="mr-2 h-4 w-4" />
                             Entrar
                           </Link>
                         </Button>
-                        <Button
-                          className="w-full justify-start"
-                          asChild
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <Link href="/register">
+                        <Button className="w-full justify-start" asChild>
+                          <Link
+                            href="/register"
+                            onClick={() => setIsOpen(false)}
+                          >
                             <User className="mr-2 h-4 w-4" />
                             Cadastrar
                           </Link>
