@@ -228,5 +228,4 @@ export function AppFooter() {
 }
 
 
-export { AppFooter }
 export default AppFooter
