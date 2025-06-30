@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import NextAuth from 'next-auth'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -90,4 +91,4 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === 'development',
 }
 
-export const auth = authOptions
+export const auth = NextAuth(authOptions)

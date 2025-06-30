@@ -7,27 +7,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
-      },
-      {
-        protocol: 'http',
-        hostname: '**',
-      },
-      {
-        protocol: 'https',
         hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'via.placeholder.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'source.unsplash.com',
+        port: '',
+        pathname: '/**',
       },
     ],
     dangerouslyAllowSVG: true,
