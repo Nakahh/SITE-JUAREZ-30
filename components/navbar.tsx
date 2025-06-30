@@ -12,6 +12,7 @@ import {
   X,
   User,
   LogOut,
+  LogIn,
   Settings,
   Heart,
   Search,
