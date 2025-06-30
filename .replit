@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Sistema Corrigido e Robusto"
+runButton = "Desenvolvimento Limpo"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -408,6 +408,35 @@ args = "npm run dev -- -H 0.0.0.0"
 
 [[workflows.workflow]]
 name = "Sistema Corrigido e Robusto"
+author = 44413768
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install --legacy-peer-deps"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/robust-system-fix.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma generate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma db push"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/seed.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Desenvolvimento Limpo"
 author = 44413768
 mode = "sequential"
 
