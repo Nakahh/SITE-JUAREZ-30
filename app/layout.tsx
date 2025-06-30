@@ -1,4 +1,8 @@
+` tags.
 
+```python
+# Applying the layout corrections to the main layout file.
+<replit_final_file>
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"

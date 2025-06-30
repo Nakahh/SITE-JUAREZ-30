@@ -1,4 +1,3 @@
-
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
@@ -28,22 +27,19 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Permitir acesso a rotas públicas
-        if (req.nextUrl.pathname.startsWith('/login') || 
-            req.nextUrl.pathname.startsWith('/register') ||
-            req.nextUrl.pathname === '/' ||
-            req.nextUrl.pathname.startsWith('/imoveis') ||
-            req.nextUrl.pathname.startsWith('/blog') ||
-            req.nextUrl.pathname.startsWith('/contato') ||
-            req.nextUrl.pathname.startsWith('/sobre') ||
-            req.nextUrl.pathname.startsWith('/api/') ||
-            req.nextUrl.pathname.startsWith('/_next/') ||
-            req.nextUrl.pathname.startsWith('/public/')) {
-          return true
+        const { pathname } = req.nextUrl
+
+        // Admin routes require ADMIN role
+        if (pathname.startsWith('/admin')) {
+          return token?.role === 'ADMIN'
         }
 
-        // Para rotas protegidas, verificar se está autenticado
-        return !!token
+        // App routes require authentication
+        if (pathname.startsWith('/dashboard') || pathname.startsWith('/(app)')) {
+          return !!token
+        }
+
+        return true
       },
     },
   }

@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    optimizePackageImports: ['lucide-react'],
-  },
   images: {
     remotePatterns: [
       {
@@ -12,15 +9,21 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'via.placeholder.com',
-      }
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.replit.app',
+      },
     ],
-    formats: ['image/webp', 'image/avif'],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000', '*.replit.app', '*.replit.dev'],
+    },
   },
 }
 
