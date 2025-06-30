@@ -199,17 +199,17 @@ export function Navbar() {
             <Image
               src="/siqueira campos para fundo claro.png"
               alt="Siqueira Campos Imóveis"
-              width={200}
-              height={60}
-              className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto max-w-[140px] sm:max-w-[160px] md:max-w-[180px] lg:max-w-[200px] animate-slide-up dark:hidden object-contain"
+              width={240}
+              height={80}
+              className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[240px] animate-slide-up dark:hidden object-contain"
               priority
             />
             <Image
               src="/siqueira campos para fundo escuro.png"
               alt="Siqueira Campos Imóveis"
-              width={200}
-              height={60}
-              className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto max-w-[140px] sm:max-w-[160px] md:max-w-[180px] lg:max-w-[200px] animate-slide-up hidden dark:block object-contain"
+              width={240}
+              height={80}
+              className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[240px] animate-slide-up hidden dark:block object-contain"
               priority
             />
           </Link>
@@ -423,6 +423,31 @@ export function Navbar() {
                       )}
                     </Link>
                   ))}
+
+                  {/* Theme Toggle Mobile */}
+                  <div className="px-4 py-3">
+                    <h4 className="text-sm font-medium mb-2">Tema</h4>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTheme("light")}
+                        className="flex-1"
+                      >
+                        <Sun className="mr-2 h-4 w-4" />
+                        Claro
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTheme("dark")}
+                        className="flex-1"
+                      >
+                        <Moon className="mr-2 h-4 w-4" />
+                        Escuro
+                      </Button>
+                    </div>
+                  </div>
                 </div>
 
                 {session ? (
@@ -455,21 +480,33 @@ export function Navbar() {
                     </button>
                   </div>
                 ) : (
-                  <div className="border-t border-border pt-4 mt-4 space-y-2">
-                    <Link
-                      href="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium text-center border border-border rounded-md"
-                    >
-                      Entrar
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium text-center bg-primary text-primary-foreground rounded-md"
-                    >
-                      Cadastrar
-                    </Link>
+                  <div className="border-t border-border pt-4 mt-4 space-y-3">
+                    <div className="px-4">
+                      <h4 className="text-sm font-medium mb-3">Acesso</h4>
+                      <div className="space-y-2">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          asChild
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <Link href="/login">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Entrar
+                          </Link>
+                        </Button>
+                        <Button
+                          className="w-full justify-start"
+                          asChild
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <Link href="/register">
+                            <User className="mr-2 h-4 w-4" />
+                            Cadastrar
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
