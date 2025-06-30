@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,7 +11,7 @@ import Image from "next/image";
 export function AppFooter() {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  
+
   const whatsappNumber = "(62) 9 8556-3905";
   const email = "siqueiraecamposimoveis@gmail.com";
 
@@ -24,9 +23,9 @@ export function AppFooter() {
     return null;
   }
 
-  const isDark = resolvedTheme === 'dark';
-  const logoSrc = isDark 
-    ? "/siqueira campos para fundo escuro.png" 
+  const isDark = resolvedTheme === "dark";
+  const logoSrc = isDark
+    ? "/siqueira campos para fundo escuro.png"
     : "/siqueira campos para fundo claro.png";
 
   return (
@@ -46,9 +45,9 @@ export function AppFooter() {
                 <Image
                   src={logoSrc}
                   alt="Siqueira Campos"
-                  width={180}
-                  height={60}
-                  className="h-12 w-auto object-contain"
+                  width={220}
+                  height={80}
+                  className="h-16 w-auto object-contain"
                   priority
                 />
               </Link>
@@ -227,5 +226,4 @@ export function AppFooter() {
   );
 }
 
-
-export default AppFooter
+export default AppFooter;
