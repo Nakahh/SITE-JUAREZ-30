@@ -1,0 +1,329 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+  OWNER
+  CLIENT
+}
+
+enum PropertyStatus {
+  FOR_SALE
+  FOR_RENT
+  SOLD
+  RENTED
+  AVAILABLE
+}
+
+enum VisitStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+model User {
+  id               String             @id @default(cuid())
+  name             String?
+  email            String             @unique
+  emailVerified    DateTime?
+  image            String?
+  password         String?
+  role             Role               @default(USER)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  properties       Property[]         @relation("AgentProperties")
+  favoriteProperties FavoriteProperty[]
+  visits           Visit[]            @relation("UserVisits")
+  articles         Article[]
+  comments         ArticleComment[]
+  reviews          PropertyReview[]
+  savedSearches    SavedSearch[]
+  testimonials     Testimonial[]
+  activityLogs     ActivityLog[]      @relation("UserActivityLogs")
+  commissions      Commission[]       @relation("AgentCommissions")
+  createdCommissions Commission[]     @relation("CreatedCommissions")
+  financings       Financing[]        @relation("UserFinancings")
+  accounts         Account[]
+  sessions         Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+model Client {
+  id               String             @id @default(cuid())
+  name             String
+  email            String             @unique
+  phone            String?
+  address          String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  visits           Visit[]            @relation("ClientVisits")
+  financialRecords FinancialRecord[]
+  financings       Financing[]
+}
+
+model Property {
+  id               String           @id @default(cuid())
+  title            String
+  description      String
+  price            Float
+  type             String
+  status           PropertyStatus   @default(FOR_SALE)
+  featured         Boolean          @default(false)
+  address          String
+  city             String
+  state            String
+  zipCode          String?
+  bedrooms         Int
+  bathrooms        Int
+  area             Float
+  garage           Boolean          @default(false)
+  pool             Boolean          @default(false)
+  balcony          Boolean          @default(false)
+  images           Json?
+  agentId          String?
+  agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  favoriteProperties FavoriteProperty[]
+  reviews          PropertyReview[]
+  visits           Visit[]          @relation("PropertyVisits")
+  commissions      Commission[]
+  financings       Financing[]
+}
+
+model FavoriteProperty {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  user       User     @relation(fields: [userId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+  createdAt  DateTime @default(now())
+  @@unique([userId, propertyId])
+}
+
+model Visit {
+  id        String    @id @default(cuid())
+  date      DateTime
+  notes     String?
+  status    VisitStatus @default(PENDING)
+  propertyId String?
+  property  Property? @relation("PropertyVisits", fields: [propertyId], references: [id])
+  userId    String?
+  user      User?     @relation("UserVisits", fields: [userId], references: [id])
+  clientId  String?
+  client    Client?   @relation("ClientVisits", fields: [clientId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model FinancialRecord {
+  id          String        @id @default(cuid())
+  clientId    String
+  client      Client        @relation(fields: [clientId], references: [id])
+  type        String
+  amount      Float
+  description String?
+  date        DateTime      @default(now())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Article {
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  slug      String           @unique
+  published Boolean          @default(false)
+  authorId  String
+  author    User             @relation(fields: [authorId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  comments  ArticleComment[]
+}
+
+model ArticleComment {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model SavedSearch {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  criteria  Json
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  rating    Int
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PropertyReview {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AppSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation("UserActivityLogs", fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CommissionType {
+  SALE
+  RENT
+}
+
+enum CommissionStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+model Commission {
+  id                   String           @id @default(cuid())
+  propertyId           String
+  property             Property         @relation(fields: [propertyId], references: [id])
+  agentId              String
+  agent                User             @relation("AgentCommissions", fields: [agentId], references: [id])
+  saleValue            Float
+  commissionPercentage Float
+  commissionValue      Float
+  type                 CommissionType
+  status               CommissionStatus @default(PENDING)
+  paidAt               DateTime?
+  createdBy            String
+  createdByUser        User             @relation("CreatedCommissions", fields: [createdBy], references: [id])
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+}
+
+enum FinancingType {
+  SAC
+  PRICE
+  MIXED
+}
+
+enum FinancingStatus {
+  SIMULATING
+  PENDING
+  APPROVED
+  REJECTED
+  CONTRACTED
+}
+
+model Financing {
+  id               String           @id @default(cuid())
+  propertyId       String
+  property         Property         @relation(fields: [propertyId], references: [id])
+  clientId         String?
+  client           Client?          @relation(fields: [clientId], references: [id])
+  userId           String?
+  user             User?            @relation("UserFinancings", fields: [userId], references: [id])
+  propertyValue    Float
+  downPayment      Float
+  financedAmount   Float
+  interestRate     Float
+  termMonths       Int
+  monthlyPayment   Float
+  totalAmount      Float
+  type             FinancingType    @default(SAC)
+  status           FinancingStatus  @default(SIMULATING)
+  bankName         String?
+  observations     String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model AppSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  error     String
+  stack     String?
+  context   String?
+  metadata  String?
+  createdAt DateTime @default(now())
+}

@@ -10,8 +10,9 @@ try {
   // Verificar se o arquivo .env existe
   if (!existsSync('.env')) {
     console.log('📝 Criando arquivo .env...')
-    const envContent = `# Development Environment - SQLite
-DATABASE_URL="file:./prisma/dev.db"
+    const envContent = `# Development Environment - PostgreSQL  
+DATABASE_URL="postgresql://postgres:password@localhost:5432/siqueira_imoveis_dev?schema=public"
+DATABASE_PROVIDER="postgresql"
 NODE_ENV="development"
 
 # NextAuth

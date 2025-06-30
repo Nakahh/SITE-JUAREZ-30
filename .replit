@@ -234,23 +234,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install --legacy-peer-deps"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx tsx scripts/fix-all-issues.ts"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx prisma generate"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx prisma db push"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx tsx scripts/seed.ts"
+args = "npx tsx scripts/setup-completo-automatico.ts"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
