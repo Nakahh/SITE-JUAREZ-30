@@ -109,8 +109,8 @@ export function Navbar() {
     }`}>
       {/* Top Bar */}
       <div className="hidden lg:block bg-primary/5 border-b border-border/50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-2 text-sm">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="flex items-center justify-between py-1.5 sm:py-2 text-xs sm:text-sm">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
@@ -161,17 +161,17 @@ export function Navbar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+      <nav className="container mx-auto px-2 sm:px-4">
+        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <Image
               src="/siqueira campos para fundo claro.png"
               alt="Siqueira Campos Imóveis"
               width={200}
               height={60}
-              className="h-12 w-auto animate-slide-up dark:hidden"
+              className="h-10 sm:h-12 w-auto animate-slide-up dark:hidden"
               priority
             />
             <Image
@@ -179,7 +179,7 @@ export function Navbar() {
               alt="Siqueira Campos Imóveis"
               width={200}
               height={60}
-              className="h-12 w-auto animate-slide-up hidden dark:block"
+              className="h-10 sm:h-12 w-auto animate-slide-up hidden dark:block"
               priority
             />
           </Link>
