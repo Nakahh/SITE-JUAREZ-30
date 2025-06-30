@@ -203,32 +203,32 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Siqueira Campos Colors - Light Theme */
-  --primary: 27 94 32; /* Verde escuro elegante */
-  --primary-foreground: 255 255 255;
-  --secondary: 255 193 7; /* Dourado premium */
-  --secondary-foreground: 0 0 0;
-  --accent: 76 175 80; /* Verde médio */
-  --accent-foreground: 255 255 255;
-  --success: 76 175 80;
-  --success-foreground: 255 255 255;
-  --warning: 255 152 0;
-  --warning-foreground: 0 0 0;
-  --info: 33 150 243;
-  --info-foreground: 255 255 255;
-  --muted: 220 13% 95%;
-  --muted-foreground: 220 8.9% 46.1%;
-  --card: 0 0% 100%;
-  --card-foreground: 220 13% 18%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 13% 18%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 220 91% 45%;
-  --background: 0 0% 100%;
-  --foreground: 220 13% 18%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
+  /* Siqueira Campos Colors - Light Theme (Marrom e Bege) */
+  --primary: 25 35% 25%; /* Marrom escuro elegante */
+  --primary-foreground: 35 25% 95%; /* Bege claro */
+  --secondary: 35 45% 75%; /* Bege médio */
+  --secondary-foreground: 25 35% 15%; /* Marrom muito escuro */
+  --accent: 30 40% 50%; /* Marrom médio */
+  --accent-foreground: 35 25% 95%; /* Bege claro */
+  --success: 120 35% 45%; /* Verde natural */
+  --success-foreground: 35 25% 95%;
+  --warning: 35 70% 55%; /* Amarelo terroso */
+  --warning-foreground: 25 35% 15%;
+  --info: 200 35% 45%; /* Azul acinzentado */
+  --info-foreground: 35 25% 95%;
+  --muted: 35 15% 90%; /* Bege muito claro */
+  --muted-foreground: 25 15% 45%; /* Marrom acinzentado */
+  --card: 35 20% 98%; /* Bege quase branco */
+  --card-foreground: 25 35% 20%; /* Marrom escuro */
+  --popover: 35 20% 98%;
+  --popover-foreground: 25 35% 20%;
+  --border: 35 20% 85%; /* Bege acinzentado */
+  --input: 35 20% 92%; /* Bege claro */
+  --ring: 25 35% 35%; /* Marrom para foco */
+  --background: 35 30% 97%; /* Bege muito claro */
+  --foreground: 25 40% 18%; /* Marrom muito escuro */
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 35 25% 95%;
   --radius: 8px;
 
   /* Variáveis personalizadas para efeitos avançados */
@@ -239,37 +239,37 @@
 }
 
 .dark {
-    /* Siqueira Campos Colors - Dark Theme */
-  --primary: 76 175 80; /* Verde mais claro para dark */
-  --primary-foreground: 0 0 0;
-  --secondary: 255 193 7; /* Dourado premium */
-  --secondary-foreground: 0 0 0;
-  --accent: 129 199 132; /* Verde claro */
-  --accent-foreground: 0 0 0;
-  --success: 129 199 132;
-  --success-foreground: 0 0 0;
-  --warning: 255 183 77;
-  --warning-foreground: 0 0 0;
-  --info: 100 181 246;
-  --info-foreground: 0 0 0;
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 162 92% 46%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Siqueira Campos Colors - Dark Theme (Marrom e Bege) */
+  --primary: 35 40% 65%; /* Bege mais claro para dark */
+  --primary-foreground: 25 50% 10%; /* Marrom muito escuro */
+  --secondary: 30 35% 45%; /* Marrom médio */
+  --secondary-foreground: 35 30% 85%; /* Bege claro */
+  --accent: 35 50% 55%; /* Bege dourado */
+  --accent-foreground: 25 50% 15%; /* Marrom escuro */
+  --success: 120 30% 55%; /* Verde natural escuro */
+  --success-foreground: 25 50% 10%;
+  --warning: 35 60% 65%; /* Amarelo terroso claro */
+  --warning-foreground: 25 50% 10%;
+  --info: 200 30% 55%; /* Azul acinzentado */
+  --info-foreground: 25 50% 10%;
+    --background: 25 45% 8%; /* Marrom muito escuro */
+    --foreground: 35 25% 90%; /* Bege claro */
+    --card: 25 40% 12%; /* Marrom escuro */
+    --card-foreground: 35 25% 90%; /* Bege claro */
+    --popover: 25 40% 12%;
+    --popover-foreground: 35 25% 90%;
+    --muted: 25 30% 20%; /* Marrom escuro acinzentado */
+    --muted-foreground: 35 20% 65%; /* Bege médio */
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 35 25% 90%;
+    --border: 25 30% 25%; /* Marrom escuro */
+    --input: 25 30% 18%; /* Marrom muito escuro */
+    --ring: 35 40% 55%; /* Bege para foco */
+    --chart-1: 25 50% 40%;
+    --chart-2: 35 45% 50%;
+    --chart-3: 30 60% 45%;
+    --chart-4: 20 40% 35%;
+    --chart-5: 40 55% 60%;
   }
 
 /* Reset e configurações base */
@@ -410,23 +410,24 @@ img {
 
 /* Botões premium com cores da logo */
 .btn-primary {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
   color: hsl(var(--primary-foreground));
-  border: none;
+  border: 2px solid hsl(var(--primary));
   border-radius: var(--radius);
   padding: 0.75rem 2rem;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.875rem;
   letter-spacing: 0.025em;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px 0 hsl(var(--primary) / 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px 0 hsl(var(--primary) / 0.4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary::before {
@@ -436,8 +437,8 @@ img {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.6s ease;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.4s ease;
 }
 
 .btn-primary:hover::before {
@@ -445,8 +446,10 @@ img {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px 0 hsl(var(--primary) / 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 hsl(var(--primary) / 0.5);
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.9), hsl(var(--accent) / 0.9));
+  border-color: hsl(var(--accent));
 }
 
 .btn-primary:active {
@@ -702,22 +705,22 @@ img {
   box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
 }
 
-/* Gradientes premium */
+/* Gradientes premium marrom/bege */
 .gradient-primary {
-  background: linear-gradient(135deg, rgb(27, 94, 32), rgb(76, 175, 80));
+  background: linear-gradient(135deg, hsl(25, 35%, 25%), hsl(30, 40%, 50%));
 }
 
 .gradient-secondary {
-  background: linear-gradient(135deg, rgb(255, 193, 7), rgb(255, 235, 59));
+  background: linear-gradient(135deg, hsl(35, 45%, 75%), hsl(35, 50%, 85%));
 }
 
 .gradient-accent {
-  background: linear-gradient(135deg, rgb(76, 175, 80), rgb(129, 199, 132));
+  background: linear-gradient(135deg, hsl(30, 40%, 50%), hsl(35, 50%, 55%));
 }
 
 /* Texto com gradiente */
 .text-gradient {
-  background: linear-gradient(135deg, rgb(27, 94, 32), rgb(76, 175, 80));
+  background: linear-gradient(135deg, hsl(25, 35%, 25%), hsl(30, 40%, 50%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

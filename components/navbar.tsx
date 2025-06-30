@@ -162,16 +162,16 @@ export function Navbar() {
 
       {/* Main Navigation */}
       <nav className="container mx-auto px-2 sm:px-4">
-        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
+        <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20 min-h-[4rem]">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
             <Image
               src="/siqueira campos para fundo claro.png"
               alt="Siqueira Campos Imóveis"
               width={200}
               height={60}
-              className="h-10 sm:h-12 w-auto animate-slide-up dark:hidden"
+              className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto max-w-[140px] sm:max-w-[160px] md:max-w-[180px] lg:max-w-[200px] animate-slide-up dark:hidden object-contain"
               priority
             />
             <Image
@@ -179,7 +179,7 @@ export function Navbar() {
               alt="Siqueira Campos Imóveis"
               width={200}
               height={60}
-              className="h-10 sm:h-12 w-auto animate-slide-up hidden dark:block"
+              className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto max-w-[140px] sm:max-w-[160px] md:max-w-[180px] lg:max-w-[200px] animate-slide-up hidden dark:block object-contain"
               priority
             />
           </Link>
