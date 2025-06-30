@@ -166,15 +166,23 @@ export function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-          <Image
-            src={'/logo-kryonix.png'}
-            alt="Kryonix"
-            width={200}
-            height={60}
-            className="h-12 w-auto animate-slide-up"
-            priority
-          />
-        </Link>
+            <Image
+              src="/siqueira campos para fundo claro.png"
+              alt="Siqueira Campos Imóveis"
+              width={200}
+              height={60}
+              className="h-12 w-auto animate-slide-up dark:hidden"
+              priority
+            />
+            <Image
+              src="/siqueira campos para fundo escuro.png"
+              alt="Siqueira Campos Imóveis"
+              width={200}
+              height={60}
+              className="h-12 w-auto animate-slide-up hidden dark:block"
+              priority
+            />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
