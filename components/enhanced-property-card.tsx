@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AddToFavoritesButton } from "@/components/add-to-favorites-button";
+import { EnhancedFavoritesButton } from "@/components/enhanced-favorites-button";
 import { VisitScheduleDialog } from "@/components/visit-schedule-dialog";
 import {
   Bed,
@@ -234,17 +234,9 @@ export function EnhancedPropertyCard({
           {/* Ações rápidas */}
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
             <div className="flex flex-col space-y-2">
-              <AddToFavoritesButton
-                propertyData={{
-                  id: property.id,
-                  titulo: property.title,
-                  preco: property.price,
-                  tipo: property.type,
-                  quartos: property.bedrooms,
-                  area: property.area,
-                  localizacao: `${property.city}, ${property.state}`,
-                  imageUrl: currentImage || "",
-                }}
+              <EnhancedFavoritesButton
+                propertyId={property.id}
+                className="shadow-lg"
               />
               <Button
                 size="sm"
