@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -118,7 +118,7 @@ model Property {
   garage           Boolean          @default(false)
   pool             Boolean          @default(false)
   balcony          Boolean          @default(false)
-  images           String?
+  images           Json?
   agentId          String?
   agent            User?            @relation("AgentProperties", fields: [agentId], references: [id])
   createdAt        DateTime         @default(now())
@@ -171,7 +171,7 @@ model Article {
   id        String           @id @default(cuid())
   title     String
   content   String
-  slug      String           @unique
+  slug      String?          @unique
   published Boolean          @default(false)
   authorId  String
   author    User             @relation(fields: [authorId], references: [id])
@@ -201,7 +201,7 @@ model SavedSearch {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  criteria  String
+  criteria  Json
   createdAt DateTime @default(now())
 }
 

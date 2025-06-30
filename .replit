@@ -16,7 +16,7 @@ localPort = 3001
 externalPort = 3001
 
 [workflows]
-runButton = "Desenvolvimento Robusto Corrigido"
+runButton = "Setup PostgreSQL e Desenvolvimento"
 
 [[workflows.workflow]]
 name = "Desenvolvimento"
@@ -360,6 +360,35 @@ args = "npm install --legacy-peer-deps"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx tsx scripts/robust-system-fix.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma generate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx prisma db push"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/seed.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Setup PostgreSQL e Desenvolvimento"
+author = 44413768
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/setup-postgres-replit.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install --legacy-peer-deps"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

@@ -1,8 +1,6 @@
+
 import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
-import path from 'path'
-
-console.log('🔧 Configurando ambiente automaticamente...')
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -10,7 +8,7 @@ try {
   // Verificar se o arquivo .env existe
   if (!existsSync('.env')) {
     console.log('📝 Criando arquivo .env...')
-    const envContent = `# Development Environment - PostgreSQL  
+    const envContent = `# Development Environment - PostgreSQL
 DATABASE_URL="postgresql://postgres:password@localhost:5432/siqueira_imoveis_dev?schema=public"
 DATABASE_PROVIDER="postgresql"
 NODE_ENV="development"
@@ -56,7 +54,7 @@ MAX_FILE_SIZE=10485760
   execSync('npx tsx scripts/seed.ts', { stdio: 'inherit' })
 
   console.log('✅ Ambiente configurado com sucesso!')
-  console.log(`📊 Usando: SQLite (desenvolvimento)`)
+  console.log(`📊 Usando: PostgreSQL (desenvolvimento e produção)`)
 
 } catch (error) {
   console.error('❌ Erro na configuração:', error)
