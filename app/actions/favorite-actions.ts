@@ -1,66 +1,66 @@
-"use server"
+"use server";
 
-import { PrismaClient } from "@prisma/client"
-import { revalidatePath } from "next/cache"
-import { auth } from "@/lib/auth"
+import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function toggleFavorite(propertyId: string) {
   try {
-    const session = await auth()
+    const session = await auth();
 
     if (!session?.user?.id) {
-      throw new Error('Usuário não autenticado')
+      throw new Error("Usuário não autenticado");
     }
 
-    const existingFavorite = await prisma.favorite.findUnique({
+    const existingFavorite = await prisma.favoriteProperty.findUnique({
       where: {
         userId_propertyId: {
           userId: session.user.id,
-          propertyId
-        }
-      }
-    })
+          propertyId,
+        },
+      },
+    });
 
     if (existingFavorite) {
-      await prisma.favorite.delete({
-        where: { id: existingFavorite.id }
-      })
+      await prisma.favoriteProperty.delete({
+        where: { id: existingFavorite.id },
+      });
     } else {
-      await prisma.favorite.create({
+      await prisma.favoriteProperty.create({
         data: {
           userId: session.user.id,
-          propertyId
-        }
-      })
+          propertyId,
+        },
+      });
     }
 
-    revalidatePath('/favoritos')
-    revalidatePath('/imoveis')
-    return { success: true }
+    revalidatePath("/favoritos");
+    revalidatePath("/imoveis");
+    return { success: true };
   } catch (error) {
-    console.error('Erro ao alterar favorito:', error)
-    return { success: false, error: 'Erro ao alterar favorito' }
+    console.error("Erro ao alterar favorito:", error);
+    return { success: false, error: "Erro ao alterar favorito" };
   }
 }
 
 export async function getFavorites() {
   try {
-    const session = await auth()
+    const session = await auth();
 
     if (!session?.user?.id) {
-      return []
+      return [];
     }
 
-    const favorites = await prisma.favorite.findMany({
+    const favorites = await prisma.favoriteProperty.findMany({
       where: { userId: session.user.id },
-      include: { property: true }
-    })
+      include: { property: true },
+    });
 
-    return favorites
+    return favorites;
   } catch (error) {
-    console.error('Erro ao buscar favoritos:', error)
-    return []
+    console.error("Erro ao buscar favoritos:", error);
+    return [];
   }
 }
