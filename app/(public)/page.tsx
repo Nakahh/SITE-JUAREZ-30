@@ -34,45 +34,78 @@ import {
 export default function HomePage() {
   const featuredProperties = [
     {
-      id: 1,
+      id: "1",
       title: "Casa Moderna Alto Padrão",
-      description: "Casa de luxo com 4 quartos, piscina e área gourmet",
-      price: "R$ 850.000",
-      location: "Centro, Siqueira Campos",
+      description: "Casa de luxo com 4 quartos, piscina e área gourmet completa. Projeto moderno com acabamentos de primeira qualidade.",
+      price: 850000,
+      type: "HOUSE",
+      status: "FOR_SALE",
+      address: "Rua das Flores, 123",
+      city: "Goiânia",
+      state: "GO",
       bedrooms: 4,
       bathrooms: 3,
-      area: "280m²",
-      image:
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-      type: "Venda",
-      featured: true,
+      area: 280,
+      garage: true,
+      pool: true,
+      balcony: false,
+      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop"],
+      createdAt: new Date(),
+      agent: {
+        id: "agent1",
+        name: "João Silva",
+        image: null
+      }
     },
     {
-      id: 2,
+      id: "2",
       title: "Apartamento Residencial Completo",
-      description: "Apartamento moderno com 2 quartos e área de lazer",
-      price: "R$ 320.000",
-      location: "Jardim América, Siqueira Campos",
+      description: "Apartamento moderno com 2 quartos e área de lazer completa. Localização privilegiada no centro da cidade.",
+      price: 320000,
+      type: "APARTMENT",
+      status: "FOR_SALE",
+      address: "Avenida Central, 456",
+      city: "Goiânia",
+      state: "GO",
       bedrooms: 2,
       bathrooms: 2,
-      area: "95m²",
-      image:
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
-      type: "Venda",
-      featured: true,
+      area: 95,
+      garage: true,
+      pool: false,
+      balcony: true,
+      images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop"],
+      createdAt: new Date(),
+      agent: {
+        id: "agent2",
+        name: "Maria Santos",
+        image: null
+      }
     },
     {
-      id: 3,
+      id: "3",
       title: "Terreno Comercial Premium",
-      description: "Terreno em localização privilegiada para investimento",
-      price: "R$ 180.000",
-      location: "Avenida Principal, Siqueira Campos",
-      bedrooms: null,
-      bathrooms: null,
-      area: "500m²",
-      image:
-        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop",
-      type: "Venda",
+      description: "Terreno em localização privilegiada para investimento comercial. Área plana e com excelente potencial.",
+      price: 180000,
+      type: "LAND",
+      status: "FOR_SALE",
+      address: "Avenida Principal, 789",
+      city: "Goiânia",
+      state: "GO",
+      bedrooms: 0,
+      bathrooms: 0,
+      area: 500,
+      garage: false,
+      pool: false,
+      balcony: false,
+      images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop"],
+      createdAt: new Date(),
+      agent: {
+        id: "agent3",
+        name: "Carlos Oliveira",
+        image: null
+      }
+    }
+  ]
       featured: true,
     },
   ];
@@ -237,74 +270,13 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredProperties.map((property) => (
-              <Card
+              <EnhancedPropertyCard
                 key={property.id}
-                className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border-border/50"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={property.image}
-                    alt={property.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                      {property.type}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="bg-white/80 hover:bg-white text-foreground"
-                    >
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-lg line-clamp-1">
-                        {property.title}
-                      </h3>
-                      <span className="text-2xl font-bold text-primary">
-                        {property.price}
-                      </span>
-                    </div>
-                    <p className="text-muted-foreground text-sm line-clamp-2">
-                      {property.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center text-muted-foreground text-sm">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {property.location}
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    {property.bedrooms && (
-                      <span>{property.bedrooms} quartos</span>
-                    )}
-                    {property.bathrooms && (
-                      <span>{property.bathrooms} banheiros</span>
-                    )}
-                    <span>{property.area}</span>
-                  </div>
-                </CardContent>
-
-                <CardFooter className="p-6 pt-0">
-                  <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground">
-                    Ver Detalhes
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
+                property={property}
+                className="animate-fadeInUp"
+              />
             ))}
           </div>
-
           <div className="text-center">
             <Button variant="outline" size="lg" asChild>
               <Link href="/imoveis">
