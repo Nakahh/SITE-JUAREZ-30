@@ -1,58 +1,79 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: siqueira-postgres
+  # PostgreSQL Database for Development
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: siqueira-postgres-dev
     environment:
-      POSTGRES_USER: siqueira_user
-      POSTGRES_PASSWORD: siqueira_pass
-      POSTGRES_DB: siqueira_db
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: siqueira_imoveis_dev
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpassword
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
     networks:
-      - siqueira-network
+      - siqueira-dev-network
+    restart: unless-stopped
 
-  redis:
+  # Redis for Development
+  redis-dev:
     image: redis:7-alpine
-    container_name: siqueira-redis
+    container_name: siqueira-redis-dev
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "6380:6379"
     networks:
-      - siqueira-network
+      - siqueira-dev-network
+    restart: unless-stopped
 
-  app:
+  # Next.js Development Server
+  app-dev:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: siqueira-app
+    container_name: siqueira-app-dev
+    environment:
+      DATABASE_URL: postgresql://dev:devpassword@postgres-dev:5432/siqueira_imoveis_dev
+      REDIS_URL: redis://redis-dev:6379
+      NEXTAUTH_SECRET: dev-secret-key-not-for-production
+      NEXTAUTH_URL: http://localhost:3000
+      NODE_ENV: development
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://siqueira_user:siqueira_pass@postgres:5432/siqueira_db?schema=public
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=dev_secret_key_change_in_production
-      - NODE_ENV=development
+    depends_on:
+      - postgres-dev
+      - redis-dev
+    networks:
+      - siqueira-dev-network
     volumes:
       - .:/app
       - /app/node_modules
       - /app/.next
+    restart: unless-stopped
+
+  # Prisma Studio for Development
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: siqueira-prisma-studio
+    command: npx prisma studio --port 5555
+    environment:
+      DATABASE_URL: postgresql://dev:devpassword@postgres-dev:5432/siqueira_imoveis_dev
+    ports:
+      - "5555:5555"
     depends_on:
-      - postgres
-      - redis
+      - postgres-dev
     networks:
-      - siqueira-network
-    command: npm run dev
+      - siqueira-dev-network
+    volumes:
+      - .:/app
 
 volumes:
-  postgres_data:
-  redis_data:
+  postgres_dev_data:
+    driver: local
 
 networks:
-  siqueira-network:
+  siqueira-dev-network:
     driver: bridge
