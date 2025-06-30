@@ -133,6 +133,21 @@ export function EnhancedPropertyCard({
     }
   };
 
+  const translateType = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "house":
+        return "Casa";
+      case "apartment":
+        return "Apartamento";
+      case "land":
+        return "Terreno";
+      case "commercial":
+        return "Comercial";
+      default:
+        return type;
+    }
+  };
+
   const TypeIcon = getTypeIcon(property.type);
 
   const handleWhatsAppContact = () => {
@@ -207,7 +222,7 @@ export function EnhancedPropertyCard({
             className="absolute top-3 right-3 bg-background/90 text-foreground border border-border/50 shadow-lg"
           >
             <TypeIcon className="h-3 w-3 mr-1" />
-            {property.type}
+            {translateType(property.type)}
           </Badge>
 
           {/* Navegação de imagens */}
@@ -230,27 +245,34 @@ export function EnhancedPropertyCard({
               ))}
             </div>
           )}
+        </div>
 
-          {/* Ações rápidas */}
-          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-            <div className="flex flex-col space-y-2">
+        {/* Ações debaixo da imagem */}
+        <div className="px-5 pt-4 pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-2">
               <EnhancedFavoritesButton
                 propertyId={property.id}
-                className="shadow-lg"
+                className="h-8"
+                size="sm"
               />
               <Button
                 size="sm"
-                variant="secondary"
-                className="h-8 w-8 p-0 bg-background/90 hover:bg-background shadow-lg"
+                variant="outline"
+                className="h-8 px-3"
                 onClick={handleShare}
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-3 w-3 mr-1" />
+                Compartilhar
               </Button>
             </div>
+            <Badge variant="outline" className="text-xs">
+              {translateType(property.type)}
+            </Badge>
           </div>
         </div>
 
-        <CardContent className="p-5">
+        <CardContent className="p-5 pt-2">
           {/* Preço */}
           <div className="flex items-center justify-between mb-3">
             <p className="text-2xl font-bold text-primary">
