@@ -222,14 +222,26 @@ export default async function PropertiesPage({
               {properties.map((property) => (
                 <PropertyCard
                   key={property.id}
-                  id={property.id}
-                  titulo={property.title}
-                  preco={property.price}
-                  tipo={property.type}
-                  quartos={property.bedrooms}
-                  area={property.area}
-                  localizacao={`${property.city}, ${property.state}`}
-                  imageUrls={Array.isArray(property.images) ? property.images : []}
+                  property={{
+                    id: property.id,
+                    title: property.title,
+                    description: property.description,
+                    price: property.price,
+                    type: property.type,
+                    status: property.status,
+                    address: property.address,
+                    city: property.city,
+                    state: property.state,
+                    bedrooms: property.bedrooms,
+                    bathrooms: property.bathrooms,
+                    area: property.area,
+                    garage: property.garage,
+                    images: Array.isArray(property.images)
+                      ? property.images
+                      : [],
+                    createdAt: property.createdAt,
+                    agent: property.agent,
+                  }}
                 />
               ))}
             </div>
