@@ -226,3 +226,7 @@ export function AppFooter() {
     </footer>
   );
 }
+
+
+export { AppFooter }
+export default AppFooter
