@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import {
   MapPin,
   Phone,
