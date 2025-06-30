@@ -1,69 +1,60 @@
-# Stage 1: Builder
+# Build stage
 FROM node:18-alpine AS builder
 
-# Cores ANSI para o terminal
-ARG GREEN='\033[0;32m'
-ARG YELLOW='\033[1;33m'
-ARG BLUE='\033[0;34m'
-ARG RED='\033[0;31m'
-ARG NC='\033[0m' # No Color
-
-RUN echo -e "${BLUE}========================================${NC}" && \
-    echo -e "${BLUE}🚀 INICIANDO FASE DE BUILD - SIQUEEIRA CAMPOS IMÓVEIS${NC}" && \
-    echo -e "${BLUE}========================================${NC}"
-
+# Set working directory
 WORKDIR /app
 
-# --- PASSO CRÍTICO: COPIAR TODO O PROJETO ANTES DE INSTALAR DEPENDÊNCIAS ---
-# Isso garante que prisma/schema.prisma e outros arquivos estejam disponíveis
+# Copy package files
+COPY package*.json ./
+COPY yarn.lock ./
+
+# Install dependencies
+RUN yarn install --frozen-lockfile
+
+# Copy source code
 COPY . .
 
-# --- ETAPA DE INSTALAÇÃO DO YARN E FERRAMENTAS DE BUILD VIA APK ---
-# Instala yarn, ferramentas de build essenciais e openssl para Prisma
-RUN echo -e "${YELLOW}Instalando dependências do sistema (yarn, git, python3, make, g++, openssl)...${NC}" && \
-    apk add --no-cache curl iputils-ping yarn git python3 make g++ openssl && \
-    echo -e "${GREEN}✅ Yarn, ferramentas de build e OpenSSL instalados com sucesso via apk!${NC}"
+# Generate Prisma client
+RUN npx prisma generate
 
-# --- NOVAS ETAPAS: LIMPAR LOCKFILES E CACHE DO YARN ---
-RUN echo -e "${YELLOW}Removendo arquivos de lock existentes (yarn.lock, package-lock.json, pnpm-lock.yaml)...${NC}" && \
-    rm -f yarn.lock package-lock.json pnpm-lock.yaml && \
-    echo -e "${YELLOW}Limpando cache do Yarn...${NC}" && \
-    yarn cache clean
-
-# --- ETAPA DE INSTALAÇÃO DE DEPENDÊNCIAS COM YARN (com mais memória) ---
-# Agora o prisma/schema.prisma estará disponível para 'prisma generate'
-RUN echo -e "${YELLOW}Instalando dependências com Yarn (com mais memória para o Node.js)...${NC}" && \
-    NODE_OPTIONS="--max_old_space_size=4096" yarn install --network-timeout 100000 || \
-    (echo -e "${RED}ERRO CRÍTICO: Yarn install falhou. Verifique a rede, o registro e as dependências.${NC}" && exit 1)
-
-RUN echo -e "${GREEN}✅ Dependências instaladas com sucesso com Yarn!${NC}" && \
-    echo ""
-
-# Etapa de Build da Aplicação (arquivos já foram copiados)
-RUN echo -e "${YELLOW}📋 Iniciando build do Next.js...${NC}"
+# Build application
 RUN yarn build
-RUN echo -e "${GREEN}✅ Build do Next.js concluído com sucesso!${NC}" && \
-    echo -e "${BLUE}========================================${NC}" && \
-    echo -e "${BLUE}BUILD COMPLETO! PRONTO PARA RODAR.${NC}" && \
-    echo -e "${BLUE}========================================${NC}" && \
-    echo ""
 
-# Stage 2: Runner
+# Production stage
 FROM node:18-alpine AS runner
 
-RUN echo -e "${GREEN}========================================${NC}" && \
-    echo -e "${GREEN}  Preparando para Iniciar o Aplicativo  \033[0m" && \
-    echo -e "${GREEN}========================================${NC}"
+# Install system dependencies
+RUN apk add --no-cache libc6-compat
 
+# Set working directory
 WORKDIR /app
 
-# Copia os arquivos da etapa de build
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/start.sh ./start.sh
-COPY --from=builder /app/package.json ./package.json
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
+# Copy built application
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+# Copy database and env files
+COPY --from=builder /app/prisma/dev.db ./prisma/dev.db
+COPY --from=builder /app/.env.local ./.env.local
+
+# Set permissions
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Expose port
 EXPOSE 3000
 
-CMD ["/bin/sh", "start.sh"]
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Start application
+CMD ["node", "server.js"]

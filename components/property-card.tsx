@@ -1,103 +1,112 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { useState } from "react"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { AddToFavoritesButton } from "@/components/add-to-favorites-button"
-import { 
-  Bed, 
-  Bath, 
-  Square, 
-  Car, 
-  MapPin, 
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AddToFavoritesButton } from "@/components/add-to-favorites-button";
+import {
+  Bed,
+  Bath,
+  Square,
+  Car,
+  MapPin,
   Calendar,
   Eye,
   Heart,
-  Share2
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Share2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: {
-    id: string
-    title: string
-    description: string
-    price: number
-    type: string
-    status: string
-    address: string
-    city: string
-    state: string
-    bedrooms: number
-    bathrooms: number
-    area: number
-    garage: boolean
-    images?: string[] | null
-    createdAt: Date
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    type: string;
+    status: string;
+    address: string;
+    city: string;
+    state: string;
+    bedrooms: number;
+    bathrooms: number;
+    area: number;
+    garage: boolean;
+    images?: string[] | null;
+    createdAt: Date;
     agent?: {
-      id: string
-      name: string | null
-      image: string | null
-    } | null
-  }
-  userId?: string
-  className?: string
+      id: string;
+      name: string | null;
+      image: string | null;
+    } | null;
+  };
+  userId?: string;
+  className?: string;
 }
 
-export function PropertyCard({ property, userId, className }: PropertyCardProps) {
-  const [imageError, setImageError] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+export function PropertyCard({
+  property,
+  userId,
+  className,
+}: PropertyCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const images = Array.isArray(property.images) ? property.images : []
-  const hasImages = images.length > 0
-  const currentImage = hasImages ? images[currentImageIndex] : null
+  const images = Array.isArray(property.images) ? property.images : [];
+  const hasImages = images.length > 0;
+  const currentImage = hasImages ? images[currentImageIndex] : null;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'FOR_SALE':
-      case 'AVAILABLE':
-        return 'bg-green-500'
-      case 'FOR_RENT':
-        return 'bg-blue-500'
-      case 'SOLD':
-        return 'bg-red-500'
-      case 'RENTED':
-        return 'bg-yellow-500'
+      case "FOR_SALE":
+      case "AVAILABLE":
+        return "bg-green-500";
+      case "FOR_RENT":
+        return "bg-blue-500";
+      case "SOLD":
+        return "bg-red-500";
+      case "RENTED":
+        return "bg-yellow-500";
       default:
-        return 'bg-gray-500'
+        return "bg-gray-500";
     }
-  }
+  };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'FOR_SALE':
-      case 'AVAILABLE':
-        return 'À Venda'
-      case 'FOR_RENT':
-        return 'Para Alugar'
-      case 'SOLD':
-        return 'Vendido'
-      case 'RENTED':
-        return 'Alugado'
+      case "FOR_SALE":
+      case "AVAILABLE":
+        return "À Venda";
+      case "FOR_RENT":
+        return "Para Alugar";
+      case "SOLD":
+        return "Vendido";
+      case "RENTED":
+        return "Alugado";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
-    <Card className={cn("group hover:shadow-lg transition-all duration-300 overflow-hidden", className)}>
+    <Card
+      className={cn(
+        "group hover:shadow-lg transition-all duration-300 overflow-hidden",
+        className,
+      )}
+    >
       {/* Imagem */}
       <div className="relative h-48 overflow-hidden">
         {hasImages && currentImage && !imageError ? (
@@ -119,10 +128,10 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
         )}
 
         {/* Status Badge */}
-        <Badge 
+        <Badge
           className={cn(
             "absolute top-2 left-2 text-white border-0",
-            getStatusColor(property.status)
+            getStatusColor(property.status),
           )}
         >
           {getStatusText(property.status)}
@@ -135,12 +144,12 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
               <button
                 key={index}
                 onClick={(e) => {
-                  e.preventDefault()
-                  setCurrentImageIndex(index)
+                  e.preventDefault();
+                  setCurrentImageIndex(index);
                 }}
                 className={cn(
                   "w-2 h-2 rounded-full transition-colors",
-                  index === currentImageIndex ? "bg-white" : "bg-white/50"
+                  index === currentImageIndex ? "bg-white" : "bg-white/50",
                 )}
               />
             ))}
@@ -149,7 +158,21 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
 
         {/* Ações rápidas */}
         <div className="absolute top-2 right-2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {userId && <AddToFavoritesButton propertyId={property.id} userId={userId} />}
+          <AddToFavoritesButton
+            propertyData={{
+              id: property.id,
+              titulo: property.title,
+              preco: property.price,
+              tipo: property.type,
+              quartos: property.bedrooms,
+              area: property.area,
+              localizacao: `${property.city}, ${property.state}`,
+              imageUrl:
+                Array.isArray(property.images) && property.images.length > 0
+                  ? property.images[0]
+                  : "",
+            }}
+          />
           <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
             <Share2 className="h-4 w-4" />
           </Button>
@@ -173,7 +196,9 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
         {/* Localização */}
         <div className="flex items-center text-sm text-muted-foreground mb-3">
           <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="truncate">{property.address}, {property.city} - {property.state}</span>
+          <span className="truncate">
+            {property.address}, {property.city} - {property.state}
+          </span>
         </div>
 
         {/* Características */}
@@ -212,7 +237,7 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
               {property.agent.image ? (
                 <Image
                   src={property.agent.image}
-                  alt={property.agent.name || 'Corretor'}
+                  alt={property.agent.name || "Corretor"}
                   width={20}
                   height={20}
                   className="rounded-full mr-2"
@@ -221,7 +246,7 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
               ) : (
                 <div className="w-5 h-5 bg-muted rounded-full mr-2 flex items-center justify-center">
                   <span className="text-xs">
-                    {property.agent.name?.charAt(0) || 'C'}
+                    {property.agent.name?.charAt(0) || "C"}
                   </span>
                 </div>
               )}
@@ -234,7 +259,8 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
         <div className="flex items-center text-xs text-muted-foreground">
           <Calendar className="h-3 w-3 mr-1" />
           <span>
-            Cadastrado em {new Date(property.createdAt).toLocaleDateString('pt-BR')}
+            Cadastrado em{" "}
+            {new Date(property.createdAt).toLocaleDateString("pt-BR")}
           </span>
         </div>
       </CardContent>
@@ -248,13 +274,13 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
               Ver Detalhes
             </Link>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex-1"
             onClick={() => {
-              const message = `Olá! Tenho interesse no imóvel: ${property.title} - ${formatPrice(property.price)}`
-              const whatsappUrl = `https://wa.me/5562985563905?text=${encodeURIComponent(message)}`
-              window.open(whatsappUrl, '_blank')
+              const message = `Olá! Tenho interesse no imóvel: ${property.title} - ${formatPrice(property.price)}`;
+              const whatsappUrl = `https://wa.me/5562985563905?text=${encodeURIComponent(message)}`;
+              window.open(whatsappUrl, "_blank");
             }}
           >
             <Calendar className="h-4 w-4 mr-2" />
@@ -263,7 +289,7 @@ export function PropertyCard({ property, userId, className }: PropertyCardProps)
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
 
-export default PropertyCard
+export default PropertyCard;

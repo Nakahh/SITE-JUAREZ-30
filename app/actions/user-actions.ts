@@ -2,7 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { logActivity } from "@/lib/logger";
 
@@ -73,7 +73,11 @@ export async function updateUser(id: string, formData: FormData) {
       where: { id },
       data: dataToUpdate,
     });
-    await logActivity(session.user.id, "updateUser", `Usuário atualizado: ${email}`);
+    await logActivity(
+      session.user.id,
+      "updateUser",
+      `Usuário atualizado: ${email}`,
+    );
     revalidatePath("/admin/usuarios");
     revalidatePath("/dashboard/perfil");
     return { success: true, message: "Usuário atualizado com sucesso!" };
@@ -125,7 +129,7 @@ export async function registerUser(formData: FormData) {
         name,
         email,
         password: hashedPassword,
-        role: "USER", // Registro público como USER por padrão
+        role: "USER", // Registro público como USER por padr��o
       },
     });
     return {
