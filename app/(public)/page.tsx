@@ -204,18 +204,50 @@ export default function HomePage() {
           {/* Quick Search */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 max-w-4xl mx-auto border border-white/20">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Input
-                placeholder="Localização"
-                className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-              />
-              <Input
-                placeholder="Tipo de imóvel"
-                className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-              />
-              <Input
-                placeholder="Preço máximo"
-                className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-              />
+              <div className="relative">
+                <Input
+                  list="locations"
+                  placeholder="Localização"
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
+                />
+                <datalist id="locations">
+                  <option value="Centro, Goiânia" />
+                  <option value="Setor Oeste, Goiânia" />
+                  <option value="Jardim Goiás, Goiânia" />
+                  <option value="Setor Bueno, Goiânia" />
+                  <option value="Aparecida de Goiânia" />
+                  <option value="Senador Canedo" />
+                </datalist>
+              </div>
+              <div className="relative">
+                <Input
+                  list="property-types"
+                  placeholder="Tipo de imóvel"
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
+                />
+                <datalist id="property-types">
+                  <option value="Casa" />
+                  <option value="Apartamento" />
+                  <option value="Terreno" />
+                  <option value="Comercial" />
+                  <option value="Chácara" />
+                </datalist>
+              </div>
+              <div className="relative">
+                <Input
+                  list="price-ranges"
+                  placeholder="Preço máximo"
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
+                />
+                <datalist id="price-ranges">
+                  <option value="R$ 100.000" />
+                  <option value="R$ 200.000" />
+                  <option value="R$ 300.000" />
+                  <option value="R$ 500.000" />
+                  <option value="R$ 800.000" />
+                  <option value="R$ 1.000.000" />
+                </datalist>
+              </div>
               <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                 <Search className="mr-2 h-4 w-4" />
                 Buscar
