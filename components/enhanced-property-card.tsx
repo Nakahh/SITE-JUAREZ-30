@@ -384,7 +384,7 @@ export function EnhancedPropertyCard({
           {/* Botões de ação principais */}
           <div className="flex space-x-2 w-full">
             <Button asChild className="flex-1">
-              <Link href={`/imoveis/${property.id}`}>
+              <Link href={`/imovel/${property.id}`}>
                 <Eye className="h-4 w-4 mr-2" />
                 Ver Detalhes
               </Link>
