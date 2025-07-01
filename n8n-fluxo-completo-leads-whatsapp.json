@@ -1,0 +1,498 @@
+{
+  "name": "Sistema Completo de Leads - Imobiliária Siqueira Campos",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-site",
+        "options": {}
+      },
+      "id": "webhook-lead-site",
+      "name": "🌐 Webhook Lead Site",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "webhookId": "lead-site"
+    },
+    {
+      "parameters": {
+        "url": "={{ $node[\"🌐 Webhook Lead Site\"].json[\"headers\"][\"host\"] }}/api/leads/webhook",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"nome\": $json[\"nome\"],\n  \"telefone\": $json[\"telefone\"],\n  \"mensagem\": $json[\"mensagem\"]\n}"
+      },
+      "id": "processar-lead",
+      "name": "📝 Processar Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "verificar-corretores",
+              "leftValue": "={{ $json[\"agents\"].length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "verificar-corretores-ativos",
+      "name": "❓ Verificar Corretores Ativos",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat.completions",
+        "operation": "create",
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Você é um assistente de uma imobiliária. Gere uma resposta cordial e profissional para o cliente informando que um corretor entrará em contato em breve. Use o nome do cliente na resposta. Seja breve, educado e transmita confiança."
+          },
+          {
+            "role": "user",
+            "content": "Cliente: {{ $json[\"lead\"][\"nome\"] }}\nMensagem: {{ $json[\"lead\"][\"mensagem\"] }}\n\nGere uma resposta para o cliente no chat do site."
+          }
+        ],
+        "temperature": 0.7,
+        "maxTokens": 150
+      },
+      "id": "gerar-resposta-ia",
+      "name": "🤖 Gerar Resposta IA",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [950, 200],
+      "credentials": {
+        "openAiApi": "OpenAI_Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Preparar mensagens para cada corretor\nconst lead = items[0].json.lead;\nconst agents = items[0].json.agents;\n\nreturn agents.map(agent => ({\n  json: {\n    leadId: lead.id,\n    agentId: agent.id,\n    agentName: agent.name,\n    whatsapp: agent.whatsapp,\n    clientName: lead.nome,\n    clientPhone: lead.telefone,\n    clientMessage: lead.mensagem,\n    messageToSend: `🏠 *NOVO LEAD IMOBILIÁRIA*\\n\\n👤 *Cliente:* ${lead.nome}\\n📱 *Telefone:* ${lead.telefone}\\n💬 *Mensagem:* \"${lead.mensagem}\"\\n\\n⚡ Responda *ASSUMIR* para ficar responsável por este atendimento.\\n\\n⏰ Você tem 15 minutos para responder.`\n  }\n}));"
+      },
+      "id": "preparar-mensagens-corretores",
+      "name": "📋 Preparar Mensagens Corretores",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [950, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": $json[\"whatsapp\"],\n  \"text\": $json[\"messageToSend\"]\n}"
+      },
+      "id": "enviar-whatsapp-corretores",
+      "name": "📱 Enviar WhatsApp Corretores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1200, 400],
+      "credentials": {
+        "httpBasicAuth": "Evolution_API_Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "waitTime": 900000,
+        "resumeOnTrigger": true
+      },
+      "id": "aguardar-15-minutos",
+      "name": "⏱️ Aguardar 15 Minutos",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1200, 550]
+    },
+    {
+      "parameters": {
+        "url": "={{ $node[\"🌐 Webhook Lead Site\"].json[\"headers\"][\"host\"] }}/api/leads/expire",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"leadId\": $node[\"📝 Processar Lead\"].json[\"leadId\"],\n  \"reason\": \"Timeout de 15 minutos - nenhum corretor respondeu\"\n}"
+      },
+      "id": "expirar-lead",
+      "name": "⏰ Expirar Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1450, 550]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": \"55\" + $node[\"📝 Processar Lead\"].json[\"lead\"][\"telefone\"],\n  \"text\": \"Olá {{ $node[\"📝 Processar Lead\"].json[\"lead\"][\"nome\"] }}! 😊\\n\\nObrigado pelo seu interesse! No momento todos os nossos corretores estão ocupados, mas retornaremos o mais breve possível.\\n\\nEm breve você receberá o contato de um de nossos especialistas.\\n\\n🏠 *Siqueira Campos Imóveis*\"\n}"
+      },
+      "id": "fallback-cliente",
+      "name": "💬 Fallback Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1700, 450]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@siqueiracamposimoveis.com.br",
+        "toEmail": "gerencia@siqueiracamposimoveis.com.br",
+        "subject": "🚨 Lead Não Atendido - Ação Necessária",
+        "text": "Um lead não foi atendido pelos corretores dentro do prazo de 15 minutos.\n\n📊 DETALHES DO LEAD:\n👤 Nome: {{ $node[\"📝 Processar Lead\"].json[\"lead\"][\"nome\"] }}\n📱 Telefone: {{ $node[\"📝 Processar Lead\"].json[\"lead\"][\"telefone\"] }}\n💬 Mensagem: {{ $node[\"📝 Processar Lead\"].json[\"lead\"][\"mensagem\"] }}\n🕐 Data/Hora: {{ $now.toISO() }}\n\n⚠️ AÇÃO RECOMENDADA:\n• Entrar em contato com o cliente manualmente\n• Verificar disponibilidade dos corretores\n• Revisar configurações do sistema\n\nEste e-mail foi gerado automaticamente pelo sistema de leads.",
+        "options": {}
+      },
+      "id": "email-gerente",
+      "name": "📧 Email Gerente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1700, 600],
+      "credentials": {
+        "smtp": "SMTP_Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Resposta automática quando não há corretores\nreturn [{\n  json: {\n    message: `Olá ${items[0].json.lead.nome}! 😊\\n\\nObrigado pelo seu interesse! No momento não temos corretores disponíveis, mas em breve entraremos em contato com você.\\n\\n🏠 *Siqueira Campos Imóveis*`,\n    clientPhone: items[0].json.lead.telefone\n  }\n}];"
+      },
+      "id": "resposta-sem-corretores",
+      "name": "🚫 Resposta Sem Corretores",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [950, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": \"55\" + $json[\"clientPhone\"],\n  \"text\": $json[\"message\"]\n}"
+      },
+      "id": "enviar-resposta-sem-corretores",
+      "name": "📱 Enviar Resposta Sem Corretores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1200, 100]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resposta-corretor",
+        "options": {}
+      },
+      "id": "webhook-resposta-corretor",
+      "name": "📞 Webhook Resposta Corretor",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 800],
+      "webhookId": "resposta-corretor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "verificar-assumir",
+              "leftValue": "={{ $json[\"message\"].toLowerCase() }}",
+              "rightValue": "assumir",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filtrar-assumir",
+      "name": "✅ Filtrar ASSUMIR",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [450, 800]
+    },
+    {
+      "parameters": {
+        "url": "={{ $node[\"📞 Webhook Resposta Corretor\"].json[\"headers\"][\"host\"] }}/api/leads/assume",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"leadId\": $json[\"leadId\"],\n  \"agentId\": $json[\"agentId\"],\n  \"message\": $json[\"message\"]\n}"
+      },
+      "id": "assumir-lead",
+      "name": "✅ Assumir Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 800]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": $json[\"lead\"][\"agent\"][\"whatsapp\"],\n  \"text\": \"✅ *LEAD ASSUMIDO COM SUCESSO!*\\n\\n🎉 Parabéns! Você assumiu o lead:\\n👤 *Cliente:* {{ $json[\"lead\"][\"nome\"] }}\\n📱 *Telefone:* {{ $json[\"lead\"][\"telefone\"] }}\\n💬 *Mensagem:* \\\"{{ $json[\"lead\"][\"mensagem\"] }}\\\"\\n\\n📞 Entre em contato com o cliente o mais breve possível!\\n\\n🏠 *Siqueira Campos Imóveis*\"\n}"
+      },
+      "id": "confirmar-assumiu",
+      "name": "🎉 Confirmar Assumiu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [950, 700]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Preparar notificações para outros corretores\nconst assumedLead = items[0].json.lead;\nconst otherAgents = items[0].json.notifyAgents || [];\n\nreturn otherAgents.map(agent => ({\n  json: {\n    whatsapp: agent.whatsapp,\n    message: `⚠️ *LEAD JÁ ASSUMIDO*\\n\\n O lead do cliente *${assumedLead.nome}* já foi assumido por outro corretor.\\n\\n🔄 Continue ativo para receber novos leads!\\n\\n🏠 *Siqueira Campos Imóveis*`\n  }\n}));"
+      },
+      "id": "preparar-notificacao-outros",
+      "name": "📢 Preparar Notificação Outros",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [950, 850]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": $json[\"whatsapp\"],\n  \"text\": $json[\"message\"]\n}"
+      },
+      "id": "notificar-outros-corretores",
+      "name": "📢 Notificar Outros Corretores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1200, 850]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api.com/message/sendText/instance",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "apikey": "={{ $credentials.evolutionApi.apiKey }}"
+          }
+        },
+        "bodyParametersJson": "={\n  \"number\": \"55\" + $json[\"lead\"][\"telefone\"],\n  \"text\": \"🎉 Ótima notícia, {{ $json[\"lead\"][\"nome\"] }}!\\n\\nO corretor *{{ $json[\"lead\"][\"agent\"][\"name\"] }}* assumiu seu atendimento e entrará em contato com você em breve.\\n\\n📞 Em caso de urgência, entre em contato conosco:\\n(62) 9 8556-3905\\n\\n🏠 *Siqueira Campos Imóveis*\\nSeu sonho, nossa missão! 🏡\"\n}"
+      },
+      "id": "notificar-cliente-assumido",
+      "name": "👤 Notificar Cliente Assumido",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [950, 950]
+    }
+  ],
+  "connections": {
+    "🌐 Webhook Lead Site": {
+      "main": [
+        [
+          {
+            "node": "📝 Processar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Processar Lead": {
+      "main": [
+        [
+          {
+            "node": "❓ Verificar Corretores Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "❓ Verificar Corretores Ativos": {
+      "main": [
+        [
+          {
+            "node": "🤖 Gerar Resposta IA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📋 Preparar Mensagens Corretores",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🚫 Resposta Sem Corretores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Preparar Mensagens Corretores": {
+      "main": [
+        [
+          {
+            "node": "📱 Enviar WhatsApp Corretores",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⏱️ Aguardar 15 Minutos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏱️ Aguardar 15 Minutos": {
+      "main": [
+        [
+          {
+            "node": "⏰ Expirar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏰ Expirar Lead": {
+      "main": [
+        [
+          {
+            "node": "💬 Fallback Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📧 Email Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚫 Resposta Sem Corretores": {
+      "main": [
+        [
+          {
+            "node": "📱 Enviar Resposta Sem Corretores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📞 Webhook Resposta Corretor": {
+      "main": [
+        [
+          {
+            "node": "✅ Filtrar ASSUMIR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Filtrar ASSUMIR": {
+      "main": [
+        [
+          {
+            "node": "✅ Assumir Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Assumir Lead": {
+      "main": [
+        [
+          {
+            "node": "🎉 Confirmar Assumiu",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📢 Preparar Notificação Outros",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "👤 Notificar Cliente Assumido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📢 Preparar Notificação Outros": {
+      "main": [
+        [
+          {
+            "node": "📢 Notificar Outros Corretores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z",
+      "id": "1",
+      "name": "Imobiliária"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2024-01-15T10:00:00.000Z",
+  "versionId": "1"
+}
