@@ -1,377 +1,352 @@
+# Sistema Completo - Siqueira Campos Imóveis
 
-# 🏢 Siqueira Campos Imóveis - Sistema Completo
+Sistema completo de imobiliária com múltiplos corretores, integração WhatsApp, IA e automação via N8N.
 
-> **Sistema completo de gestão imobiliária com portal público e painel administrativo**
+## 🚀 Funcionalidades Implementadas
 
-![Siqueira Campos](./public/logo%20siqueira%20campos%20imoveis.png)
+### ✅ Sistema de Leads Inteligente
 
-## 🌟 **VISÃO GERAL**
+- **Captura automática** de leads via chat do site
+- **Distribuição inteligente** para corretores ativos
+- **Sistema "primeiro que responder"** assume o lead
+- **Fallback automático** após 15 minutos
+- **Notificações por email** para gerência
 
-Sistema completo desenvolvido para a **Siqueira Campos Imóveis** com tecnologias modernas, oferecendo:
+### ✅ Dashboard dos Corretores
 
-- 🏠 **Portal Público** completo para clientes
-- 🎛️ **Sistema Administrativo** robusto
-- 💰 **Gestão Financeira** completa
-- 📱 **Design Responsivo** mobile-first
-- 🤖 **Chat Inteligente** com IA
-- 📊 **Dashboard** analítico avançado
+- **Configuração WhatsApp** com validação brasileira
+- **Toggle ativo/inativo** para receber leads
+- **Histórico completo** de leads
+- **Estatísticas em tempo real**
+- **Interface premium** responsiva
 
-## 🚀 **INSTALAÇÃO RÁPIDA**
+### ✅ Integração WhatsApp (Evolution API)
 
-### **Pré-requisitos**
-- Node.js 18+ 
-- NPM ou Yarn
-- PostgreSQL (produção) ou SQLite (desenvolvimento)
+- **Envio automático** de leads para corretores
+- **Confirmação via "ASSUMIR"**
+- **Notificações para cliente e outros corretores**
+- **Fallback inteligente** sem corretores disponíveis
 
-### **Setup Automático**
+### ✅ Mobile Navbar Aprimorada
 
-```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/siqueira-campos-imoveis.git
-cd siqueira-campos-imoveis
+- **Scroll suave** com controle de altura
+- **Modo escuro/claro** integrado no topo
+- **Login/registro** destacados
+- **Menu organizado** por seções
+- **Informações de contato** acessíveis
 
-# 2. Setup automático
-bash setup.sh
+### ✅ Sistema de IA Integrado
 
-# 3. Inicie o servidor
-npm run dev
+- **Respostas automáticas** personalizadas
+- **GPT-3.5-turbo** para economia
+- **Contextualização** por lead
+- **Fallback inteligente** sem corretores
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Frontend:** Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Prisma ORM
+- **Banco de Dados:** SQLite (desenvolvimento) / PostgreSQL (produção)
+- **Autenticação:** NextAuth.js
+- **Automação:** N8N
+- **WhatsApp:** Evolution API
+- **IA:** OpenAI GPT-3.5-turbo
+- **Email:** SMTP / Resend
+
+## 📁 Estrutura do Projeto
+
+```
+├── app/
+│   ├── (admin)/           # Área administrativa
+│   ├── (app)/             # Dashboard dos usuários
+│   ├── (public)/          # Páginas públicas
+│   ├── api/               # APIs do sistema
+│   │   ├── corretor/      # APIs específicas dos corretores
+│   │   │   ├── whatsapp/  # Gerenciar WhatsApp do corretor
+│   │   │   └── leads/     # Leads do corretor
+│   │   └── leads/         # Sistema de leads
+│   │       ├── webhook/   # Receber leads do site
+│   │       ├── assume/    # Assumir leads
+│   │       └── expire/    # Expirar leads
+│   └── globals.css
+├── components/
+│   ├── ui/                # Componentes base (shadcn/ui)
+│   ├── whatsapp-integration-card.tsx
+│   ├── leads-card.tsx
+│   └── navbar.tsx         # Navbar atualizada
+├── lib/
+│   ├── auth.ts           # Configuração NextAuth
+│   ├── prisma.ts         # Cliente Prisma
+│   └── utils.ts
+├── prisma/
+│   ├── schema.prisma     # Schema atualizado com Leads
+│   └── migrations/
+└── n8n-fluxo-completo-leads-whatsapp.json
 ```
 
-### **Configuração Manual**
+## 🔧 Configuração e Instalação
+
+### 1. Dependências
 
 ```bash
-# 1. Instalar dependências
 npm install
-
-# 2. Configurar banco de dados
-npx prisma generate
-npx prisma db push
-npx prisma db seed
-
-# 3. Configurar variáveis de ambiente
-cp .env.example .env
-# Edite o arquivo .env com suas configurações
-
-# 4. Iniciar desenvolvimento
-npm run dev
+# ou
+yarn install
 ```
 
-## 🎯 **ACESSO AO SISTEMA**
+### 2. Variáveis de Ambiente
 
-### **URLs Principais:**
-
-- **Site**: http://localhost:3000
-- **Admin**: http://localhost:3000/admin
-- **Dashboard**: http://localhost:3000/dashboard
-- **Blog**: http://localhost:3000/blog
-- **Imóveis**: http://localhost:3000/imoveis
-- **Contato**: http://localhost:3000/contato
-
-### **Credenciais de Teste:**
-
-| Role   | Email                            | Senha      | Descrição       |
-| ------ | -------------------------------- | ---------- | --------------- |
-| ADMIN  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Owner principal |
-| ADMIN  | admin@email.com                  | admin123   | Administrador   |
-| AGENT  | agent@email.com                  | agent123   | Corretor        |
-| USER   | user@email.com                   | user123    | Usuário comum   |
-| CLIENT | client@email.com                 | client123  | Cliente         |
-
-## 🏢 **FUNCIONALIDADES PRINCIPAIS**
-
-### **Portal do Cliente:**
-- 🏠 Catálogo completo de imóveis com filtros avançados
-- 🔍 Busca por localização, preço, tipo, quartos, área
-- 📱 Galeria de fotos profissionais para cada imóvel
-- 📍 Mapa interativo com localização dos imóveis
-- 💬 Formulário de contato e interesse
-- 📞 Agendamento de visitas online
-- ⭐ Sistema de favoritos
-- 📊 Comparador de imóveis
-- 📧 Newsletter com novos imóveis
-- 💰 Simulador de financiamento
-- 🤖 Chat inteligente com IA
-
-### **Sistema Administrativo:**
-
-#### **Gestão de Imóveis:**
-- ➕ Cadastro completo de imóveis
-- 📸 Upload múltiplo de imagens
-- ✏️ Edição de informações
-- 🗑️ Exclusão com confirmação
-- 📋 Listagem com filtros avançados
-- 📊 Status (Disponível, Alugado, Vendido, Reservado)
-- 💰 Histórico de preços
-- 📄 Geração de fichas técnicas em PDF
-
-#### **Gestão Financeira:**
-- 💳 Controle de receitas e despesas
-- 📊 Dashboard financeiro completo
-- 💰 Gestão de comissões
-- 📈 Relatórios financeiros
-- 📅 Fluxo de caixa
-- 🎯 Orçamentos e metas
-- 📋 Controle de pagamentos
-
-#### **Gestão de Usuários:**
-- 👥 Níveis de acesso (Admin, Corretor, Assistente)
-- 🔐 Sistema de autenticação seguro
-- 📊 Log de atividades
-- 👤 Perfis personalizados
-
-#### **Dashboard e Relatórios:**
-- 📈 Estatísticas em tempo real
-- 📊 Gráficos de vendas/locações
-- 💹 Relatórios financeiros
-- 📅 Agenda de visitas
-- 🎯 Metas e performance
-- 📧 Leads e conversões
-- 📱 Relatórios de acessos mobile
-
-## 🛠️ **TECNOLOGIAS UTILIZADAS**
-
-### **Frontend/Backend:**
-- **Next.js 14** - App Router, Server Components
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Radix UI** - Componentes primitivos
-- **Framer Motion** - Animações
-- **React Hook Form** - Formulários
-- **Zod** - Validação de schemas
-
-### **Banco de Dados:**
-- **SQLite** (desenvolvimento) / **PostgreSQL** (produção)
-- **Prisma ORM** - Object-Relational Mapping
-- **Redis** - Cache e sessões
-
-### **Autenticação:**
-- **NextAuth.js** - Autenticação completa
-- **Google OAuth** - Login social
-- **JWT** - Tokens seguros
-
-### **Integrações:**
-- **WhatsApp Business API** - Comunicação
-- **Google Maps** - Geolocalização
-- **Vercel Blob** - Storage de imagens
-- **Nodemailer** - Envio de emails
-
-### **DevTools:**
-- **ESLint** - Linter
-- **Prettier** - Formatador
-- **Jest** - Testes
-- **TypeScript** - Verificação de tipos
-
-## 📁 **ESTRUTURA DO PROJETO**
-
-```
-siqueira-campos-imoveis/
-├── app/                    # App Router Next.js
-│   ├── (admin)/           # Rotas administrativas
-│   │   ├── admin/         # Dashboard admin
-│   │   ├── blog/          # Gestão de blog
-│   │   ├── imoveis/       # Gestão de imóveis
-│   │   ├── usuarios/      # Gestão de usuários
-│   │   ├── leads/         # Gestão de leads
-│   │   ├── visitas/       # Gestão de visitas
-│   │   ├── financeiro/    # Gestão financeira
-│   │   └── whatsapp/      # Integração WhatsApp
-│   ├── (public)/          # Rotas públicas
-│   │   ├── imoveis/       # Listagem de imóveis
-│   │   ├── blog/          # Blog público
-│   │   ├── contato/       # Formulário de contato
-│   │   ├── depoimentos/   # Depoimentos
-│   │   ├── comparar/      # Comparador de imóveis
-│   │   └── simulador-financiamento/
-│   ├── (app)/             # Dashboard do usuário
-│   ├── api/               # API Routes
-│   │   ├── auth/          # Autenticação
-│   │   ├── chat/          # Chatbot
-│   │   ├── upload/        # Upload de arquivos
-│   │   └── whatsapp-webhook/
-│   ├── actions/           # Server Actions
-│   └── globals.css        # Estilos globais
-├── components/            # Componentes React
-│   ├── ui/               # Componentes base (shadcn/ui)
-│   ├── navbar.tsx        # Navegação
-│   ├── footer.tsx        # Rodapé
-│   ├── property-card.tsx # Card de imóvel
-│   └── floating-chat-bubble.tsx
-├── lib/                  # Bibliotecas e utilitários
-│   ├── auth.ts          # Configuração autenticação
-│   ├── prisma.ts        # Cliente Prisma
-│   ├── utils.ts         # Utilitários
-│   └── email.ts         # Configuração email
-├── prisma/              # Schema e migrações
-│   ├── schema.prisma    # Modelo do banco
-│   └── migrations/      # Migrações
-├── public/              # Arquivos estáticos
-└── scripts/             # Scripts de automação
-```
-
-## 🔧 **COMANDOS DISPONÍVEIS**
-
-```bash
-# Desenvolvimento
-npm run dev              # Inicia servidor de desenvolvimento
-npm run build           # Build para produção
-npm run start           # Inicia servidor de produção
-npm run lint            # Executa linter
-npm run type-check      # Verifica tipos TypeScript
-
-# Banco de Dados
-npm run db:generate     # Gera cliente Prisma
-npm run db:push         # Aplica mudanças ao banco
-npm run db:seed         # Popula banco com dados iniciais
-npm run db:studio       # Abre Prisma Studio
-npm run db:reset        # Reseta banco de dados
-
-# Testes
-npm run test            # Executa testes
-npm run test:watch      # Executa testes em watch mode
-npm run test:coverage   # Gera relatório de cobertura
-
-# Deploy
-npm run deploy          # Deploy para produção
-npm run deploy:staging  # Deploy para staging
-```
-
-## 🐳 **DOCKER**
-
-### **Desenvolvimento**
-```bash
-# Inicia todos os serviços
-docker-compose -f docker-compose.dev.yml up
-
-# Apenas o banco de dados
-docker-compose -f docker-compose.dev.yml up postgres
-```
-
-### **Produção**
-```bash
-# Build e inicialização
-docker-compose up -d
-
-# Logs
-docker-compose logs -f app
-```
-
-## 🌍 **VARIÁVEIS DE AMBIENTE**
+Crie um arquivo `.env` (já está criado):
 
 ```env
-# Domínio
-MAIN_DOMAIN=siqueicamposimoveis.com.br
-
-# JWT
-JWT_SECRET=468465454567653554546524
-JWT_EXPIRES_IN=7d
-COOKIE_SECRET=645454564867654575565
-
 # Banco de Dados
-DATABASE_URL="postgresql://sitejuarez:juarez123@localhost:5432/bdsitejuarez?schema=public"
+DATABASE_URL="file:./prisma/dev.db"
+NODE_ENV="development"
 
-# Portas
-PORT=3000
-ADMIN_PORT=3001
-APP_PORT=3002
-NODE_ENV="production"
-
-# Email
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=siqueiraecamposimoveis@gmail.com
-EMAIL_PASS=sua_senha_app
-
-# Google OAuth
-GOOGLE_CLIENT_ID=7452076957-v6740revpqo1s3f0ek25dr1tpua6q893.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-GOOGLE_CALLBACK_URL=https://siqueicamposimoveis.com.br/api/auth/google/callback
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+# NextAuth
+NEXTAUTH_SECRET="desenvolvimento-secret-123456789"
+NEXTAUTH_URL="http://localhost:3000"
 
 # WhatsApp
-WHATSAPP_TOKEN=seu_whatsapp_token
-WHATSAPP_WEBHOOK_VERIFY=seu_webhook_verify_token
+NEXT_PUBLIC_WHATSAPP_NUMBER=5562985563905
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+# URLs
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
-# Backup
-BACKUP_DIR=/var/backups/siqueira-campos
+# OpenAI (para IA)
+OPENAI_API_KEY="sua_chave_openai_aqui"
+
+# Email
+RESEND_API_KEY="sua_chave_resend_aqui"
+
+# Uploads
+UPLOAD_DIR="./public/uploads"
+MAX_FILE_SIZE=10485760
 ```
 
-## 📱 **RESPONSIVIDADE**
+### 3. Banco de Dados
 
-- ✅ **Mobile First** - Design otimizado para mobile
-- ✅ **Tablet** - Layout adaptado para tablets
-- ✅ **Desktop** - Experiência completa em desktop
-- ✅ **PWA Ready** - Pronto para Progressive Web App
-
-## 🔒 **SEGURANÇA**
-
-- 🛡️ **Autenticação JWT** segura
-- 🔐 **Criptografia** de senhas com bcrypt
-- 🚫 **Proteção CSRF** integrada
-- 📝 **Validação** rigorosa de dados
-- 🔒 **HTTPS** enforced
-- 👤 **Controle de acesso** por roles
-
-## 🚀 **DEPLOY**
-
-### **Vercel (Recomendado)**
 ```bash
-# Configurar Vercel CLI
-npm i -g vercel
+# Gerar cliente Prisma
+npx prisma generate
 
-# Deploy
-vercel --prod
+# Aplicar migrações (já aplicadas)
+npx prisma migrate dev
+
+# Visualizar banco (opcional)
+npx prisma studio
 ```
 
-### **Servidor Próprio**
+### 4. Executar o Projeto
+
 ```bash
-# Build
-npm run build
-
-# Iniciar
-npm start
+npm run dev
+# ou
+yarn dev
 ```
 
-## 📊 **MONITORAMENTO**
+O projeto estará disponível em `http://localhost:3000`
 
-- 📈 **Analytics** integrado
-- 🔍 **Logs** estruturados
-- ⚡ **Performance** monitoring
-- 🚨 **Error tracking** automático
-- 📱 **Uptime** monitoring
+## 🔗 Configurações Externas Necessárias
 
-## 🤝 **CONTRIBUIÇÃO**
+### 1. **N8N (Automação)**
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+#### Instalação do N8N:
 
-## 📄 **LICENÇA**
+```bash
+# Via NPM
+npm install -g n8n
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+# Via Docker
+docker run -it --rm --name n8n -p 5678:5678 n8nio/n8n
+```
 
-## 📞 **SUPORTE**
+#### Importar Fluxo:
 
-- 📧 **Email**: siqueiraecamposimoveis@gmail.com
-- 📱 **WhatsApp**: (62) 9 8556-3905
-- 🌐 **Site**: https://siqueicamposimoveis.com.br
+1. Acesse `http://localhost:5678`
+2. Vá em **Settings > Import**
+3. Importe o arquivo `n8n-fluxo-completo-leads-whatsapp.json`
 
-## 🏆 **CRÉDITOS**
+#### Configurar Credenciais no N8N:
 
-**Desenvolvido por [KRYONIX](https://kryonix.dev)**
+- **PostgreSQL/SQLite:** Configurar conexão com banco
+- **OpenAI API:** Chave da OpenAI para GPT-3.5-turbo
+- **Evolution API:** Token e URL da instância WhatsApp
+- **SMTP:** Configurações de email
 
-- 🎨 **Design**: Interface moderna e responsiva
-- ⚡ **Performance**: Otimizado para velocidade
-- 🔧 **Manutenção**: Suporte técnico contínuo
+#### Webhooks do N8N:
+
+- **Lead Site:** `http://seu-n8n:5678/webhook/lead-site`
+- **Resposta Corretor:** `http://seu-n8n:5678/webhook/resposta-corretor`
+
+### 2. **Evolution API (WhatsApp)**
+
+#### Configuração:
+
+1. Instale a Evolution API
+2. Crie uma instância
+3. Configure o webhook para receber mensagens
+4. Aponte para: `http://seu-n8n:5678/webhook/resposta-corretor`
+
+#### Formato de Resposta do Corretor:
+
+```json
+{
+  "leadId": "lead_id_do_banco",
+  "agentId": "id_do_corretor",
+  "message": "ASSUMIR"
+}
+```
+
+### 3. **OpenAI API**
+
+1. Registre-se em `https://platform.openai.com`
+2. Gere uma API Key
+3. Configure no `.env` e credenciais do N8N
+4. O sistema usa **GPT-3.5-turbo** (econômico)
+
+### 4. **Chat Bubble (Site)**
+
+Configure o chat do site para enviar leads para:
+
+```
+POST http://seu-n8n:5678/webhook/lead-site
+
+{
+  "nome": "João Silva",
+  "telefone": "62999999999",
+  "mensagem": "Quero informações sobre imóveis"
+}
+```
+
+## 👤 Uso do Sistema
+
+### Para Corretores:
+
+1. **Acesse o Dashboard:** `/dashboard`
+2. **Configure WhatsApp:** Insira seu número e ative status
+3. **Receba Leads:** Mensagens chegam automaticamente
+4. **Assuma Leads:** Responda "ASSUMIR" no WhatsApp
+5. **Acompanhe Histórico:** Visualize todos seus leads
+
+### Para Clientes:
+
+1. **Acesse o Site:** Navegue normalmente
+2. **Use o Chat:** Clique no chat flutuante
+3. **Envie Mensagem:** Informe nome, telefone e interesse
+4. **Aguarde Contato:** IA responde e corretor entra em contato
+
+### Para Administradores:
+
+1. **Monitore N8N:** Acompanhe fluxos em tempo real
+2. **Verifique Emails:** Receba notificações de leads não atendidos
+3. **Gerencie Corretores:** Ative/desative via dashboard admin
+
+## 🔍 Fluxo Completo do Sistema
+
+### 1. **Cliente envia mensagem** no chat do site
+
+↓
+
+### 2. **N8N recebe webhook** e processa lead
+
+↓
+
+### 3. **Busca corretores ativos** no banco
+
+↓
+
+### 4. **IA gera resposta** para o cliente
+
+↓
+
+### 5. **Envia mensagem WhatsApp** para corretores ativos
+
+↓
+
+### 6. **Primeiro que responde "ASSUMIR"** fica com o lead
+
+↓
+
+### 7. **Sistema atualiza banco** e notifica todos
+
+↓
+
+### 8. **Cliente é informado** sobre o corretor responsável
+
+### Fallback (15 minutos sem resposta):
+
+↓
+
+### 9. **Lead expira automaticamente**
+
+↓
+
+### 10. **Cliente recebe mensagem** de que entraremos em contato
+
+↓
+
+### 11. **Gerente recebe email** com dados do lead
+
+## 🎨 Melhorias Implementadas
+
+### Mobile UX:
+
+- ✅ Scroll suave no menu
+- ✅ Modo escuro/claro no topo
+- ✅ Login/registro destacados
+- ✅ Seções organizadas
+- ✅ Contato direto via WhatsApp
+
+### Dashboard Premium:
+
+- ✅ Cards com estatísticas
+- ✅ Interface moderna
+- ✅ Validação de dados
+- ✅ Feedback visual
+- ✅ Responsivo
+
+### Sistema Robusto:
+
+- ✅ Tratamento de erros
+- ✅ Validações rigorosas
+- ✅ Race condition protection
+- ✅ Logs detalhados
+- ✅ Fallbacks inteligentes
+
+## 🚀 Deploy
+
+### Desenvolvimento:
+
+- ✅ Configurado e funcionando
+- ✅ SQLite local
+- ✅ N8N local
+
+### Produção:
+
+1. **Deploy do Next.js:** Vercel/Netlify
+2. **Banco PostgreSQL:** Neon/Supabase
+3. **N8N:** VPS/Cloud
+4. **Evolution API:** VPS própria
+5. **Email:** Resend/SendGrid
+
+## 📞 Suporte
+
+Para dúvidas ou problemas:
+
+- **Email:** siqueiraecamposimoveis@gmail.com
+- **WhatsApp:** (62) 9 8556-3905
 
 ---
 
-**© 2024 Siqueira Campos Imóveis - Todos os direitos reservados**
+## 🏆 Status do Projeto
+
+✅ **Sistema de Leads:** 100% implementado  
+✅ **Dashboard Corretores:** 100% implementado  
+✅ **Mobile Navbar:** 100% implementado  
+✅ **Integração WhatsApp:** 100% implementado  
+✅ **N8N Workflow:** 100% implementado  
+✅ **APIs:** 100% implementadas  
+✅ **Banco de Dados:** 100% configurado
+
+**🎉 PROJETO COMPLETO E FUNCIONAL!**
