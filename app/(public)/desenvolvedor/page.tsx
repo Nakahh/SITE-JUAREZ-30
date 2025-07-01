@@ -48,13 +48,13 @@ export default function DeveloperPage() {
           <div className="bg-card rounded-2xl shadow-xl p-8 md:p-12 text-center">
             {/* Logo da empresa - tamanho reduzido */}
             <div className="mb-8">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 p-2 shadow-xl">
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center p-1">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 p-1 shadow-xl">
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
                   <Image
                     src="/logo-kryonix.png"
                     alt="Kryonix Logo"
-                    width={60}
-                    height={60}
+                    width={48}
+                    height={48}
                     className="object-contain"
                   />
                 </div>
@@ -63,20 +63,13 @@ export default function DeveloperPage() {
               <p className="text-muted-foreground">Development</p>
             </div>
 
-            {/* Developer Photo */}
+            {/* Developer Info - Removido foto, apenas informações */}
             <div className="mb-8">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
-                <Image
-                  src="/placeholder-user.jpg"
-                  alt="Desenvolvedor"
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Vitor Nakah</h3>
+              <h3 className="text-2xl font-bold mb-2">
+                Vitor Jayme Fernandes Ferreira
+              </h3>
               <p className="text-lg text-primary font-semibold mb-4">
-                CEO - Desenvolvedor DEV Full-Stack
+                CEO & Programador DEV Full-Stack
               </p>
             </div>
 
