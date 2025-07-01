@@ -155,19 +155,18 @@ export default async function PropertiesPage({
               <label htmlFor="type" className="block text-sm font-medium mb-2">
                 Tipo de Imóvel
               </label>
-              <Select name="type" defaultValue={type}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="Casa">Casa</SelectItem>
-                  <SelectItem value="Apartamento">Apartamento</SelectItem>
-                  <SelectItem value="Cobertura">Cobertura</SelectItem>
-                  <SelectItem value="Terreno">Terreno</SelectItem>
-                  <SelectItem value="Comercial">Comercial</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                name="type"
+                defaultValue={type || "todos"}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="todos">Todos</option>
+                <option value="Casa">Casa</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Cobertura">Cobertura</option>
+                <option value="Terreno">Terreno</option>
+                <option value="Comercial">Comercial</option>
+              </select>
             </div>
 
             <div>
@@ -214,26 +213,17 @@ export default async function PropertiesPage({
               >
                 Ordenar por
               </label>
-              <Select name="orderBy" defaultValue={orderBy || "recent"}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Ordenar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Mais Recentes</SelectItem>
-                  <SelectItem value="price_asc">
-                    Preço: Menor para Maior
-                  </SelectItem>
-                  <SelectItem value="price_desc">
-                    Preço: Maior para Menor
-                  </SelectItem>
-                  <SelectItem value="area_asc">
-                    Área: Menor para Maior
-                  </SelectItem>
-                  <SelectItem value="area_desc">
-                    Área: Maior para Menor
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                name="orderBy"
+                defaultValue={orderBy || "recent"}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="recent">Mais Recentes</option>
+                <option value="price_asc">Preço: Menor para Maior</option>
+                <option value="price_desc">Preço: Maior para Menor</option>
+                <option value="area_asc">Área: Menor para Maior</option>
+                <option value="area_desc">Área: Maior para Menor</option>
+              </select>
             </div>
 
             <Button type="submit" className="w-full">
