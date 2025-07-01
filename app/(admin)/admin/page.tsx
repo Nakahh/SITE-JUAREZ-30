@@ -1,15 +1,20 @@
-
-import { Suspense } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
-  Building2, 
-  Users, 
-  TrendingUp, 
-  DollarSign, 
+import { Suspense } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Building2,
+  Users,
+  TrendingUp,
+  DollarSign,
   Activity,
   MessageCircle,
   Calendar,
@@ -25,10 +30,10 @@ import {
   AlertTriangle,
   BarChart3,
   PieChart,
-  LineChart
-} from "lucide-react"
-import Link from "next/link"
-import { Skeleton } from "@/components/ui/skeleton"
+  LineChart,
+} from "lucide-react";
+import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Dados mockados para demonstração
 const dashboardStats = {
@@ -37,27 +42,27 @@ const dashboardStats = {
     available: 89,
     sold: 34,
     rented: 33,
-    growth: 12.5
+    growth: 12.5,
   },
   users: {
     total: 1247,
     active: 892,
     newThisMonth: 89,
-    growth: 8.3
+    growth: 8.3,
   },
   financial: {
     totalSales: 12450000,
     commission: 623000,
     averagePrice: 485000,
-    growth: 15.7
+    growth: 15.7,
   },
   visits: {
     scheduled: 45,
     completed: 123,
     pending: 12,
-    conversionRate: 23.5
-  }
-}
+    conversionRate: 23.5,
+  },
+};
 
 const systemStatus = {
   database: { status: "online", responseTime: "12ms" },
@@ -65,8 +70,8 @@ const systemStatus = {
   email: { status: "online", lastSent: "2 min ago" },
   whatsapp: { status: "online", messages: 156 },
   backup: { status: "completed", lastBackup: "2h ago" },
-  ssl: { status: "valid", expiresIn: "89 days" }
-}
+  ssl: { status: "valid", expiresIn: "89 days" },
+};
 
 const recentActivities = [
   {
@@ -74,30 +79,30 @@ const recentActivities = [
     type: "property_created",
     message: "Novo imóvel cadastrado: Casa 3 quartos Setor Oeste",
     timestamp: new Date(Date.now() - 300000),
-    user: "João Silva"
+    user: "João Silva",
   },
   {
-    id: "2", 
+    id: "2",
     type: "visit_scheduled",
     message: "Visita agendada para apartamento no Centro",
     timestamp: new Date(Date.now() - 600000),
-    user: "Maria Santos"
+    user: "Maria Santos",
   },
   {
     id: "3",
     type: "sale_completed",
     message: "Venda finalizada: R$ 450.000 - Apartamento Bueno",
     timestamp: new Date(Date.now() - 900000),
-    user: "Carlos Oliveira"
+    user: "Carlos Oliveira",
   },
   {
     id: "4",
     type: "user_registered",
     message: "Novo usuário cadastrado",
     timestamp: new Date(Date.now() - 1200000),
-    user: "Ana Costa"
-  }
-]
+    user: "Ana Costa",
+  },
+];
 
 const topPerformers = [
   {
@@ -105,23 +110,23 @@ const topPerformers = [
     role: "Corretor Senior",
     sales: 12,
     commission: 89000,
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
   {
     name: "Maria Santos",
     role: "Corretora",
     sales: 8,
     commission: 67000,
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
   {
-    name: "João Oliveira", 
+    name: "João Oliveira",
     role: "Corretor",
     sales: 6,
     commission: 45000,
-    avatar: "/placeholder-user.jpg"
-  }
-]
+    avatar: "/placeholder-user.jpg",
+  },
+];
 
 function SystemStatusCard() {
   return (
@@ -139,42 +144,60 @@ function SystemStatusCard() {
         {Object.entries(systemStatus).map(([service, data]) => (
           <div key={service} className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              {data.status === "online" || data.status === "valid" || data.status === "completed" ? (
+              {data.status === "online" ||
+              data.status === "valid" ||
+              data.status === "completed" ? (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               ) : (
                 <XCircle className="h-4 w-4 text-red-500" />
               )}
-              <span className="capitalize font-medium">{service.replace('_', ' ')}</span>
+              <span className="capitalize font-medium">
+                {service.replace("_", " ")}
+              </span>
             </div>
             <div className="text-right">
-              <Badge variant={
-                data.status === "online" || data.status === "valid" || data.status === "completed" 
-                  ? "default" 
-                  : "destructive"
-              }>
+              <Badge
+                variant={
+                  data.status === "online" ||
+                  data.status === "valid" ||
+                  data.status === "completed"
+                    ? "default"
+                    : "destructive"
+                }
+              >
                 {data.status}
               </Badge>
-              {data.responseTime && (
-                <p className="text-xs text-muted-foreground mt-1">{data.responseTime}</p>
+              {"responseTime" in data && data.responseTime && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.responseTime}
+                </p>
               )}
-              {data.lastSent && (
-                <p className="text-xs text-muted-foreground mt-1">{data.lastSent}</p>
+              {"lastSent" in data && data.lastSent && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.lastSent}
+                </p>
               )}
-              {data.messages && (
-                <p className="text-xs text-muted-foreground mt-1">{data.messages} msg</p>
+              {"messages" in data && data.messages && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.messages} msg
+                </p>
               )}
-              {data.lastBackup && (
-                <p className="text-xs text-muted-foreground mt-1">{data.lastBackup}</p>
+              {"lastBackup" in data && data.lastBackup && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.lastBackup}
+                </p>
               )}
-              {data.expiresIn && (
-                <p className="text-xs text-muted-foreground mt-1">{data.expiresIn}</p>
+              {"expiresIn" in data && data.expiresIn && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {data.expiresIn}
+                </p>
               )}
             </div>
           </div>
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function RecentActivitiesCard() {
@@ -182,9 +205,7 @@ function RecentActivitiesCard() {
     <Card>
       <CardHeader>
         <CardTitle>Atividades Recentes</CardTitle>
-        <CardDescription>
-          Últimas ações realizadas no sistema
-        </CardDescription>
+        <CardDescription>Últimas ações realizadas no sistema</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -201,7 +222,7 @@ function RecentActivitiesCard() {
                   </p>
                   <span className="text-xs text-muted-foreground">•</span>
                   <p className="text-xs text-muted-foreground">
-                    {activity.timestamp.toLocaleTimeString('pt-BR')}
+                    {activity.timestamp.toLocaleTimeString("pt-BR")}
                   </p>
                 </div>
               </div>
@@ -210,7 +231,7 @@ function RecentActivitiesCard() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function TopPerformersCard() {
@@ -218,9 +239,7 @@ function TopPerformersCard() {
     <Card>
       <CardHeader>
         <CardTitle>Top Performers</CardTitle>
-        <CardDescription>
-          Melhores corretores do mês
-        </CardDescription>
+        <CardDescription>Melhores corretores do mês</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -231,12 +250,14 @@ function TopPerformersCard() {
               </div>
               <div className="flex-1">
                 <p className="font-medium">{performer.name}</p>
-                <p className="text-sm text-muted-foreground">{performer.role}</p>
+                <p className="text-sm text-muted-foreground">
+                  {performer.role}
+                </p>
               </div>
               <div className="text-right">
                 <p className="font-semibold">{performer.sales} vendas</p>
                 <p className="text-sm text-green-600">
-                  R$ {performer.commission.toLocaleString('pt-BR')}
+                  R$ {performer.commission.toLocaleString("pt-BR")}
                 </p>
               </div>
             </div>
@@ -244,7 +265,7 @@ function TopPerformersCard() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function AdminDashboard() {
@@ -264,11 +285,15 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <Building2 className="h-8 w-8 text-blue-500" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Imóveis Total</p>
-                <p className="text-2xl font-bold">{dashboardStats.properties.total}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Imóveis Total
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboardStats.properties.total}
+                </p>
                 <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +{dashboardStats.properties.growth}% este mês
+                  <TrendingUp className="h-3 w-3 mr-1" />+
+                  {dashboardStats.properties.growth}% este mês
                 </p>
               </div>
             </div>
@@ -280,11 +305,15 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <Users className="h-8 w-8 text-green-500" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Usuários</p>
-                <p className="text-2xl font-bold">{dashboardStats.users.total}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Usuários
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboardStats.users.total}
+                </p>
                 <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +{dashboardStats.users.growth}% este mês
+                  <TrendingUp className="h-3 w-3 mr-1" />+
+                  {dashboardStats.users.growth}% este mês
                 </p>
               </div>
             </div>
@@ -296,13 +325,16 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-8 w-8 text-purple-500" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Vendas Total</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Vendas Total
+                </p>
                 <p className="text-2xl font-bold">
-                  R$ {(dashboardStats.financial.totalSales / 1000000).toFixed(1)}M
+                  R${" "}
+                  {(dashboardStats.financial.totalSales / 1000000).toFixed(1)}M
                 </p>
                 <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +{dashboardStats.financial.growth}% este mês
+                  <TrendingUp className="h-3 w-3 mr-1" />+
+                  {dashboardStats.financial.growth}% este mês
                 </p>
               </div>
             </div>
@@ -314,8 +346,12 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <Calendar className="h-8 w-8 text-orange-500" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Visitas</p>
-                <p className="text-2xl font-bold">{dashboardStats.visits.scheduled}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Visitas
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboardStats.visits.scheduled}
+                </p>
                 <p className="text-xs text-blue-600">
                   {dashboardStats.visits.conversionRate}% conversão
                 </p>
@@ -338,34 +374,67 @@ export default function AdminDashboard() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Disponíveis</span>
-                <span className="text-sm font-medium">{dashboardStats.properties.available}</span>
+                <span className="text-sm font-medium">
+                  {dashboardStats.properties.available}
+                </span>
               </div>
-              <Progress value={(dashboardStats.properties.available / dashboardStats.properties.total) * 100} className="h-2" />
-              
+              <Progress
+                value={
+                  (dashboardStats.properties.available /
+                    dashboardStats.properties.total) *
+                  100
+                }
+                className="h-2"
+              />
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Vendidos</span>
-                <span className="text-sm font-medium">{dashboardStats.properties.sold}</span>
+                <span className="text-sm font-medium">
+                  {dashboardStats.properties.sold}
+                </span>
               </div>
-              <Progress value={(dashboardStats.properties.sold / dashboardStats.properties.total) * 100} className="h-2" />
-              
+              <Progress
+                value={
+                  (dashboardStats.properties.sold /
+                    dashboardStats.properties.total) *
+                  100
+                }
+                className="h-2"
+              />
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Alugados</span>
-                <span className="text-sm font-medium">{dashboardStats.properties.rented}</span>
+                <span className="text-sm font-medium">
+                  {dashboardStats.properties.rented}
+                </span>
               </div>
-              <Progress value={(dashboardStats.properties.rented / dashboardStats.properties.total) * 100} className="h-2" />
+              <Progress
+                value={
+                  (dashboardStats.properties.rented /
+                    dashboardStats.properties.total) *
+                  100
+                }
+                className="h-2"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-4 pt-4 border-t">
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{dashboardStats.properties.available}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {dashboardStats.properties.available}
+                </p>
                 <p className="text-xs text-muted-foreground">Disponíveis</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{dashboardStats.properties.sold}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {dashboardStats.properties.sold}
+                </p>
                 <p className="text-xs text-muted-foreground">Vendidos</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">{dashboardStats.properties.rented}</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {dashboardStats.properties.rented}
+                </p>
                 <p className="text-xs text-muted-foreground">Alugados</p>
               </div>
             </div>
@@ -375,16 +444,17 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Métricas Financeiras</CardTitle>
-            <CardDescription>
-              Resumo financeiro do mês
-            </CardDescription>
+            <CardDescription>Resumo financeiro do mês</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Total em Vendas</span>
+                <span className="text-sm text-muted-foreground">
+                  Total em Vendas
+                </span>
                 <span className="font-medium">
-                  R$ {(dashboardStats.financial.totalSales / 1000000).toFixed(1)}M
+                  R${" "}
+                  {(dashboardStats.financial.totalSales / 1000000).toFixed(1)}M
                 </span>
               </div>
               <div className="flex justify-between">
@@ -394,13 +464,16 @@ export default function AdminDashboard() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Preço Médio</span>
+                <span className="text-sm text-muted-foreground">
+                  Preço Médio
+                </span>
                 <span className="font-medium">
-                  R$ {(dashboardStats.financial.averagePrice / 1000).toFixed(0)}K
+                  R$ {(dashboardStats.financial.averagePrice / 1000).toFixed(0)}
+                  K
                 </span>
               </div>
             </div>
-            
+
             <div className="pt-4 border-t">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">Crescimento</p>
@@ -436,22 +509,34 @@ export default function AdminDashboard() {
                 <span>Novo Imóvel</span>
               </Link>
             </Button>
-            
-            <Button asChild variant="outline" className="h-20 flex-col space-y-2">
+
+            <Button
+              asChild
+              variant="outline"
+              className="h-20 flex-col space-y-2"
+            >
               <Link href="/admin/usuarios/new">
                 <Users className="h-6 w-6" />
                 <span>Novo Usuário</span>
               </Link>
             </Button>
-            
-            <Button asChild variant="outline" className="h-20 flex-col space-y-2">
+
+            <Button
+              asChild
+              variant="outline"
+              className="h-20 flex-col space-y-2"
+            >
               <Link href="/admin/visitas">
                 <Calendar className="h-6 w-6" />
                 <span>Agendar Visita</span>
               </Link>
             </Button>
-            
-            <Button asChild variant="outline" className="h-20 flex-col space-y-2">
+
+            <Button
+              asChild
+              variant="outline"
+              className="h-20 flex-col space-y-2"
+            >
               <Link href="/admin/evolution-api">
                 <Smartphone className="h-6 w-6" />
                 <span>WhatsApp API</span>
@@ -468,9 +553,7 @@ export default function AdminDashboard() {
             <Smartphone className="h-5 w-5" />
             <span>Status WhatsApp Business</span>
           </CardTitle>
-          <CardDescription>
-            Status da integração Evolution API
-          </CardDescription>
+          <CardDescription>Status da integração Evolution API</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
@@ -494,14 +577,12 @@ export default function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">Tempo Resposta</p>
               </div>
               <Button asChild size="sm">
-                <Link href="/admin/evolution-api">
-                  Configurar
-                </Link>
+                <Link href="/admin/evolution-api">Configurar</Link>
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
