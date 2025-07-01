@@ -1,10 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { OptimizedImage } from "@/components/optimized-image";
-import { LazySection } from "@/components/lazy-components";
 import {
   MapPin,
   Phone,
@@ -13,171 +19,81 @@ import {
   ArrowRight,
   Home,
   Building,
+  Trees,
   Calculator,
   Users,
   Award,
+  Shield,
+  Clock,
+  TrendingUp,
   Heart,
   Search,
+  Filter,
   FileText,
+  Calendar,
   Eye,
 } from "lucide-react";
-import { getHomePageData } from "@/lib/optimized-queries";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
-// Mock data for fallback
-const getMockData = () => ({
-  featuredProperties: [
+// Homepage rápida e simples sem consultas ao banco
+export default function SimpleHomePage() {
+  // Dados mock para demonstração
+  const mockProperties = [
     {
-      id: "mock-1",
-      title: "Casa 3 Quartos Centro",
-      description: "Excelente casa com garagem e área gourmet",
+      id: "1",
+      title: "Casa 3 Quartos no Centro",
+      description: "Excelente casa com 3 quartos, 2 banheiros e garagem",
       price: 450000,
       type: "HOUSE",
       address: "Rua das Flores, 123 - Centro",
       city: "Siqueira Campos",
       state: "PR",
       images: ["/placeholder-property.svg"],
-      agent: { name: "João Silva", email: "joao@example.com" },
+      agent: { name: "João Silva", email: "joao@siqueiracampos.com" },
     },
     {
-      id: "mock-2",
+      id: "2",
       title: "Apartamento 2 Quartos",
       description: "Apartamento moderno com vista para a cidade",
       price: 320000,
       type: "APARTMENT",
-      address: "Av. Principal, 456 - Centro",
+      address: "Av. Principal, 456 - Bueno",
       city: "Siqueira Campos",
       state: "PR",
       images: ["/placeholder-property.svg"],
-      agent: { name: "Maria Santos", email: "maria@example.com" },
-    },
-    {
-      id: "mock-3",
-      title: "Terreno 500m²",
-      description: "Terreno para construção em área nobre",
-      price: 180000,
-      type: "LAND",
-      address: "Rua da Paz, 789 - Zona Sul",
-      city: "Siqueira Campos",
-      state: "PR",
-      images: ["/placeholder-property.svg"],
-      agent: { name: "Carlos Oliveira", email: "carlos@example.com" },
-    },
-  ],
-  recentArticles: [
-    {
-      id: "mock-1",
-      title: "Como escolher seu primeiro imóvel",
-      slug: "como-escolher-primeiro-imovel",
-      createdAt: new Date(),
-      author: { name: "Equipe Siqueira Campos", image: null },
-    },
-    {
-      id: "mock-2",
-      title: "Dicas para financiamento imobiliário",
-      slug: "dicas-financiamento-imobiliario",
-      createdAt: new Date(),
-      author: { name: "Equipe Siqueira Campos", image: null },
-    },
-    {
-      id: "mock-3",
-      title: "Mercado imobiliário em 2024",
-      slug: "mercado-imobiliario-2024",
-      createdAt: new Date(),
-      author: { name: "Equipe Siqueira Campos", image: null },
-    },
-  ],
-  testimonials: [
-    {
-      id: "mock-1",
-      content:
-        "Excelente atendimento! Encontrei minha casa dos sonhos rapidamente.",
-      rating: 5,
-      user: { name: "Ana Costa" },
-    },
-    {
-      id: "mock-2",
-      content: "Profissionais muito competentes e prestativos. Recomendo!",
-      rating: 5,
-      user: { name: "Carlos Silva" },
-    },
-    {
-      id: "mock-3",
-      content: "Processo de compra foi muito tranquilo. Equipe nota 10!",
-      rating: 5,
-      user: { name: "Maria Oliveira" },
-    },
-  ],
-  stats: {
-    totalProperties: 500,
-    totalUsers: 1000,
-    totalArticles: 50,
-    avgRating: 4.8,
-  },
-});
-
-export default async function HomePage() {
-  // Get optimized homepage data
-  const data = await getHomePageData();
-  const mockData = getMockData();
-
-  // Use real data if available, fallback to mock data
-  const {
-    featuredProperties = mockData.featuredProperties,
-    recentArticles = mockData.recentArticles,
-    testimonials = mockData.testimonials,
-    stats = mockData.stats,
-  } = data;
-
-  // Define display variables for backward compatibility
-  const displayProperties = featuredProperties;
-  const displayArticles = recentArticles;
-  const displayTestimonials = testimonials;
-
-  const displayStats = [
-    {
-      number: `${stats.totalProperties}+`,
-      label: "Imóveis Disponíveis",
-      icon: Home,
-    },
-    {
-      number: `${stats.totalUsers}+`,
-      label: "Clientes Satisfeitos",
-      icon: Users,
-    },
-    {
-      number: `${stats.totalArticles}+`,
-      label: "Artigos Publicados",
-      icon: Award,
-    },
-    {
-      number: `${Math.round(stats.avgRating * 20)}%`,
-      label: "Satisfação dos Clientes",
-      icon: Star,
+      agent: { name: "Maria Santos", email: "maria@siqueiracampos.com" },
     },
   ];
 
-  const services = [
+  const mockArticles = [
     {
-      icon: Home,
-      title: "Compra e Venda",
-      description: "Assessoria completa para compra e venda de imóveis",
+      id: "1",
+      title: "Como escolher seu primeiro imóvel",
+      slug: "como-escolher-primeiro-imovel",
+      createdAt: new Date(),
+      author: { name: "João Silva", image: "/placeholder-user.svg" },
     },
     {
-      icon: Building,
-      title: "Locação",
-      description: "Gestão completa de locações residenciais e comerciais",
+      id: "2",
+      title: "Dicas para financiamento imobiliário",
+      slug: "dicas-financiamento-imobiliario",
+      createdAt: new Date(),
+      author: { name: "Maria Santos", image: "/placeholder-user.svg" },
+    },
+  ];
+
+  const mockTestimonials = [
+    {
+      id: "1",
+      content:
+        "Excelente atendimento! Encontrei minha casa dos sonhos rapidamente.",
+      rating: 5,
+      user: { name: "Ana Costa", image: "/placeholder-user.svg" },
     },
     {
-      icon: Calculator,
-      title: "Financiamento",
-      description: "Consultoria em financiamentos e consórcios",
-    },
-    {
-      icon: FileText,
-      title: "Documentação",
-      description: "Assessoria jurídica e documentação completa",
+      id: "2",
+      content: "Profissionais muito competentes e prestativos. Recomendo!",
+      rating: 5,
+      user: { name: "Carlos Silva", image: "/placeholder-user.svg" },
     },
   ];
 
@@ -223,12 +139,10 @@ export default async function HomePage() {
                       <option>Terreno</option>
                     </select>
                   </div>
-                  <Link href="/imoveis">
-                    <Button size="lg" className="h-12 w-full">
-                      <Search className="h-4 w-4 mr-2" />
-                      Buscar
-                    </Button>
-                  </Link>
+                  <Button size="lg" className="h-12">
+                    <Search className="h-4 w-4 mr-2" />
+                    Buscar
+                  </Button>
                 </div>
               </div>
 
@@ -251,7 +165,7 @@ export default async function HomePage() {
 
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 blur-3xl"></div>
-              <OptimizedImage
+              <Image
                 src="/hero-bg.svg"
                 alt="Imóveis em destaque"
                 width={600}
@@ -277,34 +191,21 @@ export default async function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {displayProperties.map((property) => (
+            {mockProperties.map((property) => (
               <Card
                 key={property.id}
                 className="overflow-hidden group hover:shadow-lg transition-shadow"
               >
                 <div className="relative aspect-video overflow-hidden">
-                  <OptimizedImage
-                    src={property.images?.[0] || "/placeholder-property.svg"}
+                  <Image
+                    src={property.images[0]}
                     alt={property.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                    {property.type === "HOUSE"
-                      ? "Casa"
-                      : property.type === "APARTMENT"
-                        ? "Apartamento"
-                        : property.type === "LAND"
-                          ? "Terreno"
-                          : "Imóvel"}
+                    {property.type === "HOUSE" ? "Casa" : "Apartamento"}
                   </Badge>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
                 </div>
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-2">
@@ -324,12 +225,9 @@ export default async function HomePage() {
                         currency: "BRL",
                       }).format(property.price)}
                     </div>
-                    <Link href={`/imoveis/${property.id}`}>
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
-                        Ver Detalhes
-                      </Button>
-                    </Link>
+                    <Button variant="outline" size="sm">
+                      Ver Detalhes
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -347,39 +245,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Nossos Números
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Resultados que comprovam nossa excelência
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayStats.map((stat, index) => (
-              <Card
-                key={index}
-                className="text-center p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-8 w-8 text-primary" />
-                </div>
-                <div className="text-3xl font-bold text-primary mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Services */}
-      <section className="py-20">
+      <section className="py-20 bg-muted/30">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -391,7 +258,30 @@ export default async function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
+            {[
+              {
+                icon: Home,
+                title: "Compra e Venda",
+                description:
+                  "Assessoria completa para compra e venda de imóveis",
+              },
+              {
+                icon: Building,
+                title: "Locação",
+                description:
+                  "Gestão completa de locações residenciais e comerciais",
+              },
+              {
+                icon: Calculator,
+                title: "Financiamento",
+                description: "Consultoria em financiamentos e consórcios",
+              },
+              {
+                icon: FileText,
+                title: "Documentação",
+                description: "Assessoria jurídica e documentação completa",
+              },
+            ].map((service, index) => (
               <Card
                 key={index}
                 className="text-center p-6 hover:shadow-lg transition-shadow"
@@ -410,7 +300,7 @@ export default async function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -421,12 +311,9 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {displayTestimonials.map((testimonial) => (
-              <Card
-                key={testimonial.id}
-                className="p-6 hover:shadow-lg transition-shadow"
-              >
+          <div className="grid md:grid-cols-2 gap-6">
+            {mockTestimonials.map((testimonial) => (
+              <Card key={testimonial.id} className="p-6">
                 <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
@@ -450,20 +337,11 @@ export default async function HomePage() {
               </Card>
             ))}
           </div>
-
-          <div className="text-center mt-12">
-            <Link href="/depoimentos">
-              <Button variant="outline" size="lg">
-                Ver Mais Depoimentos
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* Blog */}
-      <section className="py-20">
+      <section className="py-20 bg-muted/30">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -474,35 +352,26 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {displayArticles.map((article) => (
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {mockArticles.map((article) => (
               <Card
                 key={article.id}
                 className="overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="aspect-video bg-muted relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <FileText className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                </div>
+                <div className="aspect-video bg-muted"></div>
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-2">
                     {article.title}
                   </h3>
                   <div className="flex items-center text-muted-foreground text-sm mb-4">
-                    <div className="w-6 h-6 bg-muted rounded-full mr-2 flex items-center justify-center">
-                      <Users className="h-3 w-3" />
-                    </div>
+                    <div className="w-6 h-6 bg-muted rounded-full mr-2"></div>
                     {article.author.name}
                     <span className="mx-2">•</span>
-                    {format(article.createdAt, "dd/MM/yyyy", { locale: ptBR })}
+                    {new Date().toLocaleDateString("pt-BR")}
                   </div>
-                  <Link href={`/blog/${article.slug}`}>
-                    <Button variant="outline" size="sm">
-                      Ler Mais
-                      <ArrowRight className="h-3 w-3 ml-2" />
-                    </Button>
-                  </Link>
+                  <Button variant="outline" size="sm">
+                    Ler Mais
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -530,22 +399,18 @@ export default async function HomePage() {
             própria
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/contato">
-              <Button size="lg" variant="secondary">
-                <Phone className="h-4 w-4 mr-2" />
-                Falar com Corretor
-              </Button>
-            </Link>
-            <Link href="/contato">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                Enviar Mensagem
-              </Button>
-            </Link>
+            <Button size="lg" variant="secondary">
+              <Phone className="h-4 w-4 mr-2" />
+              Falar com Corretor
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Enviar Mensagem
+            </Button>
           </div>
         </div>
       </section>

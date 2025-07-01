@@ -98,7 +98,8 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 24 * 60 * 60, // 1 day - reduced for performance
+    updateAge: 60 * 60, // 1 hour - reduce update frequency
   },
   callbacks: {
     async jwt({ token, user, account }) {
@@ -117,11 +118,52 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      // Redirecionamento seguro
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+    async redirect({ url, baseUrl, token }) {
+      console.log("🔄 Redirect callback called:", {
+        url,
+        baseUrl,
+        userRole: token?.role,
+        userEmail: token?.email,
+      });
+
+      // Se não há token (logout), redirecionar para login
+      if (!token) {
+        return `${baseUrl}/login`;
+      }
+
+      // Redirecionamento baseado em papel após login bem-sucedido
+      const role = token.role as string;
+
+      // Se o usuário está tentando acessar a página de login, redirecionar baseado no papel
+      if (url === `${baseUrl}/login` || url === `${baseUrl}/api/auth/signin`) {
+        if (role === "ADMIN") {
+          console.log("🔄 Redirecting ADMIN to admin dashboard");
+          return `${baseUrl}/admin`;
+        } else if (role === "AGENT") {
+          console.log("🔄 Redirecting AGENT to dashboard");
+          return `${baseUrl}/dashboard`;
+        } else {
+          console.log("🔄 Redirecting USER to dashboard");
+          return `${baseUrl}/dashboard`;
+        }
+      }
+
+      // URLs específicas têm prioridade
+      if (url.startsWith(`${baseUrl}/`)) {
+        return url;
+      }
+
+      // URLs relativos
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      // Default: baseado no papel
+      if (role === "ADMIN") {
+        return `${baseUrl}/admin`;
+      }
+
+      return `${baseUrl}/dashboard`;
     },
   },
   pages: {

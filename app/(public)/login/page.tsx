@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
+import { signIn, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { LoginRedirectHandler } from "@/components/auth/login-redirect-handler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { theme } = useTheme();
+  const { data: session } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,17 +121,47 @@ export default function LoginPage() {
           navigator.vibrate(200);
         }
       } else if (result?.ok) {
-        console.log("✅ Login successful, redirecting...");
+        console.log("✅ Login successful, getting session...");
         setError(""); // Limpar qualquer erro anterior
 
         // Feedback visual positivo
         setError("✅ Login realizado com sucesso! Redirecionando...");
 
-        // Aguardar um momento para mostrar o feedback positivo
-        setTimeout(() => {
-          // Forçar redirecionamento completo da página
-          window.location.href = "/dashboard";
-        }, 1000);
+        try {
+          // Aguardar e obter a sessão atualizada
+          const sessionData = await getSession();
+          console.log("📊 Session data received:", sessionData);
+
+          if (sessionData?.user?.role) {
+            const userRole = sessionData.user.role;
+            console.log("🎯 Redirecting based on role:", userRole);
+
+            // Redirecionamento baseado no papel do usuário
+            setTimeout(() => {
+              if (userRole === "ADMIN") {
+                console.log("🔄 Redirecting ADMIN to /admin");
+                window.location.href = "/admin";
+              } else if (userRole === "AGENT") {
+                console.log("🔄 Redirecting AGENT to /dashboard");
+                window.location.href = "/dashboard";
+              } else {
+                console.log("🔄 Redirecting USER to /dashboard");
+                window.location.href = "/dashboard";
+              }
+            }, 1000);
+          } else {
+            console.log("⚠️ No role found, defaulting to dashboard");
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1000);
+          }
+        } catch (sessionError) {
+          console.error("❌ Error getting session:", sessionError);
+          // Fallback para dashboard
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        }
       } else {
         setError("❌ Resposta inesperada do servidor. Tente novamente.");
       }
@@ -178,6 +210,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <LoginRedirectHandler />
       <div className="w-full max-w-md space-y-6">
         {/* Logo e Header */}
         <motion.div
