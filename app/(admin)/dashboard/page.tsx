@@ -607,34 +607,91 @@ export default function StatisticalDashboard() {
     setExecutingCommands((prev) => new Set([...prev, commandId]));
 
     try {
-      const response = await fetch("/api/dev/execute", {
+      const response = await fetch("/api/dashboard/autofix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: command.command }),
+        body: JSON.stringify({ command: commandId }),
       });
 
       const result = await response.json();
 
+      // Handle high-risk command confirmation
+      if (
+        result.requiresConfirmation &&
+        !confirm(
+          `⚠️ COMANDO DE ALTO RISCO\n\n${result.description}\n\nDeseja continuar?`,
+        )
+      ) {
+        setExecutingCommands((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(commandId);
+          return newSet;
+        });
+        return;
+      }
+
+      // Execute with force if confirmed
+      if (result.requiresConfirmation) {
+        const forceResponse = await fetch("/api/dashboard/autofix", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: commandId, force: true }),
+        });
+        const forceResult = await forceResponse.json();
+
+        setCommandHistory((prev) => [
+          {
+            id: Date.now(),
+            command: forceResult.command || command.name,
+            success: forceResult.success,
+            output: forceResult.output || forceResult.error,
+            timestamp: new Date(forceResult.timestamp),
+            estimatedTime: forceResult.estimatedTime || command.estimatedTime,
+            executionTime: forceResult.executionTime,
+            riskLevel: forceResult.riskLevel,
+          },
+          ...prev.slice(0, 49),
+        ]);
+      } else {
+        setCommandHistory((prev) => [
+          {
+            id: Date.now(),
+            command: result.command || command.name,
+            success: result.success,
+            output: result.output || result.error,
+            timestamp: new Date(result.timestamp),
+            estimatedTime: result.estimatedTime || command.estimatedTime,
+            executionTime: result.executionTime,
+            riskLevel: result.riskLevel,
+          },
+          ...prev.slice(0, 49),
+        ]);
+      }
+
+      // Remove alert if command was successful
+      if (result.success) {
+        setPredictiveAlerts((prev) =>
+          prev.filter((alert) => alert.action !== commandId),
+        );
+
+        // Refresh metrics after successful command
+        setTimeout(() => {
+          fetchRealTimeData();
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Command execution failed:", error);
       setCommandHistory((prev) => [
         {
           id: Date.now(),
           command: command.name,
-          success: result.success || response.ok,
-          output: result.output || result.error,
+          success: false,
+          output: `Erro: ${error}`,
           timestamp: new Date(),
           estimatedTime: command.estimatedTime,
         },
         ...prev.slice(0, 49),
       ]);
-
-      // Remove alert if command was successful
-      if (result.success || response.ok) {
-        setPredictiveAlerts((prev) =>
-          prev.filter((alert) => alert.action !== commandId),
-        );
-      }
-    } catch (error) {
-      console.error("Command execution failed:", error);
     } finally {
       setExecutingCommands((prev) => {
         const newSet = new Set(prev);
