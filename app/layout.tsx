@@ -5,7 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/components/session-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
-import { FloatingChatBubble } from "@/components/floating-chat-bubble";
+import { LazyFloatingChatBubble } from "@/components/lazy-components";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
