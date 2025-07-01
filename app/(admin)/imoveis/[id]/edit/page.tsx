@@ -43,7 +43,11 @@ export default function EditPropertyPage({
       }
       setProperty(fetchedProperty);
       setImageUrls(
-        Array.isArray(fetchedProperty.images) ? fetchedProperty.images : [],
+        Array.isArray(fetchedProperty.images)
+          ? fetchedProperty.images.filter(
+              (img): img is string => typeof img === "string",
+            )
+          : [],
       );
 
       // Fetch agents
