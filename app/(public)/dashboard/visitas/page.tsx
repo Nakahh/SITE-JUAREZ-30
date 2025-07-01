@@ -15,8 +15,7 @@ export default async function ClientVisitsPage() {
   if (
     !session?.user?.id ||
     session.user.role === "ADMIN" ||
-    session.user.role === "AGENT" ||
-    session.papel === "ASSISTENTE"
+    session.user.role === "AGENT"
   ) {
     redirect("/login");
   }
@@ -24,9 +23,9 @@ export default async function ClientVisitsPage() {
   const userId = session.user.id as string;
 
   const scheduledVisits = await prisma.visit.findMany({
-    where: { clientId: userId },
+    where: { userId: userId },
     include: { property: true },
-    orderBy: { dataHora: "asc" },
+    orderBy: { date: "asc" },
   });
 
   return (
