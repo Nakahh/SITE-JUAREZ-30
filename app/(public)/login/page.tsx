@@ -63,7 +63,12 @@ export default function LoginPage() {
     }
 
     try {
-      console.log("Attempting login for:", email);
+      console.log("🔐 Attempting login for:", email.substring(0, 3) + "***");
+      console.log("📊 Login attempt details:", {
+        email: email.toLowerCase().trim(),
+        hasPassword: !!password,
+        passwordLength: password.length,
+      });
 
       const result = await signIn("credentials", {
         email: email.toLowerCase().trim(),
@@ -71,7 +76,12 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      console.log("Login result:", result);
+      console.log("📥 Login result received:", {
+        ok: result?.ok,
+        error: result?.error,
+        status: result?.status,
+        url: result?.url,
+      });
 
       if (result?.error) {
         console.error("Login error:", result.error);
