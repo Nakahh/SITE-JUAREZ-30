@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/table";
 import { Pencil, Trash2, PlusCircle } from "lucide-react";
 import { deleteProperty } from "@/app/actions/property-actions";
+
+async function handleDeleteProperty(propertyId: string) {
+  await deleteProperty(propertyId);
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,7 +55,7 @@ function DeletePropertyDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <form action={deleteProperty.bind(null, propertyId)}>
+          <form action={handleDeleteProperty.bind(null, propertyId)}>
             <AlertDialogAction type="submit">Excluir</AlertDialogAction>
           </form>
         </AlertDialogFooter>
