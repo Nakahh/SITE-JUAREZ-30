@@ -1,6 +1,13 @@
 "use client";
 
-import { lazy, Suspense, ComponentType } from "react";
+import {
+  lazy,
+  Suspense,
+  ComponentType,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import { Loader2 } from "lucide-react";
 
 // Loading component
