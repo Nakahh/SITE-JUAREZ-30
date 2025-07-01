@@ -79,21 +79,21 @@ export default async function EditVisitPage({
             <SelectContent>
               {clients.map((client) => (
                 <SelectItem key={client.id} value={client.id}>
-                  {client.nome} ({client.email})
+                  {client.name} ({client.email})
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <label htmlFor="dataHora" className="block text-sm font-medium">
+          <label htmlFor="date" className="block text-sm font-medium">
             Data e Hora da Visita
           </label>
           <Input
             type="datetime-local"
-            id="dataHora"
-            name="dataHora"
-            defaultValue={formattedDataHora}
+            id="date"
+            name="date"
+            defaultValue={formattedDate}
             required
           />
         </div>
