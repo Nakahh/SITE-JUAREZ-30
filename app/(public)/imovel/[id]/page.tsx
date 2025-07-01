@@ -36,7 +36,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         select: {
           name: true,
           email: true,
-          phone: true,
+          whatsapp: true,
         },
       },
     },
