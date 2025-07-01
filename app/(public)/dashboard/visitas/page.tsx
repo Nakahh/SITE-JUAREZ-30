@@ -60,7 +60,7 @@ export default async function ClientVisitsPage() {
                     Status: {visit.status}
                   </p>
                 </div>
-                <Link href={`/imoveis/${visit.property.id}`}>
+                <Link href={`/imovel/${visit.property.id}`}>
                   <Button variant="outline" className="mt-2 md:mt-0">
                     Ver Imóvel
                   </Button>
