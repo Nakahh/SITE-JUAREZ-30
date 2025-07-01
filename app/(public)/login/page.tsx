@@ -210,6 +210,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <LoginRedirectHandler />
       <div className="w-full max-w-md space-y-6">
         {/* Logo e Header */}
         <motion.div
