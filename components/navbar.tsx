@@ -114,6 +114,12 @@ export function Navbar() {
       icon: Calculator,
       badge: "Novo",
     },
+    {
+      href: "/comparar",
+      label: "Comparador",
+      icon: TrendingUp,
+      badge: "Premium",
+    },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
     { href: "/depoimentos", label: "Depoimentos", icon: Star },
   ];
