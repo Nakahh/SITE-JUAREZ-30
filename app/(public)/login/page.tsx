@@ -57,7 +57,16 @@ export default function LoginPage() {
     // Validação básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Por favor, insira um email válido");
+      console.log("❌ Invalid email format");
+      setError("❌ Por favor, insira um email válido");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validação de senha
+    if (password.length < 6) {
+      console.log("❌ Password too short");
+      setError("❌ A senha deve ter pelo menos 6 caracteres");
       setIsLoading(false);
       return;
     }
