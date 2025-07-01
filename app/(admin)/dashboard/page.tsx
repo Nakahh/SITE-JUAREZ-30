@@ -475,36 +475,79 @@ export default function StatisticalDashboard() {
     [],
   );
 
-  // Real-time data fetching
+  // Real-time data fetching with API integration
+  const fetchRealTimeData = useCallback(async () => {
+    try {
+      // Fetch system metrics
+      const systemResponse = await fetch("/api/dashboard/metrics?type=system");
+      if (systemResponse.ok) {
+        const systemData = await systemResponse.json();
+        setCurrentMetrics(systemData.current);
+        setSystemMetrics((prev) => [...prev.slice(-59), systemData.current]);
+      }
+
+      // Fetch database metrics
+      const dbResponse = await fetch("/api/dashboard/metrics?type=database");
+      if (dbResponse.ok) {
+        const dbData = await dbResponse.json();
+        setDatabaseMetrics(dbData);
+      }
+
+      // Fetch security metrics
+      const secResponse = await fetch("/api/dashboard/metrics?type=security");
+      if (secResponse.ok) {
+        const secData = await secResponse.json();
+        setSecurityMetrics(secData);
+      }
+
+      // Fetch performance metrics
+      const perfResponse = await fetch(
+        "/api/dashboard/metrics?type=performance",
+      );
+      if (perfResponse.ok) {
+        const perfData = await perfResponse.json();
+        setPerformanceMetrics(perfData);
+      }
+
+      // Fetch user metrics
+      const userResponse = await fetch("/api/dashboard/metrics?type=users");
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUserMetrics(userData);
+      }
+
+      // Fetch alerts
+      const alertResponse = await fetch(
+        "/api/dashboard/alerts?unresolved=true",
+      );
+      if (alertResponse.ok) {
+        const alertData = await alertResponse.json();
+        setPredictiveAlerts(alertData.alerts);
+      }
+
+      // Calculate system health from real data
+      if (systemResponse.ok) {
+        const systemData = await systemResponse.json();
+        calculateSystemHealth(systemData.current);
+      }
+    } catch (error) {
+      console.error("Error fetching real-time data:", error);
+      // Fallback to simulated data
+      const newMetrics = generateMetrics();
+      setCurrentMetrics(newMetrics);
+      setSystemMetrics((prev) => [...prev.slice(-59), newMetrics]);
+      calculateSystemHealth(newMetrics);
+    }
+  }, [generateMetrics]);
+
   useEffect(() => {
     if (!autoRefresh) return;
 
-    const interval = setInterval(() => {
-      const newMetrics = generateMetrics();
-      setCurrentMetrics(newMetrics);
-      setSystemMetrics((prev) => [...prev.slice(-59), newMetrics]); // Keep last 60 points
-      setDatabaseMetrics(generateDatabaseMetrics());
-      setSecurityMetrics(generateSecurityMetrics());
-      setPerformanceMetrics(generatePerformanceMetrics());
-      setUserMetrics(generateUserMetrics());
-
-      // Generate predictive alerts
-      generatePredictiveAlerts(newMetrics);
-
-      // Calculate system health
-      calculateSystemHealth(newMetrics);
-    }, refreshInterval);
+    fetchRealTimeData(); // Initial fetch
+    const interval = setInterval(fetchRealTimeData, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [
-    autoRefresh,
-    refreshInterval,
-    generateMetrics,
-    generateDatabaseMetrics,
-    generateSecurityMetrics,
-    generatePerformanceMetrics,
-    generateUserMetrics,
-  ]);
+  }, [autoRefresh, refreshInterval, fetchRealTimeData]);
 
   const generatePredictiveAlerts = (metrics: SystemMetrics) => {
     const newAlerts = [];
