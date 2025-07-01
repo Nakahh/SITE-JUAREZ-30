@@ -70,6 +70,11 @@ function DeleteTestimonialDialog({
 
 export default async function AdminTestimonials() {
   const testimonials = await prisma.testimonial.findMany({
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
