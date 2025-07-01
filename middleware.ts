@@ -38,11 +38,7 @@ export default withAuth(
 
     // Redirecionar usuários logados da página de login
     if (pathname === "/login" && isAuthenticated) {
-      if (isAdmin) {
-        return NextResponse.redirect(new URL("/admin", req.url));
-      } else {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
     return NextResponse.next();
