@@ -106,40 +106,19 @@ const nextConfig = {
 
     // Production optimizations
     if (!dev) {
-      // Bundle analyzer
-      config.plugins.push(
-        new webpack.optimize.LimitChunkCountPlugin({
-          maxChunks: 1,
-        }),
-      );
-
       // Tree shaking optimization
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
 
-      // Split chunks optimization
-      config.optimization.splitChunks = {
-        chunks: "all",
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
-            priority: -10,
-            chunks: "all",
-          },
-          common: {
-            name: "common",
-            minChunks: 2,
-            priority: -30,
-            reuseExistingChunk: true,
-          },
-        },
-      };
+      // Optimize chunks
+      if (config.optimization.splitChunks) {
+        config.optimization.splitChunks.cacheGroups.vendor = {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          priority: 10,
+          chunks: "all",
+        };
+      }
     }
 
     // Optimize bundle splitting
