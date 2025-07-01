@@ -25,108 +25,97 @@ import { getHomePageData } from "@/lib/optimized-queries";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-// Função para validar e corrigir URLs de imagem
-function validateImageUrl(url: any): string {
-  if (!url) return "/placeholder-property.svg";
-  if (typeof url !== "string") return "/placeholder-property.svg";
-  if (url.length <= 1) return "/placeholder-property.svg";
-  if (url.startsWith("[") || url === "[") return "/placeholder-property.svg";
-  if (!url.startsWith("/") && !url.startsWith("http"))
-    return "/placeholder-property.svg";
-  return url;
-}
-
-// Função para processar array de imagens
-function processImages(images: any): string[] {
-  if (!images) return ["/placeholder-property.svg"];
-
-  let imageArray: any[] = [];
-
-  // Se for string, tentar fazer parse
-  if (typeof images === "string") {
-    try {
-      imageArray = JSON.parse(images);
-    } catch {
-      return ["/placeholder-property.svg"];
-    }
-  } else if (Array.isArray(images)) {
-    imageArray = images;
-  } else {
-    return ["/placeholder-property.svg"];
-  }
-
-  // Validar cada URL na array
-  const validImages = imageArray
-    .map(validateImageUrl)
-    .filter((url) => url !== "/placeholder-property.svg");
-
-  return validImages.length > 0 ? validImages : ["/placeholder-property.svg"];
-}
-
-// Função centralizada para buscar todos os dados de uma vez
-async function getHomePageData() {
-  try {
-    // Fazer todas as consultas em paralelo para melhor performance
-    const [featuredProperties, recentArticles, testimonials] =
-      await Promise.all([
-        // Propriedades em destaque
-        prisma.property.findMany({
-          where: { featured: true },
-          include: {
-            agent: {
-              select: { name: true, email: true },
-            },
-          },
-          take: 3,
-          orderBy: { createdAt: "desc" },
-        }),
-
-        // Artigos recentes
-        prisma.article.findMany({
-          where: { published: true },
-          include: {
-            author: {
-              select: { name: true, image: true },
-            },
-          },
-          take: 3,
-          orderBy: { createdAt: "desc" },
-        }),
-
-        // Depoimentos
-        prisma.testimonial.findMany({
-          where: { approved: true },
-          include: {
-            user: {
-              select: { name: true },
-            },
-          },
-          take: 3,
-          orderBy: { createdAt: "desc" },
-        }),
-      ]);
-
-    // Process images for properties to ensure they're valid
-    const processedProperties = featuredProperties.map((property) => ({
-      ...property,
-      images: processImages(property.images),
-    }));
-
-    return {
-      featuredProperties: processedProperties,
-      recentArticles,
-      testimonials,
-    };
-  } catch (error) {
-    console.error("Erro ao buscar dados da homepage:", error);
-    // Retornar dados vazios em caso de erro
-    return {
-      featuredProperties: [],
-      recentArticles: [],
-      testimonials: [],
-    };
-  }
-}
+// Mock data for fallback
+const getMockData = () => ({
+  featuredProperties: [
+    {
+      id: "mock-1",
+      title: "Casa 3 Quartos Centro",
+      description: "Excelente casa com garagem e área gourmet",
+      price: 450000,
+      type: "HOUSE",
+      address: "Rua das Flores, 123 - Centro",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "João Silva", email: "joao@example.com" },
+    },
+    {
+      id: "mock-2",
+      title: "Apartamento 2 Quartos",
+      description: "Apartamento moderno com vista para a cidade",
+      price: 320000,
+      type: "APARTMENT",
+      address: "Av. Principal, 456 - Centro",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "Maria Santos", email: "maria@example.com" },
+    },
+    {
+      id: "mock-3",
+      title: "Terreno 500m²",
+      description: "Terreno para construção em área nobre",
+      price: 180000,
+      type: "LAND",
+      address: "Rua da Paz, 789 - Zona Sul",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "Carlos Oliveira", email: "carlos@example.com" },
+    },
+  ],
+  recentArticles: [
+    {
+      id: "mock-1",
+      title: "Como escolher seu primeiro imóvel",
+      slug: "como-escolher-primeiro-imovel",
+      createdAt: new Date(),
+      author: { name: "Equipe Siqueira Campos", image: null },
+    },
+    {
+      id: "mock-2",
+      title: "Dicas para financiamento imobiliário",
+      slug: "dicas-financiamento-imobiliario",
+      createdAt: new Date(),
+      author: { name: "Equipe Siqueira Campos", image: null },
+    },
+    {
+      id: "mock-3",
+      title: "Mercado imobiliário em 2024",
+      slug: "mercado-imobiliario-2024",
+      createdAt: new Date(),
+      author: { name: "Equipe Siqueira Campos", image: null },
+    },
+  ],
+  testimonials: [
+    {
+      id: "mock-1",
+      content:
+        "Excelente atendimento! Encontrei minha casa dos sonhos rapidamente.",
+      rating: 5,
+      user: { name: "Ana Costa" },
+    },
+    {
+      id: "mock-2",
+      content: "Profissionais muito competentes e prestativos. Recomendo!",
+      rating: 5,
+      user: { name: "Carlos Silva" },
+    },
+    {
+      id: "mock-3",
+      content: "Processo de compra foi muito tranquilo. Equipe nota 10!",
+      rating: 5,
+      user: { name: "Maria Oliveira" },
+    },
+  ],
+  stats: {
+    totalProperties: 500,
+    totalUsers: 1000,
+    totalArticles: 50,
+    avgRating: 4.8,
+  },
+});
 
 export default async function HomePage() {
   // Buscar todos os dados de uma vez só
@@ -191,7 +180,7 @@ export default async function HomePage() {
     },
     {
       id: "mock-3",
-      title: "Terreno 500m²",
+      title: "Terreno 500m��",
       description: "Terreno para construção em área nobre",
       price: 180000,
       type: "LAND",
