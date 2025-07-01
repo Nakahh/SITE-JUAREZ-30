@@ -1,5 +1,3 @@
-"use client";
-
 import { PrismaClient } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -57,14 +55,9 @@ function DeleteTestimonialDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={async () => {
-              await deleteTestimonial(testimonialId);
-              window.location.reload();
-            }}
-          >
-            Excluir
-          </AlertDialogAction>
+          <form action={() => deleteTestimonial(testimonialId)}>
+            <AlertDialogAction type="submit">Excluir</AlertDialogAction>
+          </form>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
