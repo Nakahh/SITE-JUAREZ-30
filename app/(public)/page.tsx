@@ -1,17 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
+import { OptimizedImage } from "@/components/optimized-image";
+import { LazySection } from "@/components/lazy-components";
 import {
   MapPin,
   Phone,
@@ -20,21 +13,15 @@ import {
   ArrowRight,
   Home,
   Building,
-  Trees,
   Calculator,
   Users,
   Award,
-  Shield,
-  Clock,
-  TrendingUp,
   Heart,
   Search,
-  Filter,
   FileText,
-  Calendar,
   Eye,
 } from "lucide-react";
-import prisma from "@/lib/prisma";
+import { getHomePageData } from "@/lib/optimized-queries";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
