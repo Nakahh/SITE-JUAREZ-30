@@ -42,7 +42,7 @@ export default async function EditVisitPage({
   });
 
   // Formatar a data para o formato datetime-local
-  const formattedDataHora = format(visit.dataHora, "yyyy-MM-dd'T'HH:mm");
+  const formattedDate = format(visit.date, "yyyy-MM-dd'T'HH:mm");
 
   return (
     <div>
@@ -62,7 +62,7 @@ export default async function EditVisitPage({
             <SelectContent>
               {properties.map((property) => (
                 <SelectItem key={property.id} value={property.id}>
-                  {property.titulo}
+                  {property.title}
                 </SelectItem>
               ))}
             </SelectContent>
