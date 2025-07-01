@@ -422,6 +422,58 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              O Que Nossos Clientes Dizem
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Veja os depoimentos de quem já encontrou seu imóvel dos sonhos
+              conosco
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial) => (
+              <Card key={testimonial.id} className="h-full">
+                <CardHeader>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
+                      {testimonial.user?.name?.charAt(0) || "U"}
+                    </div>
+                    <div>
+                      <p className="font-semibold">
+                        {testimonial.user?.name || "Cliente"}
+                      </p>
+                      <div className="flex">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <span key={i} className="text-yellow-500">
+                            ⭐
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "{testimonial.content}"
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {testimonials.length === 0 && (
+            <div className="text-center text-muted-foreground">
+              <p>Carregando depoimentos...</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
         <div className="container text-center space-y-8">
