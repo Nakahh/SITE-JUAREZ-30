@@ -74,24 +74,52 @@ export default function LoginPage() {
       if (result?.error) {
         console.error("Login error:", result.error);
 
-        if (result.error === "CredentialsSignin") {
-          setError("Email ou senha incorretos. Verifique suas credenciais.");
-        } else {
-          setError("Erro na autenticação. Tente novamente.");
+        // Diferentes tipos de erro com mensagens específicas
+        switch (result.error) {
+          case "CredentialsSignin":
+            setError(
+              "❌ Email ou senha incorretos. Verifique suas credenciais e tente novamente.",
+            );
+            break;
+          case "AccessDenied":
+            setError("❌ Acesso negado. Conta pode estar inativa.");
+            break;
+          case "Signin":
+            setError("❌ Erro durante o login. Tente novamente.");
+            break;
+          default:
+            setError(
+              "❌ Erro na autenticação. Contate o suporte se persistir.",
+            );
+        }
+
+        // Vibração no dispositivo se disponível
+        if (navigator.vibrate) {
+          navigator.vibrate(200);
         }
       } else if (result?.ok) {
-        console.log("Login successful, redirecting...");
+        console.log("✅ Login successful, redirecting...");
+        setError(""); // Limpar qualquer erro anterior
 
-        // Login bem-sucedido, redirecionar imediatamente
-        // O middleware irá determinar o redirecionamento correto baseado na role
-        router.push("/dashboard");
-        router.refresh();
+        // Feedback visual positivo
+        setError("✅ Login realizado com sucesso! Redirecionando...");
+
+        // Aguardar um momento para mostrar o feedback positivo
+        setTimeout(() => {
+          router.push("/dashboard");
+          router.refresh();
+        }, 800);
       } else {
-        setError("Erro inesperado durante o login.");
+        setError("❌ Resposta inesperada do servidor. Tente novamente.");
       }
     } catch (error) {
       console.error("Login exception:", error);
-      setError("Erro de conexão. Verifique sua internet e tente novamente.");
+      setError("❌ Erro de conexão. Verifique sua internet e tente novamente.");
+
+      // Vibração para erro de conexão
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 100, 100]);
+      }
     } finally {
       setIsLoading(false);
     }
