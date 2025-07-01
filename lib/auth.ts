@@ -46,11 +46,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          console.log(
-            "Attempting to authenticate user:",
-            credentials.email.substring(0, 3) + "***",
-          );
-
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email.toLowerCase().trim(),
@@ -67,33 +62,26 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!user) {
-            console.log("User not found");
             return null;
           }
 
           if (!user.password) {
-            console.log("User has no password set");
             return null;
           }
 
-          console.log("Comparing passwords for user");
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password,
           );
 
           if (!isPasswordValid) {
-            console.log("Invalid password");
             return null;
           }
 
-          // Verificar se o usuário está ativo (para corretores)
           if (user.role === "AGENT" && !user.ativo) {
-            console.log("Agent account is inactive");
             return null;
           }
 
-          console.log("Authentication successful");
           return {
             id: user.id,
             email: user.email,

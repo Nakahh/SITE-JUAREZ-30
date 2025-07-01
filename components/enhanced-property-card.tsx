@@ -77,7 +77,7 @@ export function EnhancedPropertyCard({
     const shareData = {
       title: property.title,
       text: `Confira este imóvel: ${property.title} - ${formatPrice(property.price)}`,
-      url: `${window.location.origin}/imoveis/${property.id}`,
+      url: `${window.location.origin}/imovel/${property.id}`,
     };
 
     try {
