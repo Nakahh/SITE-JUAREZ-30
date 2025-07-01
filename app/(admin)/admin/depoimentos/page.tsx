@@ -1,9 +1,27 @@
-import { PrismaClient } from "@prisma/client"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react"
-import { deleteTestimonial, approveTestimonial } from "@/app/actions/testimonial-actions"
+import { PrismaClient } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
+import {
+  deleteTestimonial,
+  approveTestimonial,
+} from "@/app/actions/testimonial-actions";
+
+async function handleDeleteTestimonial(testimonialId: string) {
+  await deleteTestimonial(testimonialId);
+}
+
+async function handleApproveTestimonial(testimonialId: string) {
+  await approveTestimonial(testimonialId);
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,13 +32,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+} from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-function DeleteTestimonialDialog({ testimonialId, authorName }: { testimonialId: string; authorName: string }) {
+function DeleteTestimonialDialog({
+  testimonialId,
+  authorName,
+}: {
+  testimonialId: string;
+  authorName: string;
+}) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -33,27 +57,32 @@ function DeleteTestimonialDialog({ testimonialId, authorName }: { testimonialId:
         <AlertDialogHeader>
           <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta ação não pode ser desfeita. Isso excluirá permanentemente o depoimento de{" "}
-            <span className="font-bold">{authorName}</span>.
+            Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+            depoimento de <span className="font-bold">{authorName}</span>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <form action={deleteTestimonial.bind(null, testimonialId)}>
+          <form action={handleDeleteTestimonial.bind(null, testimonialId)}>
             <AlertDialogAction type="submit">Excluir</AlertDialogAction>
           </form>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 
 export default async function AdminTestimonials() {
   const testimonials = await prisma.testimonial.findMany({
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
-  })
+  });
 
   return (
     <div>
@@ -62,7 +91,9 @@ export default async function AdminTestimonials() {
       </div>
 
       {testimonials.length === 0 ? (
-        <p className="text-center text-muted-foreground">Nenhum depoimento cadastrado ainda.</p>
+        <p className="text-center text-muted-foreground">
+          Nenhum depoimento cadastrado ainda.
+        </p>
       ) : (
         <Table>
           <TableHeader>
@@ -78,8 +109,12 @@ export default async function AdminTestimonials() {
           <TableBody>
             {testimonials.map((testimonial) => (
               <TableRow key={testimonial.id}>
-                <TableCell className="font-medium">{testimonial.authorName}</TableCell>
-                <TableCell className="max-w-xs truncate">{testimonial.content}</TableCell>
+                <TableCell className="font-medium">
+                  {testimonial.user?.name || "Usuário Desconhecido"}
+                </TableCell>
+                <TableCell className="max-w-xs truncate">
+                  {testimonial.content}
+                </TableCell>
                 <TableCell>{testimonial.rating} Estrelas</TableCell>
                 <TableCell>
                   {testimonial.approved ? (
@@ -88,24 +123,40 @@ export default async function AdminTestimonials() {
                     <XCircle className="h-5 w-5 text-red-500" />
                   )}
                 </TableCell>
-                <TableCell>{format(testimonial.createdAt, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                <TableCell>
+                  {format(testimonial.createdAt, "dd/MM/yyyy", {
+                    locale: ptBR,
+                  })}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
                     {!testimonial.approved && (
-                      <form action={approveTestimonial.bind(null, testimonial.id)}>
+                      <form
+                        action={handleApproveTestimonial.bind(
+                          null,
+                          testimonial.id,
+                        )}
+                      >
                         <Button variant="outline" size="icon" title="Aprovar">
                           <CheckCircle className="h-4 w-4 text-green-600" />
                           <span className="sr-only">Aprovar</span>
                         </Button>
                       </form>
                     )}
-                    <Link href={`/admin/admin/depoimentos/edit/${testimonial.id}`}>
+                    <Link
+                      href={`/admin/admin/depoimentos/edit/${testimonial.id}`}
+                    >
                       <Button variant="outline" size="icon">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
                     </Link>
-                    <DeleteTestimonialDialog testimonialId={testimonial.id} authorName={testimonial.authorName} />
+                    <DeleteTestimonialDialog
+                      testimonialId={testimonial.id}
+                      authorName={
+                        testimonial.user?.name || "Usuário Desconhecido"
+                      }
+                    />
                   </div>
                 </TableCell>
               </TableRow>
@@ -114,5 +165,5 @@ export default async function AdminTestimonials() {
         </Table>
       )}
     </div>
-  )
+  );
 }

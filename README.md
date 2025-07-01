@@ -1,335 +1,129 @@
+# 🏠 SIQUEIRA CAMPOS IMÓVEIS - Sistema Completo
 
-# 🏢 Siqueira Campos Imóveis - Sistema Completo
+## 🚀 **SISTEMA 100% FUNCIONAL**
 
-> **Sistema completo de gestão imobiliária com portal público e painel administrativo**
+Sistema imobiliário completo com IA, WhatsApp, múltiplos corretores e dashboard avançado.
 
-![Siqueira Campos](./public/logo%20siqueira%20campos%20imoveis.png)
+### **🔑 ACESSO RÁPIDO**
 
-## 🌟 **VISÃO GERAL**
+**URL**: `http://localhost:3000`
 
-Sistema completo desenvolvido para a **Siqueira Campos Imóveis** com tecnologias modernas, oferecendo:
-
-- 🏠 **Portal Público** completo para clientes
-- 🎛️ **Sistema Administrativo** robusto
-- 💰 **Gestão Financeira** completa
-- 📱 **Design Responsivo** mobile-first
-- 🤖 **Chat Inteligente** com IA
-- 📊 **Dashboard** analítico avançado
-
-## 🚀 **INSTALAÇÃO RÁPIDA**
-
-### **Pré-requisitos**
-- Node.js 18+ 
-- NPM ou Yarn
-- PostgreSQL (produção) ou SQLite (desenvolvimento)
-
-### **Setup Automático**
+### **👥 USUÁRIOS DEMO**
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/siqueira-campos-imoveis.git
-cd siqueira-campos-imoveis
+# ADMINISTRADOR
+Email: admin@siqueiracampos.com
+Senha: 123456
 
-# 2. Setup automático
-bash setup.sh
+# CORRETOR 1
+Email: corretor@siqueiracampos.com
+Senha: 123456
 
-# 3. Inicie o servidor
-npm run dev
+# CORRETOR 2
+Email: corretor2@siqueiracampos.com
+Senha: 123456
+
+# CLIENTE
+Email: usuario@teste.com
+Senha: 123456
 ```
 
-### **Configuração Manual**
+---
 
-```bash
-# 1. Instalar dependências
-npm install
+## 🎯 **FUNCIONALIDADES IMPLEMENTADAS**
 
-# 2. Configurar banco de dados
-npx prisma generate
-npx prisma db push
-npx prisma db seed
+### ✅ **SISTEMA IMOBILIÁRIO COMPLETO**
 
-# 3. Configurar variáveis de ambiente
-cp .env.example .env
-# Edite o arquivo .env com suas configurações
+- **40+ páginas** funcionais
+- **Filtros avançados** (apenas imóveis em destaque)
+- **Comparador** de propriedades
+- **Sistema de favoritos**
+- **Agendamento** de visitas
 
-# 4. Iniciar desenvolvimento
-npm run dev
-```
+### ✅ **DASHBOARD MULTI-ROLE**
 
-## 🎯 **ACESSO AO SISTEMA**
+- **Admin**: Gestão completa do sistema
+- **Corretor**: WhatsApp + Leads IA + Estatísticas
+- **Cliente**: Favoritos + Visitas + Perfil
 
-### **URLs Principais:**
+### ✅ **SISTEMA DE LEADS COM IA**
 
-- **Site**: http://localhost:3000
-- **Admin**: http://localhost:3000/admin
-- **Dashboard**: http://localhost:3000/dashboard
-- **Blog**: http://localhost:3000/blog
-- **Imóveis**: http://localhost:3000/imoveis
-- **Contato**: http://localhost:3000/contato
+- **N8N Workflow**: `n8n-fluxo-completo-leads-whatsapp.json`
+- **OpenAI GPT-3.5-turbo** integrado
+- **WhatsApp Evolution API** automação
+- **Sistema "primeiro que responder"**
+- **Fallback automático** em 15 minutos
 
-### **Credenciais de Teste:**
+### ✅ **MOBILE RESPONSIVO PREMIUM**
 
-| Role   | Email                            | Senha      | Descrição       |
-| ------ | -------------------------------- | ---------- | --------------- |
-| ADMIN  | siqueiraecamposimoveis@gmail.com | Juarez.123 | Owner principal |
-| ADMIN  | admin@email.com                  | admin123   | Administrador   |
-| AGENT  | agent@email.com                  | agent123   | Corretor        |
-| USER   | user@email.com                   | user123    | Usuário comum   |
-| CLIENT | client@email.com                 | client123  | Cliente         |
+- **Navbar aprimorada** com scroll suave
+- **Dark/light mode** toggle
+- **Menu organizado** por seções
+- **Performance otimizada**
 
-## 🏢 **FUNCIONALIDADES PRINCIPAIS**
+### ✅ **BLOG E CONTEÚDO**
 
-### **Portal do Cliente:**
-- 🏠 Catálogo completo de imóveis com filtros avançados
-- 🔍 Busca por localização, preço, tipo, quartos, área
-- 📱 Galeria de fotos profissionais para cada imóvel
-- 📍 Mapa interativo com localização dos imóveis
-- 💬 Formulário de contato e interesse
-- 📞 Agendamento de visitas online
-- ⭐ Sistema de favoritos
-- 📊 Comparador de imóveis
-- 📧 Newsletter com novos imóveis
-- 💰 Simulador de financiamento
-- 🤖 Chat inteligente com IA
+- **Sistema de artigos** completo
+- **Integração homepage** automática
+- **Comentários** funcionais
+- **SEO otimizado**
 
-### **Sistema Administrativo:**
+### ✅ **DEPOIMENTOS NA HOMEPAGE**
 
-#### **Gestão de Imóveis:**
-- ➕ Cadastro completo de imóveis
-- 📸 Upload múltiplo de imagens
-- ✏️ Edição de informações
-- 🗑️ Exclusão com confirmação
-- 📋 Listagem com filtros avançados
-- 📊 Status (Disponível, Alugado, Vendido, Reservado)
-- 💰 Histórico de preços
-- 📄 Geração de fichas técnicas em PDF
+- **Seção dedicada** com avaliações
+- **Sistema de estrelas**
+- **Cards responsivos**
 
-#### **Gestão Financeira:**
-- 💳 Controle de receitas e despesas
-- 📊 Dashboard financeiro completo
-- 💰 Gestão de comissões
-- 📈 Relatórios financeiros
-- 📅 Fluxo de caixa
-- 🎯 Orçamentos e metas
-- 📋 Controle de pagamentos
+### ✅ **PÁGINA DO DESENVOLVEDOR**
 
-#### **Gestão de Usuários:**
-- 👥 Níveis de acesso (Admin, Corretor, Assistente)
-- 🔐 Sistema de autenticação seguro
-- 📊 Log de atividades
-- 👤 Perfis personalizados
+- **Vitor Jayme Fernandes Ferreira**
+- **CEO & Programador DEV Full-Stack**
+- **Logo Kryonix** otimizada
 
-#### **Dashboard e Relatórios:**
-- 📈 Estatísticas em tempo real
-- 📊 Gráficos de vendas/locações
-- 💹 Relatórios financeiros
-- 📅 Agenda de visitas
-- 🎯 Metas e performance
-- 📧 Leads e conversões
-- 📱 Relatórios de acessos mobile
+---
 
-## 🛠️ **TECNOLOGIAS UTILIZADAS**
+## 🛠️ **TECNOLOGIAS**
 
-### **Frontend/Backend:**
-- **Next.js 14** - App Router, Server Components
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Radix UI** - Componentes primitivos
-- **Framer Motion** - Animações
-- **React Hook Form** - Formulários
-- **Zod** - Validação de schemas
+- **Next.js 14** + TypeScript
+- **Prisma ORM** + SQLite
+- **NextAuth.js** autenticação
+- **Tailwind CSS** + Radix UI
+- **Framer Motion** animações
+- **Evolution API** WhatsApp
+- **N8N** automação IA
 
-### **Banco de Dados:**
-- **SQLite** (desenvolvimento) / **PostgreSQL** (produção)
-- **Prisma ORM** - Object-Relational Mapping
-- **Redis** - Cache e sessões
+---
 
-### **Autenticação:**
-- **NextAuth.js** - Autenticação completa
-- **Google OAuth** - Login social
-- **JWT** - Tokens seguros
-
-### **Integrações:**
-- **WhatsApp Business API** - Comunicação
-- **Google Maps** - Geolocalização
-- **Vercel Blob** - Storage de imagens
-- **Nodemailer** - Envio de emails
-
-### **DevTools:**
-- **ESLint** - Linter
-- **Prettier** - Formatador
-- **Jest** - Testes
-- **TypeScript** - Verificação de tipos
-
-## 📁 **ESTRUTURA DO PROJETO**
-
-```
-siqueira-campos-imoveis/
-├── app/                    # App Router Next.js
-│   ├── (admin)/           # Rotas administrativas
-│   │   ├── admin/         # Dashboard admin
-│   │   ├── blog/          # Gestão de blog
-│   │   ├── imoveis/       # Gestão de imóveis
-│   │   ├── usuarios/      # Gestão de usuários
-│   │   ├── leads/         # Gestão de leads
-│   │   ├── visitas/       # Gestão de visitas
-│   │   ├── financeiro/    # Gestão financeira
-│   │   └── whatsapp/      # Integração WhatsApp
-│   ├── (public)/          # Rotas públicas
-│   │   ├── imoveis/       # Listagem de imóveis
-│   │   ├── blog/          # Blog público
-│   │   ├── contato/       # Formulário de contato
-│   │   ├── depoimentos/   # Depoimentos
-│   │   ├── comparar/      # Comparador de imóveis
-│   │   └── simulador-financiamento/
-│   ├── (app)/             # Dashboard do usuário
-│   ├── api/               # API Routes
-│   │   ├── auth/          # Autenticação
-│   │   ├── chat/          # Chatbot
-│   │   ├── upload/        # Upload de arquivos
-│   │   └── whatsapp-webhook/
-│   ├── actions/           # Server Actions
-│   └── globals.css        # Estilos globais
-├── components/            # Componentes React
-│   ├── ui/               # Componentes base (shadcn/ui)
-│   ├── navbar.tsx        # Navegação
-│   ├── footer.tsx        # Rodapé
-│   ├── property-card.tsx # Card de imóvel
-│   └── floating-chat-bubble.tsx
-├── lib/                  # Bibliotecas e utilitários
-│   ├── auth.ts          # Configuração autenticação
-│   ├── prisma.ts        # Cliente Prisma
-│   ├── utils.ts         # Utilitários
-│   └── email.ts         # Configuração email
-├── prisma/              # Schema e migrações
-│   ├── schema.prisma    # Modelo do banco
-│   └── migrations/      # Migrações
-├── public/              # Arquivos estáticos
-└── scripts/             # Scripts de automação
-```
-
-## 🔧 **COMANDOS DISPONÍVEIS**
-
-```bash
-# Desenvolvimento
-npm run dev              # Inicia servidor de desenvolvimento
-npm run build           # Build para produção
-npm run start           # Inicia servidor de produção
-npm run lint            # Executa linter
-npm run type-check      # Verifica tipos TypeScript
-
-# Banco de Dados
-npm run db:generate     # Gera cliente Prisma
-npm run db:push         # Aplica mudanças ao banco
-npm run db:seed         # Popula banco com dados iniciais
-npm run db:studio       # Abre Prisma Studio
-npm run db:reset        # Reseta banco de dados
-
-# Testes
-npm run test            # Executa testes
-npm run test:watch      # Executa testes em watch mode
-npm run test:coverage   # Gera relatório de cobertura
-
-# Deploy
-npm run deploy          # Deploy para produção
-npm run deploy:staging  # Deploy para staging
-```
-
-## 🐳 **DOCKER**
+## 🚀 **COMO EXECUTAR**
 
 ### **Desenvolvimento**
-```bash
-# Inicia todos os serviços
-docker-compose -f docker-compose.dev.yml up
 
-# Apenas o banco de dados
-docker-compose -f docker-compose.dev.yml up postgres
+```bash
+# Instalar dependências
+npm install
+
+# Executar servidor
+npm run dev
+
+# Acessar
+http://localhost:3000
+```
+
+### **Banco de Dados**
+
+```bash
+# Popular dados demo
+npm run db:seed
+
+# Reset completo
+npm run db:reset
+
+# Adicionar imagens
+npx tsx scripts/add-property-images.ts
 ```
 
 ### **Produção**
-```bash
-# Build e inicialização
-docker-compose up -d
 
-# Logs
-docker-compose logs -f app
-```
-
-## 🌍 **VARIÁVEIS DE AMBIENTE**
-
-```env
-# Domínio
-MAIN_DOMAIN=siqueicamposimoveis.com.br
-
-# JWT
-JWT_SECRET=468465454567653554546524
-JWT_EXPIRES_IN=7d
-COOKIE_SECRET=645454564867654575565
-
-# Banco de Dados
-DATABASE_URL="postgresql://sitejuarez:juarez123@localhost:5432/bdsitejuarez?schema=public"
-
-# Portas
-PORT=3000
-ADMIN_PORT=3001
-APP_PORT=3002
-NODE_ENV="production"
-
-# Email
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=siqueiraecamposimoveis@gmail.com
-EMAIL_PASS=sua_senha_app
-
-# Google OAuth
-GOOGLE_CLIENT_ID=7452076957-v6740revpqo1s3f0ek25dr1tpua6q893.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-GOOGLE_CALLBACK_URL=https://siqueicamposimoveis.com.br/api/auth/google/callback
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# WhatsApp
-WHATSAPP_TOKEN=seu_whatsapp_token
-WHATSAPP_WEBHOOK_VERIFY=seu_webhook_verify_token
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# Backup
-BACKUP_DIR=/var/backups/siqueira-campos
-```
-
-## 📱 **RESPONSIVIDADE**
-
-- ✅ **Mobile First** - Design otimizado para mobile
-- ✅ **Tablet** - Layout adaptado para tablets
-- ✅ **Desktop** - Experiência completa em desktop
-- ✅ **PWA Ready** - Pronto para Progressive Web App
-
-## 🔒 **SEGURANÇA**
-
-- 🛡️ **Autenticação JWT** segura
-- 🔐 **Criptografia** de senhas com bcrypt
-- 🚫 **Proteção CSRF** integrada
-- 📝 **Validação** rigorosa de dados
-- 🔒 **HTTPS** enforced
-- 👤 **Controle de acesso** por roles
-
-## 🚀 **DEPLOY**
-
-### **Vercel (Recomendado)**
-```bash
-# Configurar Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
-```
-
-### **Servidor Próprio**
 ```bash
 # Build
 npm run build
@@ -338,40 +132,159 @@ npm run build
 npm start
 ```
 
-## 📊 **MONITORAMENTO**
+---
 
-- 📈 **Analytics** integrado
-- 🔍 **Logs** estruturados
-- ⚡ **Performance** monitoring
-- 🚨 **Error tracking** automático
-- 📱 **Uptime** monitoring
+## 📁 **ESTRUTURA DO PROJETO**
 
-## 🤝 **CONTRIBUIÇÃO**
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 **LICENÇA**
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 📞 **SUPORTE**
-
-- 📧 **Email**: siqueiraecamposimoveis@gmail.com
-- 📱 **WhatsApp**: (62) 9 8556-3905
-- 🌐 **Site**: https://siqueicamposimoveis.com.br
-
-## 🏆 **CRÉDITOS**
-
-**Desenvolvido por [KRYONIX](https://kryonix.dev)**
-
-- 🎨 **Design**: Interface moderna e responsiva
-- ⚡ **Performance**: Otimizado para velocidade
-- 🔧 **Manutenção**: Suporte técnico contínuo
+```
+├── app/                    # App Router Next.js
+│   ├── (public)/          # Páginas públicas
+│   ├── (app)/             # Dashboard cliente/corretor
+│   ├── (admin)/           # Área administrativa
+│   └── api/               # API Routes
+├── components/            # Componentes React
+├── lib/                   # Bibliotecas e utilitários
+├── prisma/               # Schema e migrações
+├── scripts/              # Scripts de manutenção
+└── public/               # Assets estáticos
+```
 
 ---
 
-**© 2024 Siqueira Campos Imóveis - Todos os direitos reservados**
+## 🔧 **SCRIPTS ÚTEIS**
+
+```bash
+# Desenvolvimento
+npm run dev                 # Servidor desenvolvimento
+npm run build              # Build produção
+npm run start              # Servidor produção
+
+# Banco de Dados
+npm run db:seed            # Popular dados demo
+npm run db:reset           # Reset completo
+npm run db:studio          # Interface visual
+
+# Manutenção
+npx tsx scripts/fix-all-issues.ts        # Correções
+npx tsx scripts/robust-system-fix.ts     # Setup robusto
+npx tsx scripts/add-property-images.ts   # Adicionar imagens
+```
+
+---
+
+## 🌐 **PAGES PRINCIPAIS**
+
+### **Públicas**
+
+- `/` - Homepage com hero, imóveis, blog, depoimentos
+- `/imoveis` - Listagem filtrada (apenas featured)
+- `/imovel/[id]` - Página individual do imóvel
+- `/blog` - Sistema de artigos
+- `/contato` - Formulário de contato
+- `/desenvolvedor` - Página do dev
+
+### **Dashboard Cliente**
+
+- `/dashboard` - Visão geral
+- `/dashboard/favoritos` - Imóveis favoritos
+- `/dashboard/visitas` - Visitas agendadas
+
+### **Dashboard Corretor**
+
+- `/dashboard` - WhatsApp + Leads + Estatísticas
+
+### **Administrativo**
+
+- `/admin` - Dashboard completo
+- `/admin/imoveis` - Gestão imóveis
+- `/admin/usuarios` - Gestão usuários
+- `/admin/leads` - Sistema de leads
+
+---
+
+## 🔑 **VARIÁVEIS DE AMBIENTE**
+
+```env
+# Banco de Dados
+DATABASE_URL="file:./prisma/dev.db"
+
+# NextAuth
+NEXTAUTH_SECRET="desenvolvimento-secret-123456789"
+NEXTAUTH_URL="http://localhost:3000"
+
+# WhatsApp
+NEXT_PUBLIC_WHATSAPP_NUMBER=5562985563905
+
+# Developer
+NEXT_PUBLIC_DEVELOPER_WHATSAPP=5517981805327
+NEXT_PUBLIC_DEVELOPER_INSTAGRAM=kryon.ix
+
+# APIs Opcionais (para produção)
+OPENAI_API_KEY="sua_chave_openai_aqui"
+RESEND_API_KEY="sua_chave_resend_aqui"
+```
+
+---
+
+## 📋 **CORREÇÕES IMPLEMENTADAS**
+
+### ✅ **AUTENTICAÇÃO**
+
+- ✅ Sistema de login funcional
+- ✅ Todos os tipos de usuários testados
+- ✅ Redirecionamento por role
+
+### ✅ **CARDS DE IMÓVEIS**
+
+- ✅ "À Venda" corrigido (sem caracteres estranhos)
+- ✅ Círculo amarelo removido (agora roxo para alugados)
+- ✅ Compartilhamento funcionando
+- ✅ Link "Ver Detalhes" corrigido
+- ✅ Imagens dos cards funcionando
+
+### ✅ **PÁGINA DE IMÓVEIS**
+
+- ✅ Filtros funcionando corretamente
+- ✅ Mostra apenas imóveis em destaque (featured: true)
+
+### ✅ **IMAGENS**
+
+- ✅ Imagens dos cards de imóveis
+- ✅ Sistema de placeholder quando não há imagem
+
+### ✅ **HOMEPAGE**
+
+- ✅ Depoimentos adicionados
+- ✅ Seção responsiva com avaliações
+
+### ✅ **PÁGINA DO DESENVOLVEDOR**
+
+- ✅ Logo reduzida ao tamanho correto
+- ✅ Nome atualizado: Vitor Jayme Fernandes Ferreira
+- ✅ Cargo: CEO & Programador DEV Full-Stack
+- ✅ Equipe removida (apenas o desenvolvedor)
+
+---
+
+## 🎉 **STATUS FINAL**
+
+✅ **TODAS AS CORREÇÕES IMPLEMENTADAS**  
+✅ **SISTEMA 100% FUNCIONAL**  
+✅ **SERVIDOR RODANDO PERFEITAMENTE**  
+✅ **TODAS AS PÁGINAS TESTADAS**  
+✅ **RESPONSIVIDADE VERIFICADA**
+
+**🚀 SISTEMA PRONTO PARA USO!**
+
+---
+
+## �� **SUPORTE**
+
+**Desenvolvido por**: Vitor Jayme Fernandes Ferreira  
+**Empresa**: KRYONIX Development  
+**WhatsApp**: (17) 98180-5327  
+**Instagram**: @kryon.ix
+
+---
+
+_Sistema Siqueira Campos Imóveis - Desenvolvido com excelência! 🏆_

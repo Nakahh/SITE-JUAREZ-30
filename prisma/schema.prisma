@@ -37,6 +37,8 @@ model User {
   image            String?
   password         String?
   role             Role               @default(USER)
+  whatsapp         String?
+  ativo            Boolean            @default(true)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   properties       Property[]         @relation("AgentProperties")
@@ -51,6 +53,7 @@ model User {
   commissions      Commission[]       @relation("AgentCommissions")
   createdCommissions Commission[]     @relation("CreatedCommissions")
   financings       Financing[]        @relation("UserFinancings")
+  leads            Lead[]             @relation("AgentLeads")
   accounts         Account[]
   sessions         Session[]
 }
@@ -325,4 +328,29 @@ model ErrorLog {
   context   String?
   metadata  String?
   createdAt DateTime @default(now())
+}
+
+enum LeadStatus {
+  PENDING
+  ASSUMED
+  EXPIRED
+  REJECTED
+}
+
+model Lead {
+  id           String     @id @default(cuid())
+  nome         String
+  telefone     String
+  mensagem     String
+  respostaIa   String?
+  status       LeadStatus @default(PENDING)
+  agentId      String?
+  agent        User?      @relation("AgentLeads", fields: [agentId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  assumedAt    DateTime?
+  expiredAt    DateTime?
+
+  @@index([status])
+  @@index([createdAt])
 }

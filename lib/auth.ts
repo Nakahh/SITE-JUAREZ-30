@@ -26,6 +26,12 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Validação de comprimento mínimo da senha
+        if (credentials.password.length < 6) {
+          console.log("Password too short");
+          return null;
+        }
+
         // Validação básica de formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(credentials.email)) {
@@ -33,37 +39,49 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        try {
-          console.log("Attempting to authenticate user:", credentials.email);
+        // Limitar comprimento do email para evitar ataques
+        if (credentials.email.length > 254) {
+          console.log("Email too long");
+          return null;
+        }
 
+        try {
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email.toLowerCase().trim(),
             },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              role: true,
+              image: true,
+              ativo: true,
+            },
           });
 
           if (!user) {
-            console.log("User not found:", credentials.email);
             return null;
           }
 
           if (!user.password) {
-            console.log("User has no password set:", credentials.email);
             return null;
           }
 
-          console.log("Comparing passwords for user:", credentials.email);
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password,
           );
 
           if (!isPasswordValid) {
-            console.log("Invalid password for user:", credentials.email);
             return null;
           }
 
-          console.log("Authentication successful for:", credentials.email);
+          if (user.role === "AGENT" && !user.ativo) {
+            return null;
+          }
+
           return {
             id: user.id,
             email: user.email,
@@ -123,3 +141,4 @@ export const authOptions: NextAuthOptions = {
 };
 
 export const auth = NextAuth(authOptions);
+export const { handlers, signIn, signOut } = auth;

@@ -73,6 +73,40 @@ export function EnhancedPropertyCard({
   const hasImages = images.length > 0;
   const currentImage = hasImages ? images[currentImageIndex] : null;
 
+  const handleShare = async () => {
+    const shareData = {
+      title: property.title,
+      text: `Confira este imóvel: ${property.title} - ${formatPrice(property.price)}`,
+      url: `${window.location.origin}/imovel/${property.id}`,
+    };
+
+    try {
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare(shareData)
+      ) {
+        await navigator.share(shareData);
+        return;
+      }
+    } catch (error) {
+      if ((error as Error).name === "AbortError") {
+        return; // User cancelled sharing
+      }
+    }
+
+    // Fallback para copy to clipboard
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      const { toast } = await import("sonner");
+      toast.success("Link copiado para a área de transferência!");
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+      const { toast } = await import("sonner");
+      toast.error("Erro ao copiar link. Tente novamente.");
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -92,7 +126,7 @@ export function EnhancedPropertyCard({
       case "SOLD":
         return "bg-red-500";
       case "RENTED":
-        return "bg-yellow-500";
+        return "bg-purple-500";
       default:
         return "bg-gray-500";
     }
@@ -154,26 +188,6 @@ export function EnhancedPropertyCard({
     const message = `Olá! Tenho interesse no imóvel: ${property.title} - ${formatPrice(property.price)}. Código: ${property.id}`;
     const whatsappUrl = `https://wa.me/5562985563905?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
-  };
-
-  const handleShare = async () => {
-    const url = `${window.location.origin}/imoveis/${property.id}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: property.title,
-          text: `${property.title} - ${formatPrice(property.price)}`,
-          url: url,
-        });
-      } catch (error) {
-        // Se a API nativa falhar, copiar para área de transferência
-        navigator.clipboard.writeText(url);
-      }
-    } else {
-      // Fallback para navegadores que não suportam Web Share API
-      navigator.clipboard.writeText(url);
-    }
   };
 
   return (
@@ -370,7 +384,7 @@ export function EnhancedPropertyCard({
           {/* Botões de ação principais */}
           <div className="flex space-x-2 w-full">
             <Button asChild className="flex-1">
-              <Link href={`/imoveis/${property.id}`}>
+              <Link href={`/imovel/${property.id}`}>
                 <Eye className="h-4 w-4 mr-2" />
                 Ver Detalhes
               </Link>

@@ -2,13 +2,7 @@ import prisma from "@/lib/prisma";
 import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
@@ -31,19 +25,24 @@ export default async function PropertiesPage({
   let properties = [];
 
   try {
-    const where: any = {};
+    const where: any = {
+      featured: true, // Mostrar apenas imóveis em destaque
+    };
 
     if (search) {
       where.OR = [
-        { title: { contains: search } },
-        { description: { contains: search } },
-        { city: { contains: search } },
-        { address: { contains: search } },
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { city: { contains: search, mode: "insensitive" } },
+        { address: { contains: search, mode: "insensitive" } },
       ];
     }
 
     if (type && type !== "todos") {
-      where.type = type;
+      where.type = {
+        contains: type,
+        mode: "insensitive",
+      };
     }
 
     if (minPrice) {
@@ -87,15 +86,15 @@ export default async function PropertiesPage({
   }
 
   const presetFilters = [
-    { label: "Casas até R$ 500k", href: "/imoveis?type=HOUSE&maxPrice=500000" },
+    { label: "Casas até R$ 600k", href: "/imoveis?type=Casa&maxPrice=600000" },
     {
       label: "Apartamentos 2 quartos",
-      href: "/imoveis?type=APARTMENT&bedrooms=2",
+      href: "/imoveis?type=Apartamento&bedrooms=2",
     },
-    { label: "Terrenos", href: "/imoveis?type=LAND" },
-    { label: "Comercial", href: "/imoveis?type=COMMERCIAL" },
-    { label: "Para Alugar", href: "/imoveis?status=FOR_RENT" },
-    { label: "Luxo (R$ 1M+)", href: "/imoveis?minPrice=1000000" },
+    { label: "Coberturas", href: "/imoveis?type=Cobertura" },
+    { label: "Para Alugar", href: "/imoveis" },
+    { label: "Luxo (R$ 800k+)", href: "/imoveis?minPrice=800000" },
+    { label: "Todos", href: "/imoveis" },
   ];
 
   return (
@@ -126,7 +125,7 @@ export default async function PropertiesPage({
         {/* Sidebar de Filtros */}
         <aside className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="mb-6 text-xl font-semibold">Filtros</h2>
-          <form method="get" className="space-y-6">
+          <form method="get" action="/imoveis" className="space-y-6">
             <div>
               <label
                 htmlFor="search"
@@ -150,18 +149,18 @@ export default async function PropertiesPage({
               <label htmlFor="type" className="block text-sm font-medium mb-2">
                 Tipo de Imóvel
               </label>
-              <Select name="type" defaultValue={type}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="HOUSE">Casa</SelectItem>
-                  <SelectItem value="APARTMENT">Apartamento</SelectItem>
-                  <SelectItem value="LAND">Terreno</SelectItem>
-                  <SelectItem value="COMMERCIAL">Comercial</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                name="type"
+                defaultValue={type || "todos"}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="todos">Todos</option>
+                <option value="Casa">Casa</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Cobertura">Cobertura</option>
+                <option value="Terreno">Terreno</option>
+                <option value="Comercial">Comercial</option>
+              </select>
             </div>
 
             <div>
@@ -208,26 +207,17 @@ export default async function PropertiesPage({
               >
                 Ordenar por
               </label>
-              <Select name="orderBy" defaultValue={orderBy || "recent"}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Ordenar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Mais Recentes</SelectItem>
-                  <SelectItem value="price_asc">
-                    Preço: Menor para Maior
-                  </SelectItem>
-                  <SelectItem value="price_desc">
-                    Preço: Maior para Menor
-                  </SelectItem>
-                  <SelectItem value="area_asc">
-                    Área: Menor para Maior
-                  </SelectItem>
-                  <SelectItem value="area_desc">
-                    Área: Maior para Menor
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                name="orderBy"
+                defaultValue={orderBy || "recent"}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="recent">Mais Recentes</option>
+                <option value="price_asc">Preço: Menor para Maior</option>
+                <option value="price_desc">Preço: Maior para Menor</option>
+                <option value="area_asc">Área: Menor para Maior</option>
+                <option value="area_desc">Área: Maior para Menor</option>
+              </select>
             </div>
 
             <Button type="submit" className="w-full">

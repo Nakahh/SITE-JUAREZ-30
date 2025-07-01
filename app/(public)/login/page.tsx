@@ -42,12 +42,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("🚀 Login form submitted");
     setIsLoading(true);
     setError("");
 
     // Validações do cliente
     if (!email || !password) {
-      setError("Por favor, preencha todos os campos");
+      console.log("❌ Missing email or password");
+      setError("❌ Por favor, preencha todos os campos");
       setIsLoading(false);
       return;
     }
@@ -55,13 +57,27 @@ export default function LoginPage() {
     // Validação básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Por favor, insira um email válido");
+      console.log("❌ Invalid email format");
+      setError("❌ Por favor, insira um email válido");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validação de senha
+    if (password.length < 6) {
+      console.log("❌ Password too short");
+      setError("❌ A senha deve ter pelo menos 6 caracteres");
       setIsLoading(false);
       return;
     }
 
     try {
-      console.log("Attempting login for:", email);
+      console.log("🔐 Attempting login for:", email.substring(0, 3) + "***");
+      console.log("📊 Login attempt details:", {
+        email: email.toLowerCase().trim(),
+        hasPassword: !!password,
+        passwordLength: password.length,
+      });
 
       const result = await signIn("credentials", {
         email: email.toLowerCase().trim(),
@@ -69,44 +85,62 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      console.log("Login result:", result);
+      console.log("📥 Login result received:", {
+        ok: result?.ok,
+        error: result?.error,
+        status: result?.status,
+        url: result?.url,
+      });
 
       if (result?.error) {
         console.error("Login error:", result.error);
 
-        if (result.error === "CredentialsSignin") {
-          setError("Email ou senha incorretos. Verifique suas credenciais.");
-        } else {
-          setError("Erro na autenticação. Tente novamente.");
+        // Diferentes tipos de erro com mensagens específicas
+        switch (result.error) {
+          case "CredentialsSignin":
+            setError(
+              "❌ Email ou senha incorretos. Verifique suas credenciais e tente novamente.",
+            );
+            break;
+          case "AccessDenied":
+            setError("❌ Acesso negado. Conta pode estar inativa.");
+            break;
+          case "Signin":
+            setError("❌ Erro durante o login. Tente novamente.");
+            break;
+          default:
+            setError(
+              "❌ Erro na autenticação. Contate o suporte se persistir.",
+            );
+        }
+
+        // Vibração no dispositivo se disponível
+        if (navigator.vibrate) {
+          navigator.vibrate(200);
         }
       } else if (result?.ok) {
-        console.log("Login successful, getting session...");
+        console.log("✅ Login successful, redirecting...");
+        setError(""); // Limpar qualquer erro anterior
 
-        // Aguardar um momento para a sessão ser estabelecida
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Feedback visual positivo
+        setError("✅ Login realizado com sucesso! Redirecionando...");
 
-        // Verificar a sessão para determinar o redirecionamento
-        const session = await getSession();
-        console.log("Session retrieved:", session);
-
-        if (session?.user) {
-          if (session.user.role === "ADMIN") {
-            console.log("Redirecting admin to /admin");
-            router.push("/admin");
-          } else {
-            console.log("Redirecting user to /dashboard");
-            router.push("/dashboard");
-          }
-          router.refresh();
-        } else {
-          setError("Erro ao estabelecer sessão. Tente novamente.");
-        }
+        // Aguardar um momento para mostrar o feedback positivo
+        setTimeout(() => {
+          // Forçar redirecionamento completo da página
+          window.location.href = "/dashboard";
+        }, 1000);
       } else {
-        setError("Erro inesperado durante o login.");
+        setError("❌ Resposta inesperada do servidor. Tente novamente.");
       }
     } catch (error) {
       console.error("Login exception:", error);
-      setError("Erro de conexão. Verifique sua internet e tente novamente.");
+      setError("❌ Erro de conexão. Verifique sua internet e tente novamente.");
+
+      // Vibração para erro de conexão
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 100, 100]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -222,9 +256,20 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <Alert
+                    variant={error.includes("✅") ? "default" : "destructive"}
+                    className="border-2"
+                  >
+                    <AlertDescription className="font-medium">
+                      {error}
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">

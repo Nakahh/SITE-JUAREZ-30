@@ -1,0 +1,39 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00000040"/>
+    </filter>
+  </defs>
+  
+  <!-- Outer Circle with Gradient -->
+  <circle cx="100" cy="100" r="100" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- Inner White Circle -->
+  <circle cx="100" cy="100" r="75" fill="white"/>
+  
+  <!-- K Letter -->
+  <g transform="translate(100, 100)">
+    <!-- Main vertical line of K -->
+    <rect x="-25" y="-35" width="8" height="70" fill="url(#textGradient)"/>
+    <!-- Upper diagonal of K -->
+    <rect x="-17" y="-15" width="30" height="6" fill="url(#textGradient)" transform="rotate(25 -17 -15)"/>
+    <!-- Lower diagonal of K -->
+    <rect x="-17" y="9" width="30" height="6" fill="url(#textGradient)" transform="rotate(-25 -17 9)"/>
+  </g>
+  
+  <!-- Company name arc (optional, can be removed for simpler version) -->
+  <defs>
+    <path id="circle" d="M 50,100 A 50,50 0 1,1 150,100"/>
+  </defs>
+  <text font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="url(#textGradient)">
+    <textPath href="#circle" startOffset="25%">KRYONIX</textPath>
+  </text>
+</svg>

@@ -93,6 +93,43 @@ export async function approveTestimonial(testimonialId: string) {
   }
 }
 
+export async function updateTestimonial(
+  testimonialId: string,
+  formData: FormData,
+) {
+  const session = await auth();
+
+  if (!session?.user?.role || session.user.role !== "ADMIN") {
+    return { success: false, message: "Permissão negada." };
+  }
+
+  const content = formData.get("content") as string;
+  const rating = parseInt(formData.get("rating") as string);
+  const approved = formData.get("approved") === "true";
+
+  if (!content || !rating || rating < 1 || rating > 5) {
+    return {
+      success: false,
+      message: "Conteúdo e avaliação (1-5 estrelas) são obrigatórios.",
+    };
+  }
+
+  try {
+    await prisma.testimonial.update({
+      where: { id: testimonialId },
+      data: { content, rating, approved },
+    });
+
+    revalidatePath("/depoimentos");
+    revalidatePath("/admin/depoimentos");
+
+    return { success: true, message: "Depoimento atualizado com sucesso!" };
+  } catch (error) {
+    console.error("Erro ao atualizar depoimento:", error);
+    return { success: false, message: "Erro ao atualizar depoimento." };
+  }
+}
+
 export async function deleteTestimonial(testimonialId: string) {
   const session = await auth();
 

@@ -1,16 +1,20 @@
-import { PrismaClient } from "@prisma/client"
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { ArticleCommentForm } from "@/components/article-comment-form" // Importar o formulário de comentário
-import { ArticleCommentsList } from "@/components/article-comments-list" // Importar a lista de comentários
-import { auth } from "@/app/api/auth/[...nextauth]/route" // Para obter a sessão do usuário
+import { PrismaClient } from "@prisma/client";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { ArticleCommentForm } from "@/components/article-comment-form"; // Importar o formulário de comentário
+import { ArticleCommentsList } from "@/components/article-comments-list"; // Importar a lista de comentários
+import { auth } from "@/lib/auth"; // Para obter a sessão do usuário
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const session = await auth()
+export default async function ArticlePage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const session = await auth();
   const article = await prisma.article.findUnique({
     where: { slug: params.slug },
     include: {
@@ -18,10 +22,10 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         select: { name: true },
       },
     },
-  })
+  });
 
   if (!article) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -44,7 +48,10 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: article.content }} />
+      <div
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: article.content }}
+      />
 
       <div className="mt-12 border-t pt-8">
         <h2 className="text-3xl font-bold mb-6">Comentários</h2>
@@ -54,5 +61,5 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         </div>
       </div>
     </article>
-  )
+  );
 }
