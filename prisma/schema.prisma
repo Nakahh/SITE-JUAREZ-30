@@ -37,6 +37,8 @@ model User {
   image            String?
   password         String?
   role             Role               @default(USER)
+  whatsapp         String?
+  ativo            Boolean            @default(true)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   properties       Property[]         @relation("AgentProperties")
@@ -51,6 +53,7 @@ model User {
   commissions      Commission[]       @relation("AgentCommissions")
   createdCommissions Commission[]     @relation("CreatedCommissions")
   financings       Financing[]        @relation("UserFinancings")
+  leads            Lead[]             @relation("AgentLeads")
   accounts         Account[]
   sessions         Session[]
 }
