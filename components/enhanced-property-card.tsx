@@ -196,26 +196,6 @@ export function EnhancedPropertyCard({
     window.open(whatsappUrl, "_blank");
   };
 
-  const handleShare = async () => {
-    const url = `${window.location.origin}/imoveis/${property.id}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: property.title,
-          text: `${property.title} - ${formatPrice(property.price)}`,
-          url: url,
-        });
-      } catch (error) {
-        // Se a API nativa falhar, copiar para área de transferência
-        navigator.clipboard.writeText(url);
-      }
-    } else {
-      // Fallback para navegadores que não suportam Web Share API
-      navigator.clipboard.writeText(url);
-    }
-  };
-
   return (
     <>
       <Card
