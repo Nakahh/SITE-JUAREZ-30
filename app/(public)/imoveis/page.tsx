@@ -2,13 +2,7 @@ import prisma from "@/lib/prisma";
 import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
