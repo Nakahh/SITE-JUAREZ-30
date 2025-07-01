@@ -131,7 +131,7 @@ export default async function PropertiesPage({
         {/* Sidebar de Filtros */}
         <aside className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="mb-6 text-xl font-semibold">Filtros</h2>
-          <form method="get" className="space-y-6">
+          <form method="get" action="/imoveis" className="space-y-6">
             <div>
               <label
                 htmlFor="search"
