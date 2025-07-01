@@ -246,7 +246,7 @@ export default async function HomePage() {
 
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 blur-3xl"></div>
-              <Image
+              <OptimizedImage
                 src="/hero-bg.svg"
                 alt="Imóveis em destaque"
                 width={600}
