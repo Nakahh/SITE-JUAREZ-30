@@ -14,6 +14,10 @@ import {
   deleteTestimonial,
   approveTestimonial,
 } from "@/app/actions/testimonial-actions";
+
+async function handleDeleteTestimonial(testimonialId: string) {
+  await deleteTestimonial(testimonialId);
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,7 +59,7 @@ function DeleteTestimonialDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <form action={() => deleteTestimonial(testimonialId)}>
+          <form action={() => handleDeleteTestimonial(testimonialId)}>
             <AlertDialogAction type="submit">Excluir</AlertDialogAction>
           </form>
         </AlertDialogFooter>
