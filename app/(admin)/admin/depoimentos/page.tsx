@@ -106,7 +106,7 @@ export default async function AdminTestimonials() {
             {testimonials.map((testimonial) => (
               <TableRow key={testimonial.id}>
                 <TableCell className="font-medium">
-                  {testimonial.authorName}
+                  {testimonial.user?.name || "Usuário Desconhecido"}
                 </TableCell>
                 <TableCell className="max-w-xs truncate">
                   {testimonial.content}
