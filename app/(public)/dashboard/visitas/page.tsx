@@ -1,17 +1,16 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { redirect } from "next/navigation"
-import { PrismaClient } from "@prisma/client"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { PrismaClient } from "@prisma/client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export default async function ClientVisitsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (
     !session?.user?.id ||
@@ -19,20 +18,22 @@ export default async function ClientVisitsPage() {
     session.papel === "CORRETOR" ||
     session.papel === "ASSISTENTE"
   ) {
-    redirect("/login")
+    redirect("/login");
   }
 
-  const userId = session.user.id as string
+  const userId = session.user.id as string;
 
   const scheduledVisits = await prisma.visit.findMany({
     where: { clientId: userId },
     include: { property: true },
     orderBy: { dataHora: "asc" },
-  })
+  });
 
   return (
     <section className="container py-12">
-      <h1 className="text-4xl font-bold tracking-tight mb-8">Suas Visitas Agendadas</h1>
+      <h1 className="text-4xl font-bold tracking-tight mb-8">
+        Suas Visitas Agendadas
+      </h1>
 
       {scheduledVisits.length === 0 ? (
         <p className="text-muted-foreground">
@@ -47,11 +48,18 @@ export default async function ClientVisitsPage() {
             <Card key={visit.id}>
               <CardContent className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold">{visit.property.titulo}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {visit.property.titulo}
+                  </h3>
                   <p className="text-muted-foreground text-sm">
-                    Agendado para: {format(visit.dataHora, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    Agendado para:{" "}
+                    {format(visit.dataHora, "dd/MM/yyyy 'às' HH:mm", {
+                      locale: ptBR,
+                    })}
                   </p>
-                  <p className="text-muted-foreground text-sm">Status: {visit.status}</p>
+                  <p className="text-muted-foreground text-sm">
+                    Status: {visit.status}
+                  </p>
                 </div>
                 <Link href={`/imoveis/${visit.property.id}`}>
                   <Button variant="outline" className="mt-2 md:mt-0">
@@ -64,5 +72,5 @@ export default async function ClientVisitsPage() {
         </div>
       )}
     </section>
-  )
+  );
 }
