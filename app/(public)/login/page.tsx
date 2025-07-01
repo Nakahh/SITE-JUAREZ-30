@@ -127,9 +127,9 @@ export default function LoginPage() {
 
         // Aguardar um momento para mostrar o feedback positivo
         setTimeout(() => {
-          router.push("/dashboard");
-          router.refresh();
-        }, 800);
+          // Forçar redirecionamento completo da página
+          window.location.href = "/dashboard";
+        }, 1000);
       } else {
         setError("❌ Resposta inesperada do servidor. Tente novamente.");
       }
