@@ -73,6 +73,29 @@ export function EnhancedPropertyCard({
   const hasImages = images.length > 0;
   const currentImage = hasImages ? images[currentImageIndex] : null;
 
+  const handleShare = async () => {
+    const shareData = {
+      title: property.title,
+      text: `Confira este imóvel: ${property.title} - ${formatPrice(property.price)}`,
+      url: `${window.location.origin}/imoveis/${property.id}`,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        // Fallback para copy to clipboard
+        await navigator.clipboard.writeText(shareData.url);
+        // Aqui você pode adicionar um toast notification
+        console.log("Link copiado para a área de transferência!");
+      }
+    } else {
+      // Fallback para navegadores que não suportam Web Share API
+      await navigator.clipboard.writeText(shareData.url);
+      console.log("Link copiado para a área de transferência!");
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
