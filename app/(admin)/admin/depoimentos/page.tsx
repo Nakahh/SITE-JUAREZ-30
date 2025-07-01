@@ -18,6 +18,10 @@ import {
 async function handleDeleteTestimonial(testimonialId: string) {
   await deleteTestimonial(testimonialId);
 }
+
+async function handleApproveTestimonial(testimonialId: string) {
+  await approveTestimonial(testimonialId);
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -128,7 +132,10 @@ export default async function AdminTestimonials() {
                   <div className="flex justify-end space-x-2">
                     {!testimonial.approved && (
                       <form
-                        action={approveTestimonial.bind(null, testimonial.id)}
+                        action={handleApproveTestimonial.bind(
+                          null,
+                          testimonial.id,
+                        )}
                       >
                         <Button variant="outline" size="icon" title="Aprovar">
                           <CheckCircle className="h-4 w-4 text-green-600" />
