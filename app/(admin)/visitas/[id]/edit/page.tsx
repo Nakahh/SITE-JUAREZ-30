@@ -1,43 +1,56 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { updateVisit } from "@/app/actions/visit-actions"
-import { PrismaClient } from "@prisma/client"
-import { notFound } from "next/navigation"
-import { format } from "date-fns"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { updateVisit } from "@/app/actions/visit-actions";
+import { PrismaClient } from "@prisma/client";
+import { notFound } from "next/navigation";
+import { format } from "date-fns";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export default async function EditVisitPage({ params }: { params: { id: string } }) {
+export default async function EditVisitPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const visit = await prisma.visit.findUnique({
     where: { id: params.id },
     include: {
-      property: { select: { id: true, titulo: true } },
-      client: { select: { id: true, nome: true, email: true } },
+      property: { select: { id: true, title: true } },
+      client: { select: { id: true, name: true, email: true } },
     },
-  })
+  });
 
   if (!visit) {
-    notFound()
+    notFound();
   }
 
   const properties = await prisma.property.findMany({
-    select: { id: true, titulo: true },
-    orderBy: { titulo: "asc" },
-  })
+    select: { id: true, title: true },
+    orderBy: { title: "asc" },
+  });
 
   const clients = await prisma.client.findMany({
-    select: { id: true, nome: true, email: true },
-    orderBy: { nome: "asc" },
-  })
+    select: { id: true, name: true, email: true },
+    orderBy: { name: "asc" },
+  });
 
   // Formatar a data para o formato datetime-local
-  const formattedDataHora = format(visit.dataHora, "yyyy-MM-dd'T'HH:mm")
+  const formattedDataHora = format(visit.dataHora, "yyyy-MM-dd'T'HH:mm");
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Editar Visita</h1>
-      <form action={updateVisit.bind(null, visit.id)} className="space-y-4 max-w-lg">
+      <form
+        action={updateVisit.bind(null, visit.id)}
+        className="space-y-4 max-w-lg"
+      >
         <div>
           <label htmlFor="propertyId" className="block text-sm font-medium">
             Imóvel
@@ -76,7 +89,13 @@ export default async function EditVisitPage({ params }: { params: { id: string }
           <label htmlFor="dataHora" className="block text-sm font-medium">
             Data e Hora da Visita
           </label>
-          <Input type="datetime-local" id="dataHora" name="dataHora" defaultValue={formattedDataHora} required />
+          <Input
+            type="datetime-local"
+            id="dataHora"
+            name="dataHora"
+            defaultValue={formattedDataHora}
+            required
+          />
         </div>
         <div>
           <label htmlFor="status" className="block text-sm font-medium">
@@ -97,5 +116,5 @@ export default async function EditVisitPage({ params }: { params: { id: string }
         <Button type="submit">Atualizar Visita</Button>
       </form>
     </div>
-  )
+  );
 }
