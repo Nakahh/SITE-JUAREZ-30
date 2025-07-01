@@ -2,7 +2,16 @@ import { Button } from "@/components/ui/button";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth"; // Importação corrigida
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Search, Calendar, Star } from "lucide-react";
+import {
+  Heart,
+  Search,
+  Calendar,
+  Star,
+  Users,
+  MessageSquare,
+} from "lucide-react";
+import { WhatsAppIntegrationCard } from "@/components/whatsapp-integration-card";
+import { LeadsCard } from "@/components/leads-card";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
