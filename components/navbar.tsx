@@ -374,140 +374,242 @@ export function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden border-t border-border bg-background/95 backdrop-blur-lg"
             >
-              <div className="py-4 space-y-2">
-                {mainNavItems.map((item) => (
-                  <div key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                        isActive(item.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-foreground hover:bg-accent"
-                      }`}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                    </Link>
-
-                    {item.submenu && (
-                      <div className="ml-6 space-y-1">
-                        {item.submenu.map((subItem) => (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            onClick={() => setIsOpen(false)}
-                            className="block px-4 py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+              <div className="max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                <div className="py-4 space-y-2">
+                  {/* Login/Register Section - Top of mobile menu */}
+                  {!session ? (
+                    <div className="px-4 pb-4 border-b border-border">
+                      <div className="flex flex-col space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-semibold">Acesso</h4>
+                          {/* Theme Toggle - Top Right */}
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setTheme("light")}
+                              className={`h-8 w-8 p-0 ${theme === "light" ? "bg-accent" : ""}`}
+                            >
+                              <Sun className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setTheme("dark")}
+                              className={`h-8 w-8 p-0 ${theme === "dark" ? "bg-accent" : ""}`}
+                            >
+                              <Moon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9"
+                            asChild
                           >
-                            {subItem.label}
-                          </Link>
-                        ))}
+                            <Link
+                              href="/login"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <LogIn className="mr-2 h-4 w-4" />
+                              Entrar
+                            </Link>
+                          </Button>
+                          <Button size="sm" className="h-9" asChild>
+                            <Link
+                              href="/register"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <User className="mr-2 h-4 w-4" />
+                              Cadastrar
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ) : (
+                    <div className="px-4 pb-4 border-b border-border">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage
+                              src={session.user?.image || ""}
+                              alt={session.user?.name || ""}
+                            />
+                            <AvatarFallback>
+                              {session.user?.name?.charAt(0).toUpperCase() ||
+                                "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium leading-none">
+                              {session.user?.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {session.user?.email}
+                            </p>
+                          </div>
+                        </div>
+                        {/* Theme Toggle - Top Right for logged users */}
+                        <div className="flex space-x-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setTheme("light")}
+                            className={`h-8 w-8 p-0 ${theme === "light" ? "bg-accent" : ""}`}
+                          >
+                            <Sun className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setTheme("dark")}
+                            className={`h-8 w-8 p-0 ${theme === "dark" ? "bg-accent" : ""}`}
+                          >
+                            <Moon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9"
+                          asChild
+                        >
+                          <Link
+                            href="/dashboard"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <User className="mr-2 h-4 w-4" />
+                            Dashboard
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9"
+                          onClick={() => {
+                            signOut();
+                            setIsOpen(false);
+                          }}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sair
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
-                <div className="border-t border-border pt-4 mt-4">
-                  {tools.map((tool) => (
-                    <Link
-                      key={tool.href}
-                      href={tool.href}
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <tool.icon className="h-4 w-4" />
-                      <span>{tool.label}</span>
-                      {tool.badge && (
-                        <Badge variant="secondary" className="text-xs">
-                          {tool.badge}
-                        </Badge>
+                  {/* Main Navigation */}
+                  {mainNavItems.map((item) => (
+                    <div key={item.href}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                          isActive(item.href)
+                            ? "bg-primary/10 text-primary"
+                            : "text-foreground hover:bg-accent"
+                        }`}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                        {item.submenu && (
+                          <ChevronDown className="h-4 w-4 ml-auto" />
+                        )}
+                      </Link>
+
+                      {item.submenu && (
+                        <div className="ml-6 space-y-1 pl-4 border-l border-border/50">
+                          {item.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              href={subItem.href}
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
                       )}
-                    </Link>
+                    </div>
                   ))}
 
-                  {/* Theme Toggle Mobile */}
-                  <div className="px-4 py-3">
-                    <h4 className="text-sm font-medium mb-2">Tema</h4>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTheme("light")}
-                        className="flex-1"
+                  {/* Tools Section */}
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="px-4 mb-3">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Ferramentas
+                      </h4>
+                    </div>
+                    {tools.map((tool) => (
+                      <Link
+                        key={tool.href}
+                        href={tool.href}
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-accent/50 transition-colors rounded-md mx-2"
                       >
-                        <Sun className="mr-2 h-4 w-4" />
-                        Claro
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTheme("dark")}
-                        className="flex-1"
+                        <tool.icon className="h-4 w-4" />
+                        <span>{tool.label}</span>
+                        {tool.badge && (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs ml-auto"
+                          >
+                            {tool.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="px-4 mb-3">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Contato
+                      </h4>
+                    </div>
+                    <div className="px-4 space-y-3">
+                      <a
+                        href="tel:(62)985563905"
+                        className="flex items-center space-x-3 text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
-                        <Moon className="mr-2 h-4 w-4" />
-                        Escuro
+                        <Phone className="h-4 w-4" />
+                        <span>(62) 9 8556-3905</span>
+                      </a>
+                      <a
+                        href="mailto:siqueiraecamposimoveis@gmail.com"
+                        className="flex items-center space-x-3 text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        <Mail className="h-4 w-4" />
+                        <span>siqueiraecamposimoveis@gmail.com</span>
+                      </a>
+                      <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>Goiânia - GO</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        asChild
+                      >
+                        <a
+                          href="https://wa.me/5562985563905"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <WhatsAppIcon className="h-4 w-4 mr-2" />
+                          WhatsApp
+                        </a>
                       </Button>
                     </div>
                   </div>
                 </div>
-
-                {session ? (
-                  <div className="border-t border-border pt-4 mt-4 space-y-2">
-                    <div className="px-4 py-2">
-                      <p className="text-sm font-medium">
-                        {session.user?.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {session.user?.email}
-                      </p>
-                    </div>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>Dashboard</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        signOut();
-                        setIsOpen(false);
-                      }}
-                      className="flex items-center space-x-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-primary transition-colors w-full text-left"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sair</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="border-t border-border pt-4 mt-4 space-y-3">
-                    <div className="px-4">
-                      <h4 className="text-sm font-medium mb-3">Acesso</h4>
-                      <div className="space-y-2">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start"
-                          asChild
-                        >
-                          <Link href="/login" onClick={() => setIsOpen(false)}>
-                            <LogIn className="mr-2 h-4 w-4" />
-                            Entrar
-                          </Link>
-                        </Button>
-                        <Button className="w-full justify-start" asChild>
-                          <Link
-                            href="/register"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            <User className="mr-2 h-4 w-4" />
-                            Cadastrar
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
