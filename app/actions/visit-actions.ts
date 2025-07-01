@@ -72,7 +72,7 @@ export async function scheduleVisit(formData: FormData) {
     await logActivity(
       session?.user?.id || null,
       "scheduleVisit",
-      `Visita agendada para imóvel ${propertyId} na data ${visitDateTime.toISOString()}`
+      `Visita agendada para imóvel ${propertyId} na data ${visitDateTime.toISOString()}`,
     );
 
     revalidatePath("/admin/visitas");
@@ -84,22 +84,25 @@ export async function scheduleVisit(formData: FormData) {
         "Visita agendada com sucesso! Entraremos em contato para confirmar.",
     };
   } catch (error) {
-    console.error('Erro ao agendar visita:', error)
+    console.error("Erro ao agendar visita:", error);
 
     // Log error for debugging
-    await prisma.errorLog.create({
-      data: {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : '',
-        context: 'scheduleVisit',
-        metadata: JSON.stringify(visitData)
-      }
-    }).catch(() => {}) // Ignore if error log fails
+    await prisma.errorLog
+      .create({
+        data: {
+          error: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : "",
+          context: "scheduleVisit",
+          metadata: JSON.stringify(visitData),
+        },
+      })
+      .catch(() => {}); // Ignore if error log fails
 
-    return { 
-      success: false, 
-      message: 'Erro ao agendar visita. Tente novamente ou entre em contato conosco.' 
-    }
+    return {
+      success: false,
+      message:
+        "Erro ao agendar visita. Tente novamente ou entre em contato conosco.",
+    };
   }
 }
 
@@ -119,7 +122,7 @@ export async function updateVisitStatus(visitId: string, status: string) {
     await logActivity(
       session.user.id,
       "updateVisitStatus",
-      `Status da visita ${visitId} atualizado para ${status}`
+      `Status da visita ${visitId} atualizado para ${status}`,
     );
 
     revalidatePath("/admin/visitas");
@@ -127,6 +130,81 @@ export async function updateVisitStatus(visitId: string, status: string) {
   } catch (error) {
     console.error("Erro ao atualizar status:", error);
     return { success: false, message: "Erro ao atualizar status." };
+  }
+}
+
+export async function updateVisit(visitId: string, formData: FormData) {
+  const session = await auth();
+
+  if (!session?.user?.role || !["ADMIN", "AGENT"].includes(session.user.role)) {
+    return { success: false, message: "Permissão negada." };
+  }
+
+  const date = formData.get("date") as string;
+  const time = formData.get("time") as string;
+  const notes = formData.get("notes") as string;
+  const status = formData.get("status") as string;
+
+  if (!date || !time) {
+    return {
+      success: false,
+      message: "Data e hora são obrigatórios.",
+    };
+  }
+
+  try {
+    const visitDateTime = new Date(`${date}T${time}:00`);
+
+    await prisma.visit.update({
+      where: { id: visitId },
+      data: {
+        date: visitDateTime,
+        notes: notes || null,
+        status: status || "PENDING",
+      },
+    });
+
+    await logActivity(
+      session.user.id,
+      "updateVisit",
+      `Visita ${visitId} atualizada`,
+    );
+
+    revalidatePath("/admin/visitas");
+    revalidatePath("/dashboard/visitas");
+
+    return { success: true, message: "Visita atualizada com sucesso!" };
+  } catch (error) {
+    console.error("Erro ao atualizar visita:", error);
+    return { success: false, message: "Erro ao atualizar visita." };
+  }
+}
+
+export async function deleteVisit(visitId: string) {
+  const session = await auth();
+
+  if (!session?.user?.role || !["ADMIN", "AGENT"].includes(session.user.role)) {
+    return { success: false, message: "Permissão negada." };
+  }
+
+  try {
+    await prisma.visit.delete({
+      where: { id: visitId },
+    });
+
+    await logActivity(
+      session.user.id,
+      "deleteVisit",
+      `Visita ${visitId} excluída`,
+    );
+
+    revalidatePath("/admin/visitas");
+    revalidatePath("/dashboard/visitas");
+
+    return { success: true, message: "Visita excluída com sucesso!" };
+  } catch (error) {
+    console.error("Erro ao excluir visita:", error);
+    return { success: false, message: "Erro ao excluir visita." };
   }
 }
 
@@ -160,7 +238,7 @@ export async function cancelVisit(visitId: string) {
     await logActivity(
       session?.user?.id || null,
       "cancelVisit",
-      `Visita ${visitId} cancelada`
+      `Visita ${visitId} cancelada`,
     );
 
     revalidatePath("/admin/visitas");
