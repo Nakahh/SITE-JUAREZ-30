@@ -30,9 +30,52 @@ import {
   Heart,
   Search,
   Filter,
+  FileText,
+  Calendar,
+  Eye,
 } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Buscar propriedades em destaque
+  const featuredProperties = await prisma.property.findMany({
+    where: {
+      featured: true,
+    },
+    include: {
+      agent: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+    take: 3,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  // Buscar artigos recentes do blog
+  const recentArticles = await prisma.article.findMany({
+    where: {
+      published: true,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
+    take: 3,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
   const featuredProperties = [
     {
       id: "1",
