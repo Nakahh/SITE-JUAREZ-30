@@ -46,7 +46,7 @@ export default function DeveloperPage() {
 
           {/* Developer Profile */}
           <div className="bg-card rounded-2xl shadow-xl p-8 md:p-12 text-center">
-            {/* Logo da empresa */}
+            {/* Logo da empresa - tamanho reduzido */}
             <div className="mb-8">
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 p-2 shadow-xl">
                 <div className="w-full h-full rounded-full bg-white flex items-center justify-center p-1">
