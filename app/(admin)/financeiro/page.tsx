@@ -1,9 +1,16 @@
-import { PrismaClient } from "@prisma/client"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash2, PlusCircle } from "lucide-react"
-import { deleteFinancialRecord } from "@/app/actions/financial-actions"
+import { PrismaClient } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pencil, Trash2, PlusCircle } from "lucide-react";
+import { deleteFinancialRecord } from "@/app/actions/financial-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,18 +21,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+} from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export default async function AdminFinanceiro() {
   const records = await prisma.financialRecord.findMany({
     orderBy: {
-      data: "desc",
+      date: "desc",
     },
-  })
+  });
 
   return (
     <div>
@@ -40,7 +47,9 @@ export default async function AdminFinanceiro() {
       </div>
 
       {records.length === 0 ? (
-        <p className="text-center text-muted-foreground">Nenhum registro financeiro cadastrado ainda.</p>
+        <p className="text-center text-muted-foreground">
+          Nenhum registro financeiro cadastrado ainda.
+        </p>
       ) : (
         <Table>
           <TableHeader>
@@ -55,14 +64,25 @@ export default async function AdminFinanceiro() {
           <TableBody>
             {records.map((record) => (
               <TableRow key={record.id}>
-                <TableCell className="font-medium">{record.descricao || "N/A"}</TableCell>
-                <TableCell>{record.tipo}</TableCell>
-                <TableCell
-                  className={record.tipo === "Receita" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}
-                >
-                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(record.valor)}
+                <TableCell className="font-medium">
+                  {record.description || "N/A"}
                 </TableCell>
-                <TableCell>{format(record.data, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+                <TableCell>{record.type}</TableCell>
+                <TableCell
+                  className={
+                    record.type === "Receita"
+                      ? "text-green-600 font-semibold"
+                      : "text-red-600 font-semibold"
+                  }
+                >
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(record.amount)}
+                </TableCell>
+                <TableCell>
+                  {format(record.date, "dd/MM/yyyy", { locale: ptBR })}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/financeiro/${record.id}/edit`}>
@@ -82,14 +102,22 @@ export default async function AdminFinanceiro() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro financeiro{" "}
-                            <span className="font-bold">{record.descricao}</span>.
+                            Esta ação não pode ser desfeita. Isso excluirá
+                            permanentemente o registro financeiro{" "}
+                            <span className="font-bold">
+                              {record.description}
+                            </span>
+                            .
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <form action={deleteFinancialRecord.bind(null, record.id)}>
-                            <AlertDialogAction type="submit">Excluir</AlertDialogAction>
+                          <form
+                            action={deleteFinancialRecord.bind(null, record.id)}
+                          >
+                            <AlertDialogAction type="submit">
+                              Excluir
+                            </AlertDialogAction>
                           </form>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -102,5 +130,5 @@ export default async function AdminFinanceiro() {
         </Table>
       )}
     </div>
-  )
+  );
 }
