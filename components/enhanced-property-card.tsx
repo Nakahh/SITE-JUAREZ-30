@@ -142,7 +142,7 @@ export function EnhancedPropertyCard({
     switch (status) {
       case "FOR_SALE":
       case "AVAILABLE":
-        return "�� Venda";
+        return "À Venda";
       case "FOR_RENT":
         return "Para Alugar";
       case "SOLD":
