@@ -121,17 +121,47 @@ export default function LoginPage() {
           navigator.vibrate(200);
         }
       } else if (result?.ok) {
-        console.log("✅ Login successful, redirecting...");
+        console.log("✅ Login successful, getting session...");
         setError(""); // Limpar qualquer erro anterior
 
         // Feedback visual positivo
         setError("✅ Login realizado com sucesso! Redirecionando...");
 
-        // Aguardar um momento para mostrar o feedback positivo
-        setTimeout(() => {
-          // Forçar redirecionamento completo da página
-          window.location.href = "/dashboard";
-        }, 1000);
+        try {
+          // Aguardar e obter a sessão atualizada
+          const sessionData = await getSession();
+          console.log("📊 Session data received:", sessionData);
+
+          if (sessionData?.user?.role) {
+            const userRole = sessionData.user.role;
+            console.log("🎯 Redirecting based on role:", userRole);
+
+            // Redirecionamento baseado no papel do usuário
+            setTimeout(() => {
+              if (userRole === "ADMIN") {
+                console.log("🔄 Redirecting ADMIN to /admin");
+                window.location.href = "/admin";
+              } else if (userRole === "AGENT") {
+                console.log("🔄 Redirecting AGENT to /dashboard");
+                window.location.href = "/dashboard";
+              } else {
+                console.log("🔄 Redirecting USER to /dashboard");
+                window.location.href = "/dashboard";
+              }
+            }, 1000);
+          } else {
+            console.log("⚠️ No role found, defaulting to dashboard");
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1000);
+          }
+        } catch (sessionError) {
+          console.error("❌ Error getting session:", sessionError);
+          // Fallback para dashboard
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        }
       } else {
         setError("❌ Resposta inesperada do servidor. Tente novamente.");
       }
