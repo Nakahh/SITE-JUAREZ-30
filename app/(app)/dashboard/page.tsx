@@ -250,6 +250,17 @@ export default async function ClientDashboard() {
         )}
       </div>
 
+      {/* Seção específica para corretores */}
+      {isAgent && (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Ferramentas do Corretor</h2>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <WhatsAppIntegrationCard />
+            <LeadsCard />
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
