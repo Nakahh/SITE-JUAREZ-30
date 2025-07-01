@@ -61,7 +61,7 @@ function DeleteSavedSearchDialog({ searchId }: { searchId: string }) {
 }
 
 export default async function SavedSearchesPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (
     !session?.user?.id ||

@@ -10,7 +10,7 @@ import { ptBR } from "date-fns/locale";
 const prisma = new PrismaClient();
 
 export default async function ClientVisitsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (
     !session?.user?.id ||
