@@ -111,6 +111,7 @@ import {
   ScanLine,
   Crosshair,
   Radar,
+  X,
 } from "lucide-react";
 
 interface SystemMetrics {
