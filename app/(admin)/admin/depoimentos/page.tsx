@@ -59,7 +59,7 @@ function DeleteTestimonialDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <form action={() => handleDeleteTestimonial(testimonialId)}>
+          <form action={handleDeleteTestimonial.bind(null, testimonialId)}>
             <AlertDialogAction type="submit">Excluir</AlertDialogAction>
           </form>
         </AlertDialogFooter>
