@@ -278,7 +278,7 @@ export default async function HomePage() {
                 className="overflow-hidden group hover:shadow-lg transition-shadow"
               >
                 <div className="relative aspect-video overflow-hidden">
-                  <Image
+                  <OptimizedImage
                     src={property.images?.[0] || "/placeholder-property.svg"}
                     alt={property.title}
                     fill
