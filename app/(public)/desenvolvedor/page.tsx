@@ -1,6 +1,3 @@
-"use client";
-
-import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -26,7 +23,7 @@ import {
   Linkedin,
 } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Desenvolvedor - KRYONIX Development",
   description:
     "Conheça a KRYONIX Development, responsável pelo desenvolvimento do sistema Siqueira Campos Imóveis",
