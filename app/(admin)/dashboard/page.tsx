@@ -1633,7 +1633,7 @@ export default function StatisticalDashboard() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Brain className="h-5 w-5" />
-                    Alertas Preditivos
+                    Alertas Preditivos com IA
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -1642,8 +1642,8 @@ export default function StatisticalDashboard() {
                       <Alert className="bg-green-900/20 border-green-500">
                         <CheckCircle className="h-4 w-4 text-green-500" />
                         <AlertDescription className="text-green-300">
-                          Sistema funcionando perfeitamente. Nenhum alerta no
-                          momento.
+                          🤖 IA Analytics: Sistema funcionando perfeitamente.
+                          Nenhum alerta no momento.
                         </AlertDescription>
                       </Alert>
                     ) : (
@@ -1651,56 +1651,185 @@ export default function StatisticalDashboard() {
                         <Alert
                           key={alert.id}
                           className={`${
-                            alert.type === "error"
-                              ? "bg-red-900/20 border-red-500"
-                              : alert.type === "warning"
-                                ? "bg-yellow-900/20 border-yellow-500"
-                                : "bg-blue-900/20 border-blue-500"
+                            alert.type === "critical"
+                              ? "bg-red-900/30 border-red-400"
+                              : alert.type === "error"
+                                ? "bg-red-900/20 border-red-500"
+                                : alert.type === "warning"
+                                  ? "bg-yellow-900/20 border-yellow-500"
+                                  : "bg-blue-900/20 border-blue-500"
                           }`}
                         >
-                          <AlertTriangle
-                            className={`h-4 w-4 ${
-                              alert.type === "error"
-                                ? "text-red-500"
-                                : alert.type === "warning"
-                                  ? "text-yellow-500"
-                                  : "text-blue-500"
-                            }`}
-                          />
-                          <AlertDescription className="flex items-center justify-between">
-                            <div>
-                              <strong className="text-white">
-                                {alert.title}
-                              </strong>
-                              <p
-                                className={`text-sm ${
-                                  alert.type === "error"
-                                    ? "text-red-300"
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle
+                              className={`h-4 w-4 mt-1 ${
+                                alert.type === "critical"
+                                  ? "text-red-400 animate-pulse"
+                                  : alert.type === "error"
+                                    ? "text-red-500"
                                     : alert.type === "warning"
-                                      ? "text-yellow-300"
-                                      : "text-blue-300"
-                                }`}
-                              >
-                                {alert.message}
-                              </p>
-                              <p className="text-slate-400 text-xs">
-                                {alert.timestamp.toLocaleTimeString()}
-                              </p>
-                            </div>
-                            {alert.action && (
-                              <Button
-                                size="sm"
-                                onClick={() => executeAutoFix(alert.action)}
-                                disabled={executingCommands.has(alert.action)}
-                              >
-                                <Wrench className="h-3 w-3 mr-1" />
-                                Corrigir
-                              </Button>
-                            )}
-                          </AlertDescription>
+                                      ? "text-yellow-500"
+                                      : "text-blue-500"
+                              }`}
+                            />
+                            <AlertDescription className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-white">
+                                      {alert.title}
+                                    </strong>
+                                    {alert.severity && (
+                                      <Badge
+                                        className={`${getSeverityColor(alert.severity)} text-xs`}
+                                      >
+                                        {alert.severity}
+                                      </Badge>
+                                    )}
+                                    {alert.autoFixAvailable && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs border-green-500 text-green-400"
+                                      >
+                                        AUTO-FIX
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p
+                                    className={`text-sm ${
+                                      alert.type === "critical"
+                                        ? "text-red-300"
+                                        : alert.type === "error"
+                                          ? "text-red-300"
+                                          : alert.type === "warning"
+                                            ? "text-yellow-300"
+                                            : "text-blue-300"
+                                    }`}
+                                  >
+                                    {alert.message}
+                                  </p>
+                                  <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                                    <span>
+                                      ⏰ {alert.timestamp?.toLocaleTimeString()}
+                                    </span>
+                                    {alert.category && (
+                                      <span>📁 {alert.category}</span>
+                                    )}
+                                    {alert.resolved && (
+                                      <span className="text-green-400">
+                                        ✅ Resolvido
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  {alert.action && (
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        executeAutoFix(alert.action)
+                                      }
+                                      disabled={executingCommands.has(
+                                        alert.action,
+                                      )}
+                                      variant={
+                                        alert.type === "critical"
+                                          ? "destructive"
+                                          : "default"
+                                      }
+                                    >
+                                      {executingCommands.has(alert.action) ? (
+                                        <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                      ) : (
+                                        <Wrench className="h-3 w-3 mr-1" />
+                                      )}
+                                      {alert.type === "critical"
+                                        ? "URGENTE"
+                                        : "Corrigir"}
+                                    </Button>
+                                  )}
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setPredictiveAlerts((prev) =>
+                                        prev.filter((a) => a.id !== alert.id),
+                                      );
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </AlertDescription>
+                          </div>
                         </Alert>
                       ))
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI Predictions */}
+              <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/50">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-purple-400" />
+                    Predições de IA - Próximas 24h
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <h4 className="text-purple-300 font-semibold">
+                        🎯 Tendências Previstas
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between p-2 bg-slate-700/30 rounded">
+                          <span className="text-slate-300">
+                            Pico de usuários
+                          </span>
+                          <span className="text-green-400">14:30 - 16:00</span>
+                        </div>
+                        <div className="flex justify-between p-2 bg-slate-700/30 rounded">
+                          <span className="text-slate-300">Uso de CPU</span>
+                          <span className="text-yellow-400">↗️ Aumentando</span>
+                        </div>
+                        <div className="flex justify-between p-2 bg-slate-700/30 rounded">
+                          <span className="text-slate-300">
+                            Backup automático
+                          </span>
+                          <span className="text-blue-400">23:00</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <h4 className="text-purple-300 font-semibold">
+                        ⚡ Ações Recomendadas
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="p-2 bg-slate-700/30 rounded">
+                          <div className="text-white font-medium">
+                            Otimização de Cache
+                          </div>
+                          <div className="text-slate-400">
+                            Recomendado às 02:00
+                          </div>
+                        </div>
+                        <div className="p-2 bg-slate-700/30 rounded">
+                          <div className="text-white font-medium">
+                            Limpeza de Logs
+                          </div>
+                          <div className="text-slate-400">Executar domingo</div>
+                        </div>
+                        <div className="p-2 bg-slate-700/30 rounded">
+                          <div className="text-white font-medium">
+                            Update de Segurança
+                          </div>
+                          <div className="text-slate-400">Pendente</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
