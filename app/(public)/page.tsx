@@ -77,6 +77,24 @@ export default async function HomePage() {
     },
   });
 
+  // Buscar depoimentos aprovados
+  const testimonials = await prisma.testimonial.findMany({
+    where: {
+      approved: true,
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    take: 3,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   const stats = [
     { number: "500+", label: "Imóveis Vendidos", icon: Home },
     { number: "15+", label: "Anos de Experiência", icon: Award },
