@@ -35,15 +35,18 @@ export default async function PropertiesPage({
 
     if (search) {
       where.OR = [
-        { title: { contains: search } },
-        { description: { contains: search } },
-        { city: { contains: search } },
-        { address: { contains: search } },
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { city: { contains: search, mode: "insensitive" } },
+        { address: { contains: search, mode: "insensitive" } },
       ];
     }
 
     if (type && type !== "todos") {
-      where.type = type;
+      where.type = {
+        contains: type,
+        mode: "insensitive",
+      };
     }
 
     if (minPrice) {
