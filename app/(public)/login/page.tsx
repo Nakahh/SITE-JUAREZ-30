@@ -80,27 +80,12 @@ export default function LoginPage() {
           setError("Erro na autenticação. Tente novamente.");
         }
       } else if (result?.ok) {
-        console.log("Login successful, getting session...");
+        console.log("Login successful, redirecting...");
 
-        // Aguardar um momento para a sessão ser estabelecida
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Verificar a sessão para determinar o redirecionamento
-        const session = await getSession();
-        console.log("Session retrieved:", session);
-
-        if (session?.user) {
-          if (session.user.role === "ADMIN") {
-            console.log("Redirecting admin to /admin");
-            router.push("/admin");
-          } else {
-            console.log("Redirecting user to /dashboard");
-            router.push("/dashboard");
-          }
-          router.refresh();
-        } else {
-          setError("Erro ao estabelecer sessão. Tente novamente.");
-        }
+        // Login bem-sucedido, redirecionar imediatamente
+        // O middleware irá determinar o redirecionamento correto baseado na role
+        router.push("/dashboard");
+        router.refresh();
       } else {
         setError("Erro inesperado durante o login.");
       }
