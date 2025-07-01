@@ -118,9 +118,17 @@ const getMockData = () => ({
 });
 
 export default async function HomePage() {
-  // Buscar todos os dados de uma vez só
-  const { featuredProperties, recentArticles, testimonials } =
-    await getHomePageData();
+  // Get optimized homepage data
+  const data = await getHomePageData();
+  const mockData = getMockData();
+
+  // Use real data if available, fallback to mock data
+  const {
+    featuredProperties = mockData.featuredProperties,
+    recentArticles = mockData.recentArticles,
+    testimonials = mockData.testimonials,
+    stats = mockData.stats,
+  } = data;
 
   const stats = [
     { number: "500+", label: "Imóveis Vendidos", icon: Home },
@@ -180,7 +188,7 @@ export default async function HomePage() {
     },
     {
       id: "mock-3",
-      title: "Terreno 500m��",
+      title: "Terreno 500m²",
       description: "Terreno para construção em área nobre",
       price: 180000,
       type: "LAND",
