@@ -133,7 +133,7 @@ export default function EditPropertyPage({
             type="number"
             id="quartos"
             name="quartos"
-            defaultValue={property.quartos}
+            defaultValue={property.bedrooms.toString()}
             required
           />
         </div>
@@ -146,7 +146,7 @@ export default function EditPropertyPage({
             id="area"
             name="area"
             step="0.01"
-            defaultValue={property.area}
+            defaultValue={property.area.toString()}
             required
           />
         </div>
@@ -158,7 +158,7 @@ export default function EditPropertyPage({
             type="text"
             id="localizacao"
             name="localizacao"
-            defaultValue={property.localizacao}
+            defaultValue={property.address}
             required
           />
         </div>
@@ -200,7 +200,7 @@ export default function EditPropertyPage({
               <SelectItem value="none">Nenhum Corretor</SelectItem>
               {agents.map((agent) => (
                 <SelectItem key={agent.id} value={agent.id}>
-                  {agent.nome} ({agent.email})
+                  {agent.name} ({agent.email})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -214,7 +214,7 @@ export default function EditPropertyPage({
             type="text"
             id="comodidades"
             name="comodidades"
-            defaultValue={property.comodidades?.join(", ") || ""}
+            defaultValue={""}
             placeholder="Ex: Piscina, Academia, Churrasqueira"
           />
         </div>
