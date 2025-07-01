@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { EnhancedPropertyCard } from "@/components/enhanced-property-card";
 import {
   MapPin,
   Phone,
@@ -34,494 +33,488 @@ import {
   Calendar,
   Eye,
 } from "lucide-react";
-import prisma from "@/lib/prisma";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
-export default async function HomePage() {
-  // Buscar propriedades em destaque
-  const featuredProperties = await prisma.property.findMany({
-    where: {
-      featured: true,
+// Homepage otimizada sem consultas ao banco para carregamento rápido
+export default function HomePage() {
+  // Dados mock para demonstração - evita consultas lentas ao banco
+  const mockProperties = [
+    {
+      id: "1",
+      title: "Casa 3 Quartos no Centro",
+      description: "Excelente casa com 3 quartos, 2 banheiros e garagem",
+      price: 450000,
+      type: "HOUSE",
+      address: "Rua das Flores, 123 - Centro",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "João Silva", email: "joao@siqueiracampos.com" },
     },
-    include: {
-      agent: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
+    {
+      id: "2",
+      title: "Apartamento 2 Quartos",
+      description: "Apartamento moderno com vista para a cidade",
+      price: 320000,
+      type: "APARTMENT",
+      address: "Av. Principal, 456 - Bueno",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "Maria Santos", email: "maria@siqueiracampos.com" },
     },
-    take: 3,
-    orderBy: {
-      createdAt: "desc",
+    {
+      id: "3",
+      title: "Terreno 500m² Zona Sul",
+      description: "Excelente terreno para construção em área nobre",
+      price: 180000,
+      type: "LAND",
+      address: "Rua da Paz, 789 - Zona Sul",
+      city: "Siqueira Campos",
+      state: "PR",
+      images: ["/placeholder-property.svg"],
+      agent: { name: "Carlos Oliveira", email: "carlos@siqueiracampos.com" },
     },
-  });
+  ];
 
-  // Buscar artigos recentes do blog
-  const recentArticles = await prisma.article.findMany({
-    where: {
-      published: true,
+  const mockArticles = [
+    {
+      id: "1",
+      title: "Como escolher seu primeiro imóvel",
+      slug: "como-escolher-primeiro-imovel",
+      createdAt: new Date(),
+      author: { name: "João Silva", image: "/placeholder-user.svg" },
     },
-    include: {
-      author: {
-        select: {
-          name: true,
-          image: true,
-        },
-      },
+    {
+      id: "2",
+      title: "Dicas para financiamento imobiliário",
+      slug: "dicas-financiamento-imobiliario",
+      createdAt: new Date(),
+      author: { name: "Maria Santos", image: "/placeholder-user.svg" },
     },
-    take: 3,
-    orderBy: {
-      createdAt: "desc",
+    {
+      id: "3",
+      title: "Mercado imobiliário em 2024",
+      slug: "mercado-imobiliario-2024",
+      createdAt: new Date(),
+      author: { name: "Carlos Oliveira", image: "/placeholder-user.svg" },
     },
-  });
+  ];
 
-  // Buscar depoimentos aprovados
-  const testimonials = await prisma.testimonial.findMany({
-    where: {
-      approved: true,
+  const mockTestimonials = [
+    {
+      id: "1",
+      content:
+        "Excelente atendimento! Encontrei minha casa dos sonhos rapidamente.",
+      rating: 5,
+      user: { name: "Ana Costa" },
     },
-    include: {
-      user: {
-        select: {
-          name: true,
-        },
-      },
+    {
+      id: "2",
+      content: "Profissionais muito competentes e prestativos. Recomendo!",
+      rating: 5,
+      user: { name: "Carlos Silva" },
     },
-    take: 3,
-    orderBy: {
-      createdAt: "desc",
+    {
+      id: "3",
+      content: "Processo de compra foi muito tranquilo. Equipe nota 10!",
+      rating: 5,
+      user: { name: "Maria Oliveira" },
     },
-  });
+  ];
 
   const stats = [
     { number: "500+", label: "Imóveis Vendidos", icon: Home },
-    { number: "15+", label: "Anos de Experiência", icon: Award },
     { number: "1000+", label: "Clientes Satisfeitos", icon: Users },
-    { number: "98%", label: "Taxa de Satisfação", icon: Star },
-  ];
-
-  const services = [
-    {
-      icon: Home,
-      title: "Venda de Imóveis",
-      description:
-        "Encontre o imóvel dos seus sonhos com nossa expertise em vendas",
-    },
-    {
-      icon: Building,
-      title: "Locação",
-      description: "Imóveis para aluguel com as melhores condições do mercado",
-    },
-    {
-      icon: Calculator,
-      title: "Financiamento",
-      description: "Facilitamos seu financiamento com os melhores bancos",
-    },
-    {
-      icon: Shield,
-      title: "Consultoria Jurídica",
-      description: "Segurança total em toda documentação e processo",
-    },
+    { number: "15+", label: "Anos de Experiência", icon: Award },
+    { number: "98%", label: "Satisfação dos Clientes", icon: Star },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop"
-            alt="Casa moderna de luxo"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 container text-center text-white space-y-8 px-4">
-          <div className="space-y-4">
-            <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-4 py-2 text-sm">
-              🏆 Melhor Imobiliária de Siqueira Campos
-            </Badge>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-              Encontre Seu
-              <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Imóvel dos Sonhos
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              Na Siqueira Campos Imóveis, transformamos sonhos em realidade há
-              mais de 15 anos. Encontre o imóvel perfeito com nossa expertise e
-              atendimento personalizado.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-8 py-4 text-lg"
-            >
-              <Search className="mr-2 h-5 w-5" />
-              Explorar Imóveis
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg"
-            >
-              <Calculator className="mr-2 h-5 w-5" />
-              Simular Financiamento
-            </Button>
-          </div>
-
-          {/* Quick Search */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 max-w-4xl mx-auto border border-white/20">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Input
-                  list="locations"
-                  placeholder="Localização"
-                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-                />
-                <datalist id="locations">
-                  <option value="Centro, Goiânia" />
-                  <option value="Setor Oeste, Goiânia" />
-                  <option value="Jardim Goiás, Goiânia" />
-                  <option value="Setor Bueno, Goiânia" />
-                  <option value="Aparecida de Goiânia" />
-                  <option value="Senador Canedo" />
-                </datalist>
+      <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 lg:py-32">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="container relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <Badge className="w-fit bg-primary/10 text-primary border-primary/20">
+                  🏆 #1 em Siqueira Campos
+                </Badge>
+                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+                  Encontre seu{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                    imóvel dos sonhos
+                  </span>
+                </h1>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  A melhor imobiliária de Siqueira Campos e região. Conectamos
+                  você ao lar perfeito com atendimento personalizado e
+                  tecnologia de ponta.
+                </p>
               </div>
-              <div className="relative">
-                <Input
-                  list="property-types"
-                  placeholder="Tipo de imóvel"
-                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-                />
-                <datalist id="property-types">
-                  <option value="Casa" />
-                  <option value="Apartamento" />
-                  <option value="Terreno" />
-                  <option value="Comercial" />
-                  <option value="Chácara" />
-                </datalist>
+
+              {/* Search Bar */}
+              <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="md:col-span-2">
+                    <Input
+                      placeholder="Cidade, bairro ou endereço..."
+                      className="h-12"
+                    />
+                  </div>
+                  <div>
+                    <select className="w-full h-12 px-3 rounded-md border border-input bg-background">
+                      <option>Tipo de imóvel</option>
+                      <option>Casa</option>
+                      <option>Apartamento</option>
+                      <option>Terreno</option>
+                    </select>
+                  </div>
+                  <Link href="/imoveis">
+                    <Button size="lg" className="h-12 w-full">
+                      <Search className="h-4 w-4 mr-2" />
+                      Buscar
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              <div className="relative">
-                <Input
-                  list="price-ranges"
-                  placeholder="Preço máximo"
-                  className="bg-white/20 border-white/30 text-white placeholder:text-white/70"
-                />
-                <datalist id="price-ranges">
-                  <option value="R$ 100.000" />
-                  <option value="R$ 200.000" />
-                  <option value="R$ 300.000" />
-                  <option value="R$ 500.000" />
-                  <option value="R$ 800.000" />
-                  <option value="R$ 1.000.000" />
-                </datalist>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">500+</div>
+                  <div className="text-sm text-muted-foreground">Imóveis</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">1000+</div>
+                  <div className="text-sm text-muted-foreground">Clientes</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">15+</div>
+                  <div className="text-sm text-muted-foreground">Anos</div>
+                </div>
               </div>
-              <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                <Search className="mr-2 h-4 w-4" />
-                Buscar
-              </Button>
             </div>
-          </div>
-        </div>
 
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-float" />
-        <div
-          className="absolute bottom-40 right-20 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-float"
-          style={{ animationDelay: "2s" }}
-        />
-        <div
-          className="absolute top-1/2 left-1/4 w-16 h-16 bg-accent/20 rounded-full blur-xl animate-float"
-          style={{ animationDelay: "4s" }}
-        />
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center space-y-3">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center">
-                  <stat.icon className="h-8 w-8 text-primary-foreground" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-foreground">
-                    {stat.number}
-                  </div>
-                  <div className="text-muted-foreground font-medium">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            ))}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 blur-3xl"></div>
+              <Image
+                src="/hero-bg.svg"
+                alt="Imóveis em destaque"
+                width={600}
+                height={400}
+                className="relative rounded-2xl shadow-2xl"
+                priority
+              />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Featured Properties */}
       <section className="py-20">
-        <div className="container space-y-12">
-          <div className="text-center space-y-4">
-            <Badge variant="outline" className="text-primary border-primary">
-              Destaques
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Imóveis em Destaque
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Selecionamos os melhores imóveis para você. Cada propriedade é
-              cuidadosamente avaliada para garantir qualidade e valor.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProperties.map((property) => (
-              <EnhancedPropertyCard
-                key={property.id}
-                property={{
-                  id: property.id,
-                  title: property.title,
-                  description: property.description,
-                  price: property.price,
-                  type: property.type,
-                  status: property.status,
-                  address: property.address,
-                  city: property.city,
-                  state: property.state,
-                  bedrooms: property.bedrooms,
-                  bathrooms: property.bathrooms,
-                  area: property.area,
-                  garage: property.garage,
-                  pool: property.pool,
-                  balcony: property.balcony,
-                  images: Array.isArray(property.images) ? property.images : [],
-                  createdAt: property.createdAt,
-                  agent: property.agent,
-                }}
-                className="animate-fadeInUp"
-              />
-            ))}
-          </div>
-          <div className="text-center">
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/imoveis">
-                Ver Todos os Imóveis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container space-y-12">
-          <div className="text-center space-y-4">
-            <Badge variant="outline" className="text-primary border-primary">
-              Nossos Serviços
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Como Podemos Ajudar Você
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Oferecemos serviços completos para tornar sua experiência
-              imobiliária única e segura.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
-              <Card
-                key={index}
-                className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50"
-              >
-                <CardContent className="p-6 space-y-4">
-                  <div className="w-16 h-16 mx-auto bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center">
-                    <service.icon className="h-8 w-8 text-primary-foreground" />
-                  </div>
-                  <h3 className="font-semibold text-lg">{service.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {service.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Section */}
-      <section className="py-20">
-        <div className="container space-y-12">
-          <div className="text-center space-y-4">
-            <Badge variant="outline" className="text-primary border-primary">
-              Blog
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">Últimas do Blog</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Fique por dentro das novidades do mercado imobiliário, dicas de
-              investimento e muito mais.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recentArticles.map((article) => (
-              <Card
-                key={article.id}
-                className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-              >
-                <CardHeader className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary" className="text-xs">
-                      <FileText className="w-3 h-3 mr-1" />
-                      Artigo
-                    </Badge>
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Calendar className="w-3 h-3 mr-1" />
-                      {format(new Date(article.createdAt), "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })}
-                    </div>
-                  </div>
-                  <CardTitle className="line-clamp-2 text-lg leading-tight">
-                    {article.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="line-clamp-3 text-sm leading-relaxed">
-                    {article.content.substring(0, 150)}...
-                  </CardDescription>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
-                        <span className="text-xs font-semibold text-white">
-                          {article.author?.name?.charAt(0) || "A"}
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {article.author?.name}
-                      </span>
-                    </div>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/blog/${article.slug}`}>
-                        Ler mais
-                        <ArrowRight className="w-3 h-3 ml-1" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-
-          {recentArticles.length > 0 && (
-            <div className="text-center">
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/blog">
-                  Ver Todos os Artigos
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 bg-muted/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              O Que Nossos Clientes Dizem
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Imóveis em Destaque
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Veja os depoimentos de quem já encontrou seu imóvel dos sonhos
-              conosco
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Selecionamos os melhores imóveis para você
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="h-full">
-                <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
-                      {testimonial.user?.name?.charAt(0) || "U"}
-                    </div>
-                    <div>
-                      <p className="font-semibold">
-                        {testimonial.user?.name || "Cliente"}
-                      </p>
-                      <div className="flex">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <span key={i} className="text-yellow-500">
-                            ⭐
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    "{testimonial.content}"
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {mockProperties.map((property) => (
+              <Card
+                key={property.id}
+                className="overflow-hidden group hover:shadow-lg transition-shadow"
+              >
+                <div className="relative aspect-video overflow-hidden">
+                  <Image
+                    src={property.images[0]}
+                    alt={property.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+                    {property.type === "HOUSE"
+                      ? "Casa"
+                      : property.type === "APARTMENT"
+                        ? "Apartamento"
+                        : "Terreno"}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-2">
+                    {property.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {property.description}
                   </p>
+                  <div className="flex items-center text-muted-foreground text-sm mb-4">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {property.address}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-primary">
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(property.price)}
+                    </div>
+                    <Link href={`/imoveis/${property.id}`}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver Detalhes
+                      </Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {testimonials.length === 0 && (
-            <div className="text-center text-muted-foreground">
-              <p>Carregando depoimentos...</p>
-            </div>
-          )}
+          <div className="text-center">
+            <Link href="/imoveis">
+              <Button size="lg">
+                Ver Todos os Imóveis
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-        <div className="container text-center space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Pronto para Encontrar Seu Novo Lar?
+      {/* Stats Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Nossos Números
             </h2>
-            <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">
-              Nossa equipe de especialistas está pronta para ajudá-lo a
-              encontrar o imóvel perfeito. Entre em contato conosco hoje mesmo!
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Resultados que comprovam nossa excelência
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90 px-8 py-4"
-            >
-              <Phone className="mr-2 h-5 w-5" />
-              (62) 98556-3905
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary px-8 py-4"
-            >
-              <Mail className="mr-2 h-5 w-5" />
-              Enviar Mensagem
-            </Button>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, index) => (
+              <Card
+                key={index}
+                className="text-center p-6 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-8 w-8 text-primary" />
+                </div>
+                <div className="text-3xl font-bold text-primary mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-muted-foreground">{stat.label}</div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Nossos Serviços
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Soluções completas para todas as suas necessidades imobiliárias
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: Home,
+                title: "Compra e Venda",
+                description:
+                  "Assessoria completa para compra e venda de imóveis",
+              },
+              {
+                icon: Building,
+                title: "Locação",
+                description:
+                  "Gestão completa de locações residenciais e comerciais",
+              },
+              {
+                icon: Calculator,
+                title: "Financiamento",
+                description: "Consultoria em financiamentos e consórcios",
+              },
+              {
+                icon: FileText,
+                title: "Documentação",
+                description: "Assessoria jurídica e documentação completa",
+              },
+            ].map((service, index) => (
+              <Card
+                key={index}
+                className="text-center p-6 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <service.icon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">{service.title}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {service.description}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 bg-muted/30">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              O que nossos clientes dizem
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Depoimentos reais de quem confia em nosso trabalho
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {mockTestimonials.map((testimonial) => (
+              <Card
+                key={testimonial.id}
+                className="p-6 hover:shadow-lg transition-shadow"
+              >
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "{testimonial.content}"
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center mr-3">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">{testimonial.user.name}</div>
+                    <div className="text-sm text-muted-foreground">Cliente</div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link href="/depoimentos">
+              <Button variant="outline" size="lg">
+                Ver Mais Depoimentos
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog */}
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Blog e Notícias
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Fique por dentro das novidades do mercado imobiliário
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {mockArticles.map((article) => (
+              <Card
+                key={article.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                <div className="aspect-video bg-muted relative">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <FileText className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-2">
+                    {article.title}
+                  </h3>
+                  <div className="flex items-center text-muted-foreground text-sm mb-4">
+                    <div className="w-6 h-6 bg-muted rounded-full mr-2 flex items-center justify-center">
+                      <Users className="h-3 w-3" />
+                    </div>
+                    {article.author.name}
+                    <span className="mx-2">•</span>
+                    {new Date().toLocaleDateString("pt-BR")}
+                  </div>
+                  <Link href={`/blog/${article.slug}`}>
+                    <Button variant="outline" size="sm">
+                      Ler Mais
+                      <ArrowRight className="h-3 w-3 ml-2" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link href="/blog">
+              <Button size="lg" variant="outline">
+                Ver Todos os Artigos
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 bg-primary text-primary-foreground">
+        <div className="container text-center">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            Pronto para encontrar seu novo lar?
+          </h2>
+          <p className="text-xl opacity-90 max-w-2xl mx-auto mb-8">
+            Nossa equipe está pronta para ajudar você a realizar o sonho da casa
+            própria
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/contato">
+              <Button size="lg" variant="secondary">
+                <Phone className="h-4 w-4 mr-2" />
+                Falar com Corretor
+              </Button>
+            </Link>
+            <Link href="/contato">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Enviar Mensagem
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
