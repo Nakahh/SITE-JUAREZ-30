@@ -343,6 +343,85 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section className="py-20">
+        <div className="container space-y-12">
+          <div className="text-center space-y-4">
+            <Badge variant="outline" className="text-primary border-primary">
+              Blog
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold">Últimas do Blog</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Fique por dentro das novidades do mercado imobiliário, dicas de
+              investimento e muito mais.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {recentArticles.map((article) => (
+              <Card
+                key={article.id}
+                className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              >
+                <CardHeader className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="text-xs">
+                      <FileText className="w-3 h-3 mr-1" />
+                      Artigo
+                    </Badge>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {format(new Date(article.createdAt), "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })}
+                    </div>
+                  </div>
+                  <CardTitle className="line-clamp-2 text-lg leading-tight">
+                    {article.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="line-clamp-3 text-sm leading-relaxed">
+                    {article.content.substring(0, 150)}...
+                  </CardDescription>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                        <span className="text-xs font-semibold text-white">
+                          {article.author?.name?.charAt(0) || "A"}
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {article.author?.name}
+                      </span>
+                    </div>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`/blog/${article.slug}`}>
+                        Ler mais
+                        <ArrowRight className="w-3 h-3 ml-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+
+          {recentArticles.length > 0 && (
+            <div className="text-center">
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/blog">
+                  Ver Todos os Artigos
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
         <div className="container text-center space-y-8">
