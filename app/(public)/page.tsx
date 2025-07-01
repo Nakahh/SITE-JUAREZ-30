@@ -130,11 +130,27 @@ export default async function HomePage() {
     stats = mockData.stats,
   } = data;
 
-  const stats = [
-    { number: "500+", label: "Imóveis Vendidos", icon: Home },
-    { number: "1000+", label: "Clientes Satisfeitos", icon: Users },
-    { number: "15+", label: "Anos de Experiência", icon: Award },
-    { number: "98%", label: "Satisfação dos Clientes", icon: Star },
+  const displayStats = [
+    {
+      number: `${stats.totalProperties}+`,
+      label: "Imóveis Disponíveis",
+      icon: Home,
+    },
+    {
+      number: `${stats.totalUsers}+`,
+      label: "Clientes Satisfeitos",
+      icon: Users,
+    },
+    {
+      number: `${stats.totalArticles}+`,
+      label: "Artigos Publicados",
+      icon: Award,
+    },
+    {
+      number: `${Math.round(stats.avgRating * 20)}%`,
+      label: "Satisfação dos Clientes",
+      icon: Star,
+    },
   ];
 
   const services = [
