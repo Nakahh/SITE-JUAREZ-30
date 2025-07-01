@@ -80,36 +80,30 @@ export function EnhancedPropertyCard({
       url: `${window.location.origin}/imoveis/${property.id}`,
     };
 
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare(shareData)
-    ) {
-      try {
+    try {
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare(shareData)
+      ) {
         await navigator.share(shareData);
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          // Fallback para copy to clipboard
-          try {
-            await navigator.clipboard.writeText(shareData.url);
-            const { toast } = await import("sonner");
-            toast.success("Link copiado para a área de transferência!");
-          } catch (clipboardError) {
-            const { toast } = await import("sonner");
-            toast.error("Erro ao compartilhar. Tente novamente.");
-          }
-        }
+        return;
       }
-    } else {
-      // Fallback para navegadores que não suportam Web Share API
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        const { toast } = await import("sonner");
-        toast.success("Link copiado para a área de transferência!");
-      } catch (error) {
-        const { toast } = await import("sonner");
-        toast.error("Erro ao copiar link. Tente novamente.");
+    } catch (error) {
+      if ((error as Error).name === "AbortError") {
+        return; // User cancelled sharing
       }
+    }
+
+    // Fallback para copy to clipboard
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      const { toast } = await import("sonner");
+      toast.success("Link copiado para a área de transferência!");
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+      const { toast } = await import("sonner");
+      toast.error("Erro ao copiar link. Tente novamente.");
     }
   };
 
