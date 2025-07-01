@@ -146,7 +146,9 @@ export default async function AdminTestimonials() {
                     </Link>
                     <DeleteTestimonialDialog
                       testimonialId={testimonial.id}
-                      authorName={testimonial.authorName}
+                      authorName={
+                        testimonial.user?.name || "Usuário Desconhecido"
+                      }
                     />
                   </div>
                 </TableCell>
