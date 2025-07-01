@@ -132,7 +132,7 @@ export function EnhancedPropertyCard({
       case "SOLD":
         return "bg-red-500";
       case "RENTED":
-        return "bg-yellow-500";
+        return "bg-purple-500";
       default:
         return "bg-gray-500";
     }
