@@ -38,6 +38,44 @@ import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Função para validar e corrigir URLs de imagem
+function validateImageUrl(url: any): string {
+  if (!url) return "/placeholder-property.svg";
+  if (typeof url !== "string") return "/placeholder-property.svg";
+  if (url.length <= 1) return "/placeholder-property.svg";
+  if (url.startsWith("[") || url === "[") return "/placeholder-property.svg";
+  if (!url.startsWith("/") && !url.startsWith("http"))
+    return "/placeholder-property.svg";
+  return url;
+}
+
+// Função para processar array de imagens
+function processImages(images: any): string[] {
+  if (!images) return ["/placeholder-property.svg"];
+
+  let imageArray: any[] = [];
+
+  // Se for string, tentar fazer parse
+  if (typeof images === "string") {
+    try {
+      imageArray = JSON.parse(images);
+    } catch {
+      return ["/placeholder-property.svg"];
+    }
+  } else if (Array.isArray(images)) {
+    imageArray = images;
+  } else {
+    return ["/placeholder-property.svg"];
+  }
+
+  // Validar cada URL na array
+  const validImages = imageArray
+    .map(validateImageUrl)
+    .filter((url) => url !== "/placeholder-property.svg");
+
+  return validImages.length > 0 ? validImages : ["/placeholder-property.svg"];
+}
+
 // Função centralizada para buscar todos os dados de uma vez
 async function getHomePageData() {
   try {
@@ -81,8 +119,14 @@ async function getHomePageData() {
         }),
       ]);
 
+    // Process images for properties to ensure they're valid
+    const processedProperties = featuredProperties.map((property) => ({
+      ...property,
+      images: processImages(property.images),
+    }));
+
     return {
-      featuredProperties,
+      featuredProperties: processedProperties,
       recentArticles,
       testimonials,
     };
@@ -322,84 +366,63 @@ export default async function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {displayProperties.map((property) => {
-              // Safely extract and validate the first image URL
-              let imageUrl = "/placeholder-property.svg";
-
-              if (
-                property.images &&
-                Array.isArray(property.images) &&
-                property.images.length > 0
-              ) {
-                const firstImage = property.images[0];
-                // Validate that the image URL is a proper string and not malformed
-                if (
-                  typeof firstImage === "string" &&
-                  firstImage.length > 1 &&
-                  !firstImage.startsWith("[")
-                ) {
-                  imageUrl = firstImage;
-                }
-              }
-
-              return (
-                <Card
-                  key={property.id}
-                  className="overflow-hidden group hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative aspect-video overflow-hidden">
-                    <Image
-                      src={imageUrl}
-                      alt={property.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                      {property.type === "HOUSE"
-                        ? "Casa"
-                        : property.type === "APARTMENT"
-                          ? "Apartamento"
-                          : property.type === "LAND"
-                            ? "Terreno"
-                            : "Imóvel"}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Heart className="h-4 w-4" />
-                    </Button>
+            {displayProperties.map((property) => (
+              <Card
+                key={property.id}
+                className="overflow-hidden group hover:shadow-lg transition-shadow"
+              >
+                <div className="relative aspect-video overflow-hidden">
+                  <Image
+                    src={property.images?.[0] || "/placeholder-property.svg"}
+                    alt={property.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+                    {property.type === "HOUSE"
+                      ? "Casa"
+                      : property.type === "APARTMENT"
+                        ? "Apartamento"
+                        : property.type === "LAND"
+                          ? "Terreno"
+                          : "Imóvel"}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-2">
+                    {property.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {property.description}
+                  </p>
+                  <div className="flex items-center text-muted-foreground text-sm mb-4">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {property.address}
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-2">
-                      {property.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      {property.description}
-                    </p>
-                    <div className="flex items-center text-muted-foreground text-sm mb-4">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {property.address}
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-primary">
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(property.price)}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold text-primary">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(property.price)}
-                      </div>
-                      <Link href={`/imoveis/${property.id}`}>
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    <Link href={`/imoveis/${property.id}`}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver Detalhes
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           <div className="text-center">
