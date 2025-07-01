@@ -31,7 +31,9 @@ export default async function PropertiesPage({
   let properties = [];
 
   try {
-    const where: any = {};
+    const where: any = {
+      featured: true, // Mostrar apenas imóveis em destaque
+    };
 
     if (search) {
       where.OR = [
