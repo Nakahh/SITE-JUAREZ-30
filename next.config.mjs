@@ -142,21 +142,15 @@ const nextConfig = {
       };
     }
 
-    // Optimize imports
-    config.module.rules.push({
-      test: /\.tsx?$/,
-      use: [
-        {
-          loader: "ts-loader",
-          options: {
-            transpileOnly: true,
-            compilerOptions: {
-              module: "esnext",
-            },
-          },
-        },
-      ],
-    });
+    // Optimize bundle splitting
+    if (config.optimization.splitChunks) {
+      config.optimization.splitChunks.cacheGroups.react = {
+        test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+        name: "react",
+        chunks: "all",
+        priority: 20,
+      };
+    }
 
     return config;
   },
