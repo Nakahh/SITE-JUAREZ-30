@@ -80,19 +80,36 @@ export function EnhancedPropertyCard({
       url: `${window.location.origin}/imoveis/${property.id}`,
     };
 
-    if (navigator.share) {
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare(shareData)
+    ) {
       try {
         await navigator.share(shareData);
       } catch (error) {
-        // Fallback para copy to clipboard
-        await navigator.clipboard.writeText(shareData.url);
-        // Aqui você pode adicionar um toast notification
-        console.log("Link copiado para a área de transferência!");
+        if ((error as Error).name !== "AbortError") {
+          // Fallback para copy to clipboard
+          try {
+            await navigator.clipboard.writeText(shareData.url);
+            const { toast } = await import("sonner");
+            toast.success("Link copiado para a área de transferência!");
+          } catch (clipboardError) {
+            const { toast } = await import("sonner");
+            toast.error("Erro ao compartilhar. Tente novamente.");
+          }
+        }
       }
     } else {
       // Fallback para navegadores que não suportam Web Share API
-      await navigator.clipboard.writeText(shareData.url);
-      console.log("Link copiado para a área de transferência!");
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        const { toast } = await import("sonner");
+        toast.success("Link copiado para a área de transferência!");
+      } catch (error) {
+        const { toast } = await import("sonner");
+        toast.error("Erro ao copiar link. Tente novamente.");
+      }
     }
   };
 
@@ -125,7 +142,7 @@ export function EnhancedPropertyCard({
     switch (status) {
       case "FOR_SALE":
       case "AVAILABLE":
-        return "À Venda";
+        return "�� Venda";
       case "FOR_RENT":
         return "Para Alugar";
       case "SOLD":
