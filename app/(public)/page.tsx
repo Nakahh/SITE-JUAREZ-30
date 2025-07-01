@@ -130,6 +130,11 @@ export default async function HomePage() {
     stats = mockData.stats,
   } = data;
 
+  // Define display variables for backward compatibility
+  const displayProperties = featuredProperties;
+  const displayArticles = recentArticles;
+  const displayTestimonials = testimonials;
+
   const displayStats = [
     {
       number: `${stats.totalProperties}+`,
