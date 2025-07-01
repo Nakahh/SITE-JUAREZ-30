@@ -271,7 +271,26 @@ export default async function HomePage() {
             {featuredProperties.map((property) => (
               <EnhancedPropertyCard
                 key={property.id}
-                property={property}
+                property={{
+                  id: property.id,
+                  title: property.title,
+                  description: property.description,
+                  price: property.price,
+                  type: property.type,
+                  status: property.status,
+                  address: property.address,
+                  city: property.city,
+                  state: property.state,
+                  bedrooms: property.bedrooms,
+                  bathrooms: property.bathrooms,
+                  area: property.area,
+                  garage: property.garage,
+                  pool: property.pool,
+                  balcony: property.balcony,
+                  images: Array.isArray(property.images) ? property.images : [],
+                  createdAt: property.createdAt,
+                  agent: property.agent,
+                }}
                 className="animate-fadeInUp"
               />
             ))}
