@@ -322,63 +322,84 @@ export default async function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {displayProperties.map((property) => (
-              <Card
-                key={property.id}
-                className="overflow-hidden group hover:shadow-lg transition-shadow"
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={property.images?.[0] || "/placeholder-property.svg"}
-                    alt={property.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                    {property.type === "HOUSE"
-                      ? "Casa"
-                      : property.type === "APARTMENT"
-                        ? "Apartamento"
-                        : property.type === "LAND"
-                          ? "Terreno"
-                          : "Imóvel"}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold text-lg mb-2">
-                    {property.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    {property.description}
-                  </p>
-                  <div className="flex items-center text-muted-foreground text-sm mb-4">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {property.address}
+            {displayProperties.map((property) => {
+              // Safely extract and validate the first image URL
+              let imageUrl = "/placeholder-property.svg";
+
+              if (
+                property.images &&
+                Array.isArray(property.images) &&
+                property.images.length > 0
+              ) {
+                const firstImage = property.images[0];
+                // Validate that the image URL is a proper string and not malformed
+                if (
+                  typeof firstImage === "string" &&
+                  firstImage.length > 1 &&
+                  !firstImage.startsWith("[")
+                ) {
+                  imageUrl = firstImage;
+                }
+              }
+
+              return (
+                <Card
+                  key={property.id}
+                  className="overflow-hidden group hover:shadow-lg transition-shadow"
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={imageUrl}
+                      alt={property.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+                      {property.type === "HOUSE"
+                        ? "Casa"
+                        : property.type === "APARTMENT"
+                          ? "Apartamento"
+                          : property.type === "LAND"
+                            ? "Terreno"
+                            : "Imóvel"}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-2xl font-bold text-primary">
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(property.price)}
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-lg mb-2">
+                      {property.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      {property.description}
+                    </p>
+                    <div className="flex items-center text-muted-foreground text-sm mb-4">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {property.address}
                     </div>
-                    <Link href={`/imoveis/${property.id}`}>
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
-                        Ver Detalhes
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="flex items-center justify-between">
+                      <div className="text-2xl font-bold text-primary">
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(property.price)}
+                      </div>
+                      <Link href={`/imoveis/${property.id}`}>
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           <div className="text-center">
