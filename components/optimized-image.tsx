@@ -78,6 +78,11 @@ export function OptimizedImage({
 
   // Generate placeholder blur data URL
   const generateBlurDataURL = (w: number, h: number) => {
+    // Check if we're on the client side
+    if (typeof window === "undefined") {
+      return "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyygDW4RWzHcVlRR1+CxII1BVQ9iFOowjlBo9IACjtNyEJZfWONM7d+2f2DGqAr4N3FDLhA8WaQDQ/QFpJ4a3XYo+bNJBDLzJOsZoT5fNPJbKjSlJXm3/sF8VaKQYzJSbNtYGBDfXJqJ6WXl8qgQwCZOXpJoFYMMAjbHQxOUiGFBm9NG4cqRJGNzE";
+    }
+
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
@@ -170,6 +175,9 @@ export function OptimizedImage({
 // Custom hook for image preloading
 export function useImagePreloader(urls: string[]) {
   useEffect(() => {
+    // Check if we're on the client side
+    if (typeof window === "undefined") return;
+
     const preloadImages = urls.map((url) => {
       return new Promise((resolve, reject) => {
         const img = new window.Image();
