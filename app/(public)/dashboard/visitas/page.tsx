@@ -48,11 +48,11 @@ export default async function ClientVisitsPage() {
               <CardContent className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {visit.property.titulo}
+                    {visit.property.title}
                   </h3>
                   <p className="text-muted-foreground text-sm">
                     Agendado para:{" "}
-                    {format(visit.dataHora, "dd/MM/yyyy 'às' HH:mm", {
+                    {format(visit.date, "dd/MM/yyyy 'às' HH:mm", {
                       locale: ptBR,
                     })}
                   </p>
