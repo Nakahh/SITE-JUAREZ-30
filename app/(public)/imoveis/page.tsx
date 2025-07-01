@@ -90,15 +90,15 @@ export default async function PropertiesPage({
   }
 
   const presetFilters = [
-    { label: "Casas até R$ 500k", href: "/imoveis?type=HOUSE&maxPrice=500000" },
+    { label: "Casas até R$ 600k", href: "/imoveis?type=Casa&maxPrice=600000" },
     {
       label: "Apartamentos 2 quartos",
-      href: "/imoveis?type=APARTMENT&bedrooms=2",
+      href: "/imoveis?type=Apartamento&bedrooms=2",
     },
-    { label: "Terrenos", href: "/imoveis?type=LAND" },
-    { label: "Comercial", href: "/imoveis?type=COMMERCIAL" },
-    { label: "Para Alugar", href: "/imoveis?status=FOR_RENT" },
-    { label: "Luxo (R$ 1M+)", href: "/imoveis?minPrice=1000000" },
+    { label: "Coberturas", href: "/imoveis?type=Cobertura" },
+    { label: "Para Alugar", href: "/imoveis" },
+    { label: "Luxo (R$ 800k+)", href: "/imoveis?minPrice=800000" },
+    { label: "Todos", href: "/imoveis" },
   ];
 
   return (
