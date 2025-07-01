@@ -49,6 +49,33 @@ export default async function ClientDashboard() {
   const totalVisits = await prisma.visit.count({ where: { userId } }); // Alterado de clientId para userId
   const totalReviews = await prisma.propertyReview.count({ where: { userId } });
 
+  // Dados específicos para corretores
+  const isAgent =
+    session.user.role === "AGENT" || session.user.role === "ADMIN";
+  let agentData = null;
+
+  if (isAgent) {
+    const totalLeads = await prisma.lead.count({
+      where: { agentId: userId },
+    });
+    const pendingLeads = await prisma.lead.count({
+      where: { agentId: userId, status: "PENDING" },
+    });
+    const assumedLeads = await prisma.lead.count({
+      where: { agentId: userId, status: "ASSUMED" },
+    });
+    const totalProperties = await prisma.property.count({
+      where: { agentId: userId },
+    });
+
+    agentData = {
+      totalLeads,
+      pendingLeads,
+      assumedLeads,
+      totalProperties,
+    };
+  }
+
   const recentFavorites = await prisma.favoriteProperty.findMany({
     where: { userId },
     include: {
