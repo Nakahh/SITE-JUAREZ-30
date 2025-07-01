@@ -13,8 +13,8 @@ export function SessionProvider({ children, session }: SessionProviderProps) {
   return (
     <NextAuthSessionProvider
       session={session}
-      refetchInterval={15 * 60} // 15 minutes - reduced frequency
-      refetchOnWindowFocus={false} // Disabled for performance
+      refetchInterval={5 * 60} // 5 minutes
+      refetchOnWindowFocus={true}
     >
       {children}
     </NextAuthSessionProvider>
