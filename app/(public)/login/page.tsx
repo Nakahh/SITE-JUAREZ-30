@@ -42,12 +42,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("🚀 Login form submitted");
     setIsLoading(true);
     setError("");
 
     // Validações do cliente
     if (!email || !password) {
-      setError("Por favor, preencha todos os campos");
+      console.log("❌ Missing email or password");
+      setError("❌ Por favor, preencha todos os campos");
       setIsLoading(false);
       return;
     }
@@ -235,9 +237,20 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <Alert
+                    variant={error.includes("✅") ? "default" : "destructive"}
+                    className="border-2"
+                  >
+                    <AlertDescription className="font-medium">
+                      {error}
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
