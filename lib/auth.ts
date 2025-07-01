@@ -171,7 +171,7 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
+  debug: false, // Disabled for performance
   events: {
     async signIn({ user, account, profile }) {
       console.log("User signed in:", user.email);
