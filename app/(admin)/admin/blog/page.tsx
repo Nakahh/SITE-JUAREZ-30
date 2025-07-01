@@ -1,18 +1,25 @@
-import { PrismaClient } from "@prisma/client"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash2, PlusCircle } from "lucide-react"
-import { deleteArticle } from "@/app/actions/article-actions"
+import { PrismaClient } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pencil, Trash2, PlusCircle } from "lucide-react";
+import { deleteArticle } from "@/app/actions/article-actions";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export default async function AdminBlog() {
   const articles = await prisma.article.findMany({
     orderBy: {
       createdAt: "desc",
     },
-  })
+  });
 
   return (
     <div>
@@ -27,7 +34,9 @@ export default async function AdminBlog() {
       </div>
 
       {articles.length === 0 ? (
-        <p className="text-center text-muted-foreground">Nenhum artigo cadastrado ainda.</p>
+        <p className="text-center text-muted-foreground">
+          Nenhum artigo cadastrado ainda.
+        </p>
       ) : (
         <Table>
           <TableHeader>
@@ -41,9 +50,11 @@ export default async function AdminBlog() {
           <TableBody>
             {articles.map((article) => (
               <TableRow key={article.id}>
-                <TableCell className="font-medium">{article.titulo}</TableCell>
+                <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>{article.slug}</TableCell>
-                <TableCell>{new Date(article.createdAt).toLocaleDateString("pt-BR")}</TableCell>
+                <TableCell>
+                  {new Date(article.createdAt).toLocaleDateString("pt-BR")}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/admin/blog/edit/${article.id}`}>
@@ -66,5 +77,5 @@ export default async function AdminBlog() {
         </Table>
       )}
     </div>
-  )
+  );
 }
