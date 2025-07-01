@@ -1,9 +1,16 @@
-import { PrismaClient } from "@prisma/client"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash2, PlusCircle } from "lucide-react"
-import { deleteProperty } from "@/app/actions/property-actions"
+import { PrismaClient } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pencil, Trash2, PlusCircle } from "lucide-react";
+import { deleteProperty } from "@/app/actions/property-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,12 +21,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 // Componente cliente para o AlertDialog
-function DeletePropertyDialog({ propertyId, propertyTitle }: { propertyId: string; propertyTitle: string }) {
+function DeletePropertyDialog({
+  propertyId,
+  propertyTitle,
+}: {
+  propertyId: string;
+  propertyTitle: string;
+}) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -32,8 +45,8 @@ function DeletePropertyDialog({ propertyId, propertyTitle }: { propertyId: strin
         <AlertDialogHeader>
           <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta ação não pode ser desfeita. Isso excluirá permanentemente o imóvel{" "}
-            <span className="font-bold">{propertyTitle}</span>.
+            Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+            imóvel <span className="font-bold">{propertyTitle}</span>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -44,7 +57,7 @@ function DeletePropertyDialog({ propertyId, propertyTitle }: { propertyId: strin
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 
 export default async function AdminImoveis() {
@@ -52,7 +65,7 @@ export default async function AdminImoveis() {
     orderBy: {
       createdAt: "desc",
     },
-  })
+  });
 
   return (
     <div>
@@ -67,7 +80,9 @@ export default async function AdminImoveis() {
       </div>
 
       {properties.length === 0 ? (
-        <p className="text-center text-muted-foreground">Nenhum imóvel cadastrado ainda.</p>
+        <p className="text-center text-muted-foreground">
+          Nenhum imóvel cadastrado ainda.
+        </p>
       ) : (
         <Table>
           <TableHeader>
@@ -83,12 +98,15 @@ export default async function AdminImoveis() {
           <TableBody>
             {properties.map((property) => (
               <TableRow key={property.id}>
-                <TableCell className="font-medium">{property.titulo}</TableCell>
+                <TableCell className="font-medium">{property.title}</TableCell>
                 <TableCell>
-                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(property.preco)}
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(property.price)}
                 </TableCell>
-                <TableCell>{property.tipo}</TableCell>
-                <TableCell>{property.localizacao}</TableCell>
+                <TableCell>{property.type}</TableCell>
+                <TableCell>{property.address}</TableCell>
                 <TableCell>{property.status}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
@@ -98,7 +116,10 @@ export default async function AdminImoveis() {
                         <span className="sr-only">Editar</span>
                       </Button>
                     </Link>
-                    <DeletePropertyDialog propertyId={property.id} propertyTitle={property.titulo} />
+                    <DeletePropertyDialog
+                      propertyId={property.id}
+                      propertyTitle={property.title}
+                    />
                   </div>
                 </TableCell>
               </TableRow>
@@ -107,5 +128,5 @@ export default async function AdminImoveis() {
         </Table>
       )}
     </div>
-  )
+  );
 }
