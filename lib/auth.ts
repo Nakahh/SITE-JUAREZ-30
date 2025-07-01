@@ -68,8 +68,6 @@ export const authOptions: NextAuthOptions = {
 
           if (!user) {
             console.log("User not found");
-            // Delay para prevenir timing attacks
-            await new Promise((resolve) => setTimeout(resolve, 1000));
             return null;
           }
 
@@ -86,8 +84,6 @@ export const authOptions: NextAuthOptions = {
 
           if (!isPasswordValid) {
             console.log("Invalid password");
-            // Delay para prevenir timing attacks
-            await new Promise((resolve) => setTimeout(resolve, 1000));
             return null;
           }
 
