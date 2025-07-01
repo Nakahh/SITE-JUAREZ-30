@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { updateUser } from "@/app/actions/user-actions";
+
+async function handleUpdateUser(userId: string, formData: FormData) {
+  await updateUser(userId, formData);
+}
 import { Role } from "@prisma/client"; // Importar o enum Role
 
 const prisma = new PrismaClient();
@@ -38,7 +42,10 @@ export default async function EditUserPage({
           <CardTitle>Informações do Usuário</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={updateUser.bind(null, user.id)} className="space-y-4">
+          <form
+            action={handleUpdateUser.bind(null, user.id)}
+            className="space-y-4"
+          >
             <div>
               <Label htmlFor="name">Nome</Label>
               <Input
