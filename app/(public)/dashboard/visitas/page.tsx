@@ -14,8 +14,8 @@ export default async function ClientVisitsPage() {
 
   if (
     !session?.user?.id ||
-    session.papel === "ADMIN" ||
-    session.papel === "CORRETOR" ||
+    session.user.role === "ADMIN" ||
+    session.user.role === "AGENT" ||
     session.papel === "ASSISTENTE"
   ) {
     redirect("/login");
