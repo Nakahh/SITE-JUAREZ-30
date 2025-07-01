@@ -159,10 +159,11 @@ export default async function PropertiesPage({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="HOUSE">Casa</SelectItem>
-                  <SelectItem value="APARTMENT">Apartamento</SelectItem>
-                  <SelectItem value="LAND">Terreno</SelectItem>
-                  <SelectItem value="COMMERCIAL">Comercial</SelectItem>
+                  <SelectItem value="Casa">Casa</SelectItem>
+                  <SelectItem value="Apartamento">Apartamento</SelectItem>
+                  <SelectItem value="Cobertura">Cobertura</SelectItem>
+                  <SelectItem value="Terreno">Terreno</SelectItem>
+                  <SelectItem value="Comercial">Comercial</SelectItem>
                 </SelectContent>
               </Select>
             </div>
