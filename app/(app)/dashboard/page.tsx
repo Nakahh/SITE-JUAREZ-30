@@ -103,78 +103,151 @@ export default async function ClientDashboard() {
         Aqui você pode gerenciar suas atividades no site.
       </p>
 
+      {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Imóveis Favoritos
-            </CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalFavorites}</div>
-            <p className="text-xs text-muted-foreground">
-              <Link href="/favoritos" className="text-primary hover:underline">
-                Ver todos
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Buscas Salvas</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSavedSearches}</div>
-            <p className="text-xs text-muted-foreground">
-              <Link
-                href="/dashboard/buscas-salvas"
-                className="text-primary hover:underline"
-              >
-                Gerenciar
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Visitas Agendadas
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalVisits}</div>
-            <p className="text-xs text-muted-foreground">
-              <Link
-                href="/dashboard/visitas"
-                className="text-primary hover:underline"
-              >
-                Ver detalhes
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Minhas Avaliações
-            </CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalReviews}</div>
-            <p className="text-xs text-muted-foreground">
-              <Link
-                href="/dashboard/minhas-avaliacoes"
-                className="text-primary hover:underline"
-              >
-                Gerenciar
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
+        {isAgent ? (
+          <>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total de Leads
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {agentData?.totalLeads || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">Leads recebidos</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Leads Pendentes
+                </CardTitle>
+                <MessageSquare className="h-4 w-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600">
+                  {agentData?.pendingLeads || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Aguardando resposta
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Leads Assumidos
+                </CardTitle>
+                <MessageSquare className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {agentData?.assumedLeads || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">Em atendimento</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Meus Imóveis
+                </CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {agentData?.totalProperties || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Imóveis cadastrados
+                </p>
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Imóveis Favoritos
+                </CardTitle>
+                <Heart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalFavorites}</div>
+                <p className="text-xs text-muted-foreground">
+                  <Link
+                    href="/favoritos"
+                    className="text-primary hover:underline"
+                  >
+                    Ver todos
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Buscas Salvas
+                </CardTitle>
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalSavedSearches}</div>
+                <p className="text-xs text-muted-foreground">
+                  <Link
+                    href="/dashboard/buscas-salvas"
+                    className="text-primary hover:underline"
+                  >
+                    Gerenciar
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Visitas Agendadas
+                </CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalVisits}</div>
+                <p className="text-xs text-muted-foreground">
+                  <Link
+                    href="/dashboard/visitas"
+                    className="text-primary hover:underline"
+                  >
+                    Ver detalhes
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Minhas Avaliações
+                </CardTitle>
+                <Star className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalReviews}</div>
+                <p className="text-xs text-muted-foreground">
+                  <Link
+                    href="/dashboard/minhas-avaliacoes"
+                    className="text-primary hover:underline"
+                  >
+                    Gerenciar
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
