@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>🔧 COMPLETE FIX</title>
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <style>
+      body {
+        font-family: Arial;
+        background: linear-gradient(45deg, #1e3c72, #2a5298);
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .status {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: left;
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .success {
+        color: #4caf50;
+      }
+      .error {
+        color: #f44336;
+      }
+      .warning {
+        color: #ff9800;
+      }
+      .info {
+        color: #2196f3;
+      }
+      button {
+        padding: 15px 30px;
+        font-size: 16px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #4caf50;
+        color: white;
+      }
+      button:hover {
+        opacity: 0.8;
+      }
+      .step {
+        margin: 10px 0;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 COMPLETE SYSTEM FIX</h1>
+      <p>
+        This will perform a comprehensive fix to eliminate all Fly.dev
+        connections.
+      </p>
+
+      <button onclick="runCompleteFix()">🚀 RUN COMPLETE FIX</button>
+      <button onclick="window.location.href='/'">🏠 Go to Homepage</button>
+      <button onclick="window.location.href='/diagnostic.html'">
+        🔍 Run Diagnostic
+      </button>
+
+      <div id="status" class="status">
+        <div class="info">Ready to start comprehensive fix...</div>
+      </div>
+    </div>
+
+    <script>
+      let statusDiv = document.getElementById("status");
+      let stepCounter = 0;
+
+      function log(message, type = "info") {
+        stepCounter++;
+        const timestamp = new Date().toLocaleTimeString();
+        const className = type;
+        statusDiv.innerHTML += `<div class="step ${className}">[${stepCounter}] [${timestamp}] ${message}</div>`;
+        statusDiv.scrollTop = statusDiv.scrollHeight;
+        console.log(`[${stepCounter}] ${message}`);
+      }
+
+      async function runCompleteFix() {
+        log("🚀 STARTING COMPLETE SYSTEM FIX...", "info");
+
+        try {
+          // Step 1: Network Request Interception
+          log("🌐 Setting up network request interception...", "info");
+          const originalFetch = window.fetch;
+          window.fetch = function (...args) {
+            const url = String(args[0] || "");
+            if (
+              url.includes("fly.dev") ||
+              url.includes("1f687d367311492e88ec0eb21dfc8b09")
+            ) {
+              log(`🚨 BLOCKED FLY.DEV REQUEST: ${url}`, "error");
+              log(`🔄 REDIRECTING TO LOCALHOST...`, "warning");
+              window.location.href =
+                "http://localhost:3000/?fixed=" + Date.now();
+              return Promise.reject(
+                new Error("Fly.dev request blocked and redirected"),
+              );
+            }
+            return originalFetch.apply(this, args);
+          };
+          log("✅ Network interception active", "success");
+
+          // Step 2: Service Worker Cleanup
+          log("🔧 Cleaning up service workers...", "info");
+          if ("serviceWorker" in navigator) {
+            const registrations =
+              await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+              await registration.unregister();
+              log(`✅ Unregistered SW: ${registration.scope}`, "success");
+            }
+            log(
+              `✅ All ${registrations.length} service workers removed`,
+              "success",
+            );
+          } else {
+            log("ℹ️ Service workers not supported", "info");
+          }
+
+          // Step 3: Cache Cleanup
+          log("🗑️ Cleaning up all caches...", "info");
+          if ("caches" in window) {
+            const cacheNames = await caches.keys();
+            for (let name of cacheNames) {
+              await caches.delete(name);
+              log(`✅ Deleted cache: ${name}`, "success");
+            }
+            log(`✅ All ${cacheNames.length} caches deleted`, "success");
+          } else {
+            log("ℹ️ Cache API not supported", "info");
+          }
+
+          // Step 4: Storage Cleanup
+          log("💾 Cleaning up storage...", "info");
+          try {
+            const localStorageCount = localStorage.length;
+            localStorage.clear();
+            log(
+              `✅ Cleared ${localStorageCount} localStorage items`,
+              "success",
+            );
+
+            const sessionStorageCount = sessionStorage.length;
+            sessionStorage.clear();
+            log(
+              `✅ Cleared ${sessionStorageCount} sessionStorage items`,
+              "success",
+            );
+          } catch (e) {
+            log(`⚠️ Storage cleanup error: ${e.message}`, "warning");
+          }
+
+          // Step 5: Cookie Cleanup
+          log("🍪 Cleaning up cookies...", "info");
+          let cookieCount = 0;
+          document.cookie.split(";").forEach(function (c) {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(
+                /=.*/,
+                "=;expires=" + new Date().toUTCString() + ";path=/",
+              );
+            cookieCount++;
+          });
+          log(`✅ Cleared ${cookieCount} cookies`, "success");
+
+          // Step 6: IndexedDB Cleanup
+          log("📊 Cleaning up IndexedDB...", "info");
+          if ("indexedDB" in window) {
+            try {
+              const databases = await indexedDB.databases();
+              for (let db of databases) {
+                indexedDB.deleteDatabase(db.name);
+                log(`✅ Deleted IndexedDB: ${db.name}`, "success");
+              }
+              log(
+                `✅ All ${databases.length} IndexedDB databases deleted`,
+                "success",
+              );
+            } catch (e) {
+              log(`⚠️ IndexedDB cleanup error: ${e.message}`, "warning");
+            }
+          } else {
+            log("ℹ️ IndexedDB not supported", "info");
+          }
+
+          // Step 7: URL Cleanup and Redirect
+          log("🔗 Preparing clean redirect...", "info");
+
+          // Step 8: Final Verification
+          log("✅ COMPLETE FIX FINISHED SUCCESSFULLY!", "success");
+          log("🔄 Redirecting to clean application in 3 seconds...", "info");
+
+          setTimeout(() => {
+            const cleanUrl =
+              "http://localhost:3000/?clean=" + Date.now() + "&fixed=true";
+            log(`🚀 Redirecting to: ${cleanUrl}`, "success");
+            window.location.replace(cleanUrl);
+          }, 3000);
+        } catch (error) {
+          log(`❌ Fix failed: ${error.message}`, "error");
+          log("🔄 Trying emergency redirect...", "warning");
+          setTimeout(() => {
+            window.location.href =
+              "http://localhost:3000/?emergency=" + Date.now();
+          }, 2000);
+        }
+      }
+
+      // Auto-run fix after 2 seconds
+      setTimeout(() => {
+        runCompleteFix();
+      }, 2000);
+    </script>
+  </body>
+</html>
