@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>🔥 EMERGENCY RESET</title>
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        padding: 50px;
+        background: #f00;
+        color: white;
+      }
+      button {
+        padding: 20px;
+        font-size: 18px;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔥 EMERGENCY SYSTEM RESET</h1>
+    <p>This will completely reset your browser state for this application.</p>
+
+    <button onclick="nuclearReset()">🔥 NUCLEAR RESET</button>
+    <button onclick="window.location.href = '/'">🏠 Try Homepage</button>
+
+    <div id="status"></div>
+
+    <script>
+      function log(msg) {
+        document.getElementById("status").innerHTML += "<br>" + msg;
+        console.log(msg);
+      }
+
+      async function nuclearReset() {
+        log("🔥 Starting nuclear reset...");
+
+        try {
+          // 1. Unregister ALL service workers
+          if ("serviceWorker" in navigator) {
+            const registrations =
+              await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+              await registration.unregister();
+              log("✅ Service worker unregistered: " + registration.scope);
+            }
+          }
+
+          // 2. Delete ALL caches
+          if ("caches" in window) {
+            const cacheNames = await caches.keys();
+            for (let name of cacheNames) {
+              await caches.delete(name);
+              log("✅ Cache deleted: " + name);
+            }
+          }
+
+          // 3. Clear ALL storage
+          localStorage.clear();
+          sessionStorage.clear();
+          log("✅ Storage cleared");
+
+          // 4. Clear cookies
+          document.cookie.split(";").forEach(function (c) {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(
+                /=.*/,
+                "=;expires=" + new Date().toUTCString() + ";path=/",
+              );
+          });
+          log("✅ Cookies cleared");
+
+          // 5. Clear IndexedDB
+          if ("indexedDB" in window) {
+            try {
+              const dbs = await indexedDB.databases();
+              for (let db of dbs) {
+                indexedDB.deleteDatabase(db.name);
+                log("✅ IndexedDB deleted: " + db.name);
+              }
+            } catch (e) {
+              log("⚠️ IndexedDB clear error: " + e.message);
+            }
+          }
+
+          log("🎉 NUCLEAR RESET COMPLETE!");
+          log("Redirecting in 3 seconds...");
+
+          setTimeout(() => {
+            window.location.replace("/?reset=" + Date.now());
+          }, 3000);
+        } catch (error) {
+          log("❌ Reset error: " + error.message);
+        }
+      }
+
+      // Auto-start reset
+      window.addEventListener("load", function () {
+        setTimeout(nuclearReset, 1000);
+      });
+    </script>
+  </body>
+</html>

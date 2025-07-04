@@ -135,62 +135,50 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* NUCLEAR CACHE BUSTER */}
-        <Script id="nuclear-cache-buster" strategy="beforeInteractive">
+        {/* EMERGENCY FLY.DEV REDIRECT INTERCEPTOR */}
+        <Script id="flydev-interceptor" strategy="beforeInteractive">
           {`
-            // IMMEDIATE CACHE DESTRUCTION
+            // IMMEDIATE FLY.DEV BLOCK AND REDIRECT
             (function() {
-              console.log('🔥 NUCLEAR CACHE BUSTER ACTIVATED');
+              // Detect if we're being accessed from a fly.dev URL
+              if (window.location.hostname.includes('fly.dev') ||
+                  window.location.hostname.includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                console.log('🚨 FLY.DEV DETECTED - REDIRECTING TO LOCALHOST');
+                window.location.replace('http://localhost:3000/emergency-reset.html');
+                return;
+              }
 
-              // 1. Kill all service workers IMMEDIATELY
+              // Block any attempts to connect to fly.dev
+              if (typeof window !== 'undefined') {
+                const originalFetch = window.fetch;
+                window.fetch = function(...args) {
+                  const url = String(args[0] || '');
+                  if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    console.error('🚨 REDIRECTING FROM FLY.DEV REQUEST');
+                    window.location.replace('http://localhost:3000/emergency-reset.html');
+                    return Promise.reject(new Error('Redirected to reset'));
+                  }
+                  return originalFetch.apply(this, args);
+                };
+              }
+
+              // Clear all caches immediately
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(regs => {
                   regs.forEach(reg => reg.unregister());
                 });
               }
 
-              // 2. Hijack ALL network requests
-              if (typeof window !== 'undefined') {
-                const originalFetch = window.fetch;
-                window.fetch = function(...args) {
-                  const url = String(args[0] || '');
-                  if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
-                    console.error('🚨 BLOCKED EXTERNAL REQUEST:', url);
-                    return Promise.reject(new Error('External request blocked'));
-                  }
-                  return originalFetch.apply(this, args);
-                };
-
-                // Override XMLHttpRequest too
-                const originalOpen = XMLHttpRequest.prototype.open;
-                XMLHttpRequest.prototype.open = function(method, url, ...args) {
-                  if (String(url).includes('fly.dev') || String(url).includes('1f687d367311492e88ec0eb21dfc8b09')) {
-                    console.error('🚨 BLOCKED XHR REQUEST:', url);
-                    throw new Error('External XHR blocked');
-                  }
-                  return originalOpen.call(this, method, url, ...args);
-                };
+              if ('caches' in window) {
+                caches.keys().then(names => names.forEach(name => caches.delete(name)));
               }
 
-              // 3. Clear ALL storage
               try {
                 localStorage.clear();
                 sessionStorage.clear();
-                if ('caches' in window) {
-                  caches.keys().then(names => names.forEach(name => caches.delete(name)));
-                }
-              } catch(e) {
-                console.log('Storage clear error:', e);
-              }
+              } catch(e) {}
 
-              // 4. Force reload with timestamp
-              const currentUrl = window.location.href;
-              if (!currentUrl.includes('?nocache=')) {
-                const separator = currentUrl.includes('?') ? '&' : '?';
-                window.location.href = currentUrl + separator + 'nocache=' + Date.now();
-              }
-
-              console.log('🔥 NUCLEAR CACHE BUSTER COMPLETE');
+              console.log('✅ FLY.DEV INTERCEPTOR ACTIVE');
             })();
           `}
         </Script>
