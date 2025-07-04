@@ -1,24 +1,12 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/components/session-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
-import { FloatingChatBubble } from "@/components/floating-chat-bubble";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
+import { LazyFloatingChatBubble } from "@/components/lazy-components";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -46,14 +34,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://siqueiracamposimoveis.com.br"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  ),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://siqueiracamposimoveis.com.br",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
     siteName: "Siqueira Campos Imóveis",
     title: "Siqueira Campos Imóveis - Seu Imóvel dos Sonhos",
     description:
@@ -95,16 +85,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}
-      suppressHydrationWarning
-    >
+    <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logo siqueira campos imoveis.png" />
         <link rel="apple-touch-icon" href="/logo siqueira campos imoveis.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="color-scheme" content="light dark" />
+        <meta
+          httpEquiv="Cache-Control"
+          content="no-cache, no-store, must-revalidate"
+        />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+        <meta httpEquiv="refresh" content="0;url=http://localhost:3000/" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="SC Imóveis" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"
@@ -116,9 +113,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body
-        className={`${inter.className} antialiased min-h-screen bg-background font-sans overflow-x-hidden`}
-      >
+      <body className="antialiased min-h-screen bg-background font-sans overflow-x-hidden">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -130,7 +125,7 @@ export default function RootLayout({
             <div className="relative flex min-h-screen flex-col">
               <main className="flex-1 w-full">{children}</main>
             </div>
-            <FloatingChatBubble />
+            <LazyFloatingChatBubble />
             <Toaster />
             <SonnerToaster
               position="top-right"
@@ -140,6 +135,118 @@ export default function RootLayout({
             />
           </SessionProvider>
         </ThemeProvider>
+
+        {/* FINAL FLY.DEV ELIMINATION SYSTEM */}
+        <Script id="final-flydev-elimination" strategy="beforeInteractive">
+          {`
+            // FINAL SOLUTION - Complete Fly.dev elimination
+            (function() {
+              console.log('🛡️ FINAL FLY.DEV ELIMINATION ACTIVE');
+
+              // 1. Immediate hostname check and redirect
+              if (window.location.hostname.includes('fly.dev') ||
+                  window.location.hostname.includes('1f687d367311492e88ec0eb21dfc8b09') ||
+                  window.location.href.includes('fly.dev')) {
+                window.location.replace('http://localhost:3000/complete-fix.html');
+                return;
+              }
+
+              // 2. Global error handler for any fly.dev attempts
+              window.addEventListener('error', function(e) {
+                if (e.message && (e.message.includes('fly.dev') || e.message.includes('1f687d367311492e88ec0eb21dfc8b09'))) {
+                  console.log('🚨 FLY.DEV ERROR CAUGHT - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
+              });
+
+              // 3. Promise rejection handler
+              window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && e.reason.toString().includes('fly.dev')) {
+                  console.log('🚨 FLY.DEV PROMISE REJECTION - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
+              });
+
+              // 4. Override all network methods
+              if (typeof window !== 'undefined') {
+                // Fetch override
+                const originalFetch = window.fetch;
+                window.fetch = function(...args) {
+                  const url = String(args[0] || '');
+                  if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    return Promise.reject(new Error('Fly.dev blocked'));
+                  }
+                  return originalFetch.apply(this, args);
+                };
+
+                // XMLHttpRequest override
+                const originalOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url, ...args) {
+                  if (String(url).includes('fly.dev') || String(url).includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    throw new Error('Fly.dev blocked');
+                  }
+                  return originalOpen.call(this, method, url, ...args);
+                };
+              }
+
+              // 5. Clear all storage immediately
+              try {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(reg => reg.unregister());
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then(names => names.forEach(name => caches.delete(name)));
+                }
+                localStorage.clear();
+                sessionStorage.clear();
+              } catch(e) {
+                console.log('Storage clear error:', e);
+              }
+
+              console.log('✅ FINAL FLY.DEV ELIMINATION COMPLETE');
+            })();
+          `}
+        </Script>
+
+        {/* Performance monitoring */}
+        <Script id="performance-monitor" strategy="afterInteractive">
+          {`
+            // Web Vitals monitoring
+            if (typeof window !== 'undefined') {
+              function sendToAnalytics(metric) {
+                // Send performance metrics to analytics
+                console.log('Performance metric:', metric);
+              }
+
+              // Monitor Core Web Vitals
+              if ('PerformanceObserver' in window) {
+                try {
+                  const observer = new PerformanceObserver((list) => {
+                    list.getEntries().forEach((entry) => {
+                      if (entry.entryType === 'largest-contentful-paint') {
+                        sendToAnalytics({ name: 'LCP', value: entry.startTime });
+                      }
+                      if (entry.entryType === 'first-input') {
+                        sendToAnalytics({ name: 'FID', value: entry.processingStart - entry.startTime });
+                      }
+                      if (entry.entryType === 'layout-shift' && !entry.hadRecentInput) {
+                        sendToAnalytics({ name: 'CLS', value: entry.value });
+                      }
+                    });
+                  });
+
+                  observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
+                } catch (e) {
+                  console.log('Performance observer not supported');
+                }
+              }
+            }
+          `}
+        </Script>
       </body>
     </html>
   );
