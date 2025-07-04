@@ -1,6 +1,6 @@
-const CACHE_NAME = "siqueira-campos-v1";
-const STATIC_CACHE_NAME = "static-v1";
-const DYNAMIC_CACHE_NAME = "dynamic-v1";
+const CACHE_NAME = "siqueira-campos-v2";
+const STATIC_CACHE_NAME = "static-v2";
+const DYNAMIC_CACHE_NAME = "dynamic-v2";
 
 // Cache static assets
 const STATIC_ASSETS = [
@@ -50,46 +50,71 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch strategy
+// Fetch event handler
 self.addEventListener("fetch", (event) => {
-  const { request } = event;
+  const request = event.request;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
-  if (request.method !== "GET") return;
+  // Only handle GET requests
+  if (request.method !== "GET") {
+    return;
+  }
 
-  // Skip chrome-extension requests
-  if (url.protocol === "chrome-extension:") return;
+  // Skip non-http requests
+  if (!url.protocol.startsWith("http")) {
+    return;
+  }
+
+  // Skip external domains except for allowed ones
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
   // Handle different types of requests
-  if (request.destination === "image") {
-    event.respondWith(handleImageRequest(request));
-  } else if (url.pathname.startsWith("/api/")) {
-    event.respondWith(handleApiRequest(request));
-  } else if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(handleStaticAssets(request));
+  if (url.pathname.startsWith("/api/")) {
+    // API requests - network first
+    event.respondWith(networkFirst(request));
+  } else if (url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/)) {
+    // Images - cache first
+    event.respondWith(cacheFirst(request));
   } else {
-    event.respondWith(handlePageRequest(request));
+    // Pages - stale while revalidate
+    event.respondWith(staleWhileRevalidate(request));
   }
 });
 
-// Image caching strategy (cache-first)
-async function handleImageRequest(request) {
+// Cache strategies implementation
+async function networkFirst(request) {
   try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
     const cache = await caches.open(DYNAMIC_CACHE_NAME);
     const cachedResponse = await cache.match(request);
+    return cachedResponse || new Response("Offline", { status: 503 });
+  }
+}
 
-    if (cachedResponse) {
-      return cachedResponse;
-    }
+async function cacheFirst(request) {
+  const cache = await caches.open(STATIC_CACHE_NAME);
+  const cachedResponse = await cache.match(request);
 
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  try {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
     }
     return networkResponse;
   } catch (error) {
-    // Return placeholder image on error
+    // Return placeholder for failed image requests
     return new Response(
       '<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Imagem não disponível</text></svg>',
       { headers: { "Content-Type": "image/svg+xml" } },
@@ -97,115 +122,27 @@ async function handleImageRequest(request) {
   }
 }
 
-// API caching strategy (network-first)
-async function handleApiRequest(request) {
-  try {
-    const networkResponse = await fetch(request);
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(DYNAMIC_CACHE_NAME);
+  const cachedResponse = await cache.match(request);
 
-    if (networkResponse.ok) {
-      const cache = await caches.open(DYNAMIC_CACHE_NAME);
-      cache.put(request, networkResponse.clone());
-    }
-
-    return networkResponse;
-  } catch (error) {
-    const cache = await caches.open(DYNAMIC_CACHE_NAME);
-    const cachedResponse = await cache.match(request);
-
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Return error response
-    return new Response(
-      JSON.stringify({ error: "Network error, data not available offline" }),
-      {
-        status: 503,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-  }
-}
-
-// Static assets caching (cache-first)
-async function handleStaticAssets(request) {
-  try {
-    const cache = await caches.open(STATIC_CACHE_NAME);
-    const cachedResponse = await cache.match(request);
-
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    const networkResponse = await fetch(request);
+  // Always try to update cache in background
+  const networkPromise = fetch(request).then((networkResponse) => {
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
     }
     return networkResponse;
-  } catch (error) {
-    return new Response("Asset not available offline", { status: 503 });
+  });
+
+  // Return cached version immediately if available
+  if (cachedResponse) {
+    return cachedResponse;
   }
-}
 
-// Page caching strategy (stale-while-revalidate)
-async function handlePageRequest(request) {
+  // If no cache, wait for network
   try {
-    const cache = await caches.open(DYNAMIC_CACHE_NAME);
-    const cachedResponse = await cache.match(request);
-
-    // Always try to update cache in background
-    const networkPromise = fetch(request).then((networkResponse) => {
-      if (networkResponse.ok) {
-        cache.put(request, networkResponse.clone());
-      }
-      return networkResponse;
-    });
-
-    // Return cached version immediately if available
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Otherwise wait for network
     return await networkPromise;
   } catch (error) {
-    const cache = await caches.open(DYNAMIC_CACHE_NAME);
-    const cachedResponse = await cache.match(request);
-
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Return offline page
-    return new Response(
-      "<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Você está offline</h1><p>Esta página não está disponível offline.</p></body></html>",
-      { headers: { "Content-Type": "text/html" } },
-    );
-  }
-}
-
-// Background sync for analytics
-self.addEventListener("sync", (event) => {
-  if (event.tag === "analytics-sync") {
-    event.waitUntil(syncAnalytics());
-  }
-});
-
-async function syncAnalytics() {
-  // Sync any pending analytics data when back online
-  try {
-    const cache = await caches.open("analytics-cache");
-    const requests = await cache.keys();
-
-    for (const request of requests) {
-      try {
-        await fetch(request);
-        await cache.delete(request);
-      } catch (error) {
-        console.log("Failed to sync analytics:", error);
-      }
-    }
-  } catch (error) {
-    console.log("Analytics sync failed:", error);
+    return new Response("Offline", { status: 503 });
   }
 }
