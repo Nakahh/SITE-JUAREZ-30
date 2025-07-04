@@ -111,7 +111,10 @@ const nextConfig = {
       config.optimization.sideEffects = false;
 
       // Optimize chunks
-      if (config.optimization.splitChunks) {
+      if (
+        config.optimization.splitChunks &&
+        config.optimization.splitChunks.cacheGroups
+      ) {
         config.optimization.splitChunks.cacheGroups.vendor = {
           test: /[\\/]node_modules[\\/]/,
           name: "vendors",
@@ -122,7 +125,10 @@ const nextConfig = {
     }
 
     // Optimize bundle splitting
-    if (config.optimization.splitChunks) {
+    if (
+      config.optimization.splitChunks &&
+      config.optimization.splitChunks.cacheGroups
+    ) {
       config.optimization.splitChunks.cacheGroups.react = {
         test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
         name: "react",
