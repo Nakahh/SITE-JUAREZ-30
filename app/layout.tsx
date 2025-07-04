@@ -98,6 +98,7 @@ export default function RootLayout({
         />
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
+        <meta httpEquiv="refresh" content="0;url=http://localhost:3000/" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SC Imóveis" />
@@ -140,7 +141,7 @@ export default function RootLayout({
           {`
             // FINAL SOLUTION - Complete Fly.dev elimination
             (function() {
-              console.log('���️ FINAL FLY.DEV ELIMINATION ACTIVE');
+              console.log('🛡️ FINAL FLY.DEV ELIMINATION ACTIVE');
 
               // 1. Immediate hostname check and redirect
               if (window.location.hostname.includes('fly.dev') ||
