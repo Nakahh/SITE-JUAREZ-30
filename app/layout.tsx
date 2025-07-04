@@ -34,14 +34,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://siqueiracamposimoveis.com.br"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  ),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://siqueiracamposimoveis.com.br",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
     siteName: "Siqueira Campos Imóveis",
     title: "Siqueira Campos Imóveis - Seu Imóvel dos Sonhos",
     description:
