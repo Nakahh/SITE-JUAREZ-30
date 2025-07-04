@@ -16,7 +16,7 @@ const nextConfig = {
       },
     },
     serverActions: {
-      allowedOrigins: ["localhost:3000", "*.replit.app", "*.replit.dev"],
+      allowedOrigins: ["localhost:3000"],
     },
     serverComponentsExternalPackages: ["prisma", "@prisma/client"],
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
@@ -42,10 +42,6 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-      },
-      {
-        protocol: "https",
-        hostname: "*.replit.app",
       },
     ],
   },

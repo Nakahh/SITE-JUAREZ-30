@@ -129,35 +129,37 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* Service Worker Registration */}
-        <Script id="sw-registration" strategy="afterInteractive">
+        {/* Clear all caches and service workers */}
+        <Script id="cache-clear" strategy="afterInteractive">
           {`
-            // First unregister any existing service workers
+            // Complete cache and service worker cleanup
             if ('serviceWorker' in navigator) {
               navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
+                registrations.forEach(function(registration) {
                   registration.unregister();
-                }
-                // Clear caches
-                if ('caches' in window) {
-                  caches.keys().then(function(names) {
-                    names.forEach(function(name) {
-                      caches.delete(name);
-                    });
-                  });
-                }
-
-                // Register new service worker
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
+                  console.log('Service worker unregistered');
                 });
               });
+            }
+
+            if ('caches' in window) {
+              caches.keys().then(function(names) {
+                names.forEach(function(name) {
+                  caches.delete(name);
+                  console.log('Cache deleted:', name);
+                });
+              });
+            }
+
+            // Clear all storage
+            try {
+              localStorage.clear();
+              sessionStorage.clear();
+              if ('indexedDB' in window) {
+                indexedDB.deleteDatabase('keyval-store');
+              }
+            } catch (e) {
+              console.log('Storage clear error:', e);
             }
           `}
         </Script>
