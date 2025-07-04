@@ -135,38 +135,50 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* Clear all caches and service workers */}
-        <Script id="cache-clear" strategy="afterInteractive">
+        {/* Emergency reset and cache clear */}
+        <Script id="emergency-reset" strategy="afterInteractive">
           {`
-            // Complete cache and service worker cleanup
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                registrations.forEach(function(registration) {
-                  registration.unregister();
-                  console.log('Service worker unregistered');
-                });
-              });
-            }
+            // EMERGENCY RESET - Detect and fix Fly.dev connections
+            window.addEventListener('load', function() {
+              // Check for any fetch calls to external domains
+              const originalFetch = window.fetch;
+              window.fetch = function(...args) {
+                const url = args[0];
+                if (typeof url === 'string' && url.includes('fly.dev')) {
+                  console.error('🚨 BLOCKED FLY.DEV REQUEST:', url);
+                  alert('Detected Fly.dev connection attempt! Click OK to reset.');
+                  window.location.href = '/reset.html';
+                  return Promise.reject(new Error('Blocked external request'));
+                }
+                return originalFetch.apply(this, args);
+              };
 
-            if ('caches' in window) {
-              caches.keys().then(function(names) {
-                names.forEach(function(name) {
-                  caches.delete(name);
-                  console.log('Cache deleted:', name);
+              // Clear all existing caches and workers
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  registrations.forEach(function(registration) {
+                    registration.unregister();
+                  });
                 });
-              });
-            }
-
-            // Clear all storage
-            try {
-              localStorage.clear();
-              sessionStorage.clear();
-              if ('indexedDB' in window) {
-                indexedDB.deleteDatabase('keyval-store');
               }
-            } catch (e) {
-              console.log('Storage clear error:', e);
-            }
+
+              if ('caches' in window) {
+                caches.keys().then(function(names) {
+                  names.forEach(function(name) {
+                    caches.delete(name);
+                  });
+                });
+              }
+
+              // Add emergency reset button
+              if (window.location.pathname === '/') {
+                const resetBtn = document.createElement('button');
+                resetBtn.innerHTML = '🔥 Emergency Reset';
+                resetBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;background:red;color:white;border:none;padding:10px;border-radius:5px;cursor:pointer;';
+                resetBtn.onclick = () => window.location.href = '/reset.html';
+                document.body.appendChild(resetBtn);
+              }
+            });
           `}
         </Script>
 
