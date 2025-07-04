@@ -135,50 +135,63 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* Emergency reset and cache clear */}
-        <Script id="emergency-reset" strategy="afterInteractive">
+        {/* NUCLEAR CACHE BUSTER */}
+        <Script id="nuclear-cache-buster" strategy="beforeInteractive">
           {`
-            // EMERGENCY RESET - Detect and fix Fly.dev connections
-            window.addEventListener('load', function() {
-              // Check for any fetch calls to external domains
-              const originalFetch = window.fetch;
-              window.fetch = function(...args) {
-                const url = args[0];
-                if (typeof url === 'string' && url.includes('fly.dev')) {
-                  console.error('🚨 BLOCKED FLY.DEV REQUEST:', url);
-                  alert('Detected Fly.dev connection attempt! Click OK to reset.');
-                  window.location.href = '/reset.html';
-                  return Promise.reject(new Error('Blocked external request'));
-                }
-                return originalFetch.apply(this, args);
-              };
+            // IMMEDIATE CACHE DESTRUCTION
+            (function() {
+              console.log('🔥 NUCLEAR CACHE BUSTER ACTIVATED');
 
-              // Clear all existing caches and workers
+              // 1. Kill all service workers IMMEDIATELY
               if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  registrations.forEach(function(registration) {
-                    registration.unregister();
-                  });
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                  regs.forEach(reg => reg.unregister());
                 });
               }
 
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) {
-                    caches.delete(name);
-                  });
-                });
+              // 2. Hijack ALL network requests
+              if (typeof window !== 'undefined') {
+                const originalFetch = window.fetch;
+                window.fetch = function(...args) {
+                  const url = String(args[0] || '');
+                  if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    console.error('🚨 BLOCKED EXTERNAL REQUEST:', url);
+                    return Promise.reject(new Error('External request blocked'));
+                  }
+                  return originalFetch.apply(this, args);
+                };
+
+                // Override XMLHttpRequest too
+                const originalOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url, ...args) {
+                  if (String(url).includes('fly.dev') || String(url).includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    console.error('🚨 BLOCKED XHR REQUEST:', url);
+                    throw new Error('External XHR blocked');
+                  }
+                  return originalOpen.call(this, method, url, ...args);
+                };
               }
 
-              // Add emergency reset button
-              if (window.location.pathname === '/') {
-                const resetBtn = document.createElement('button');
-                resetBtn.innerHTML = '🔥 Emergency Reset';
-                resetBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;background:red;color:white;border:none;padding:10px;border-radius:5px;cursor:pointer;';
-                resetBtn.onclick = () => window.location.href = '/reset.html';
-                document.body.appendChild(resetBtn);
+              // 3. Clear ALL storage
+              try {
+                localStorage.clear();
+                sessionStorage.clear();
+                if ('caches' in window) {
+                  caches.keys().then(names => names.forEach(name => caches.delete(name)));
+                }
+              } catch(e) {
+                console.log('Storage clear error:', e);
               }
-            });
+
+              // 4. Force reload with timestamp
+              const currentUrl = window.location.href;
+              if (!currentUrl.includes('?nocache=')) {
+                const separator = currentUrl.includes('?') ? '&' : '?';
+                window.location.href = currentUrl + separator + 'nocache=' + Date.now();
+              }
+
+              console.log('🔥 NUCLEAR CACHE BUSTER COMPLETE');
+            })();
           `}
         </Script>
 
