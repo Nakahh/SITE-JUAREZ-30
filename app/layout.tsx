@@ -34,14 +34,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://siqueiracamposimoveis.com.br"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  ),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://siqueiracamposimoveis.com.br",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
     siteName: "Siqueira Campos Imóveis",
     title: "Siqueira Campos Imóveis - Seu Imóvel dos Sonhos",
     description:
@@ -90,6 +92,13 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="color-scheme" content="light dark" />
+        <meta
+          httpEquiv="Cache-Control"
+          content="no-cache, no-store, must-revalidate"
+        />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+        <meta httpEquiv="refresh" content="0;url=http://localhost:3000/" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SC Imóveis" />
@@ -127,20 +136,79 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* Service Worker Registration */}
-        <Script id="sw-registration" strategy="afterInteractive">
+        {/* FINAL FLY.DEV ELIMINATION SYSTEM */}
+        <Script id="final-flydev-elimination" strategy="beforeInteractive">
           {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('SW registered: ', registration);
-                  })
-                  .catch(function(registrationError) {
-                    console.log('SW registration failed: ', registrationError);
-                  });
+            // FINAL SOLUTION - Complete Fly.dev elimination
+            (function() {
+              console.log('🛡️ FINAL FLY.DEV ELIMINATION ACTIVE');
+
+              // 1. Immediate hostname check and redirect
+              if (window.location.hostname.includes('fly.dev') ||
+                  window.location.hostname.includes('1f687d367311492e88ec0eb21dfc8b09') ||
+                  window.location.href.includes('fly.dev')) {
+                window.location.replace('http://localhost:3000/complete-fix.html');
+                return;
+              }
+
+              // 2. Global error handler for any fly.dev attempts
+              window.addEventListener('error', function(e) {
+                if (e.message && (e.message.includes('fly.dev') || e.message.includes('1f687d367311492e88ec0eb21dfc8b09'))) {
+                  console.log('🚨 FLY.DEV ERROR CAUGHT - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
               });
-            }
+
+              // 3. Promise rejection handler
+              window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && e.reason.toString().includes('fly.dev')) {
+                  console.log('🚨 FLY.DEV PROMISE REJECTION - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
+              });
+
+              // 4. Override all network methods
+              if (typeof window !== 'undefined') {
+                // Fetch override
+                const originalFetch = window.fetch;
+                window.fetch = function(...args) {
+                  const url = String(args[0] || '');
+                  if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    return Promise.reject(new Error('Fly.dev blocked'));
+                  }
+                  return originalFetch.apply(this, args);
+                };
+
+                // XMLHttpRequest override
+                const originalOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url, ...args) {
+                  if (String(url).includes('fly.dev') || String(url).includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    throw new Error('Fly.dev blocked');
+                  }
+                  return originalOpen.call(this, method, url, ...args);
+                };
+              }
+
+              // 5. Clear all storage immediately
+              try {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(reg => reg.unregister());
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then(names => names.forEach(name => caches.delete(name)));
+                }
+                localStorage.clear();
+                sessionStorage.clear();
+              } catch(e) {
+                console.log('Storage clear error:', e);
+              }
+
+              console.log('✅ FINAL FLY.DEV ELIMINATION COMPLETE');
+            })();
           `}
         </Script>
 

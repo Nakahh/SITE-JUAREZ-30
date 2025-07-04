@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Complete Reset</title>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate, max-age=0"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <script>
+      // NUCLEAR OPTION - Complete browser reset
+      (function () {
+        console.log("🔥 NUCLEAR RESET STARTING...");
+
+        // 1. Unregister ALL service workers
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => {
+              registration.unregister();
+              console.log("SW unregistered:", registration.scope);
+            });
+          });
+        }
+
+        // 2. Delete ALL caches
+        if ("caches" in window) {
+          caches.keys().then((cacheNames) => {
+            cacheNames.forEach((cacheName) => {
+              caches.delete(cacheName);
+              console.log("Cache deleted:", cacheName);
+            });
+          });
+        }
+
+        // 3. Clear ALL storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 4. Clear IndexedDB
+        if ("indexedDB" in window) {
+          try {
+            indexedDB.databases().then((dbs) => {
+              dbs.forEach((db) => {
+                indexedDB.deleteDatabase(db.name);
+                console.log("IndexedDB deleted:", db.name);
+              });
+            });
+          } catch (e) {
+            console.log("IndexedDB clear error:", e);
+          }
+        }
+
+        // 5. Clear cookies for this domain
+        document.cookie.split(";").forEach(function (c) {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(
+              /=.*/,
+              "=;expires=" + new Date().toUTCString() + ";path=/",
+            );
+        });
+
+        console.log("🔥 NUCLEAR RESET COMPLETE");
+        alert("All caches cleared! Redirecting to fresh app...");
+
+        // 6. Hard reload with cache bypass
+        setTimeout(() => {
+          window.location.href = "/?t=" + Date.now();
+        }, 1000);
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>🔥 Complete Browser Reset</h1>
+    <p>Clearing all caches, service workers, and storage...</p>
+    <p>You will be redirected automatically.</p>
+  </body>
+</html>

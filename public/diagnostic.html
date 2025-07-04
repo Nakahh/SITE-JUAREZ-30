@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>🔍 FLY.DEV DIAGNOSTIC</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        background: #000;
+        color: #0f0;
+      }
+      .log {
+        border: 1px solid #0f0;
+        padding: 10px;
+        margin: 10px 0;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      button {
+        padding: 10px;
+        margin: 5px;
+        background: #0f0;
+        color: #000;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔍 FLY.DEV CONNECTION DIAGNOSTIC</h1>
+
+    <button onclick="runDiagnostic()">🔍 RUN DIAGNOSTIC</button>
+    <button onclick="clearLog()">🧹 CLEAR LOG</button>
+    <button onclick="window.location.href='/'">🏠 GO HOME</button>
+
+    <div id="log" class="log"></div>
+
+    <script>
+      let logDiv = document.getElementById("log");
+
+      function log(msg, color = "#0f0") {
+        let timestamp = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `<div style="color:${color}">[${timestamp}] ${msg}</div>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+        console.log(msg);
+      }
+
+      function clearLog() {
+        logDiv.innerHTML = "";
+      }
+
+      async function runDiagnostic() {
+        log("🔍 STARTING FLY.DEV DIAGNOSTIC...", "#fff");
+
+        // 1. Check current URL
+        log(`Current URL: ${window.location.href}`);
+        log(`Hostname: ${window.location.hostname}`);
+        log(`Protocol: ${window.location.protocol}`);
+
+        // 2. Check for service workers
+        if ("serviceWorker" in navigator) {
+          try {
+            const registrations =
+              await navigator.serviceWorker.getRegistrations();
+            log(`Service Workers found: ${registrations.length}`);
+            registrations.forEach((reg, i) => {
+              log(`SW ${i}: ${reg.scope}`, "#ff0");
+            });
+          } catch (e) {
+            log(`SW check error: ${e.message}`, "#f00");
+          }
+        }
+
+        // 3. Check caches
+        if ("caches" in window) {
+          try {
+            const cacheNames = await caches.keys();
+            log(`Caches found: ${cacheNames.length}`);
+            cacheNames.forEach((name) => {
+              log(`Cache: ${name}`, "#ff0");
+            });
+          } catch (e) {
+            log(`Cache check error: ${e.message}`, "#f00");
+          }
+        }
+
+        // 4. Check localStorage
+        try {
+          log(`LocalStorage keys: ${Object.keys(localStorage).length}`);
+          Object.keys(localStorage).forEach((key) => {
+            if (key.includes("fly") || localStorage[key].includes("fly")) {
+              log(`LocalStorage contains fly: ${key}`, "#f00");
+            }
+          });
+        } catch (e) {
+          log(`LocalStorage check error: ${e.message}`, "#f00");
+        }
+
+        // 5. Check sessionStorage
+        try {
+          log(`SessionStorage keys: ${Object.keys(sessionStorage).length}`);
+          Object.keys(sessionStorage).forEach((key) => {
+            if (key.includes("fly") || sessionStorage[key].includes("fly")) {
+              log(`SessionStorage contains fly: ${key}`, "#f00");
+            }
+          });
+        } catch (e) {
+          log(`SessionStorage check error: ${e.message}`, "#f00");
+        }
+
+        // 6. Intercept network requests
+        log("Setting up network interceptors...");
+
+        const originalFetch = window.fetch;
+        window.fetch = function (...args) {
+          const url = String(args[0] || "");
+          log(
+            `FETCH REQUEST: ${url}`,
+            url.includes("fly.dev") ? "#f00" : "#0ff",
+          );
+          if (url.includes("fly.dev")) {
+            log(`🚨 FLY.DEV REQUEST DETECTED! ${url}`, "#f00");
+            // Get call stack
+            log(`Call stack: ${new Error().stack}`, "#f00");
+          }
+          return originalFetch.apply(this, args);
+        };
+
+        // 7. Check for any global variables containing fly.dev
+        log("Checking global variables...");
+        for (let prop in window) {
+          try {
+            const value = window[prop];
+            if (typeof value === "string" && value.includes("fly.dev")) {
+              log(
+                `Global variable contains fly.dev: ${prop} = ${value}`,
+                "#f00",
+              );
+            }
+          } catch (e) {
+            // Skip inaccessible properties
+          }
+        }
+
+        log("✅ DIAGNOSTIC COMPLETE", "#fff");
+      }
+
+      // Auto-run on load
+      window.addEventListener("load", function () {
+        setTimeout(runDiagnostic, 1000);
+      });
+    </script>
+  </body>
+</html>

@@ -16,7 +16,7 @@ const nextConfig = {
       },
     },
     serverActions: {
-      allowedOrigins: ["localhost:3000", "*.replit.app", "*.replit.dev"],
+      allowedOrigins: ["localhost:3000"],
     },
     serverComponentsExternalPackages: ["prisma", "@prisma/client"],
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
@@ -42,10 +42,6 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-      },
-      {
-        protocol: "https",
-        hostname: "*.replit.app",
       },
     ],
   },
@@ -111,7 +107,10 @@ const nextConfig = {
       config.optimization.sideEffects = false;
 
       // Optimize chunks
-      if (config.optimization.splitChunks) {
+      if (
+        config.optimization.splitChunks &&
+        config.optimization.splitChunks.cacheGroups
+      ) {
         config.optimization.splitChunks.cacheGroups.vendor = {
           test: /[\\/]node_modules[\\/]/,
           name: "vendors",
@@ -122,7 +121,10 @@ const nextConfig = {
     }
 
     // Optimize bundle splitting
-    if (config.optimization.splitChunks) {
+    if (
+      config.optimization.splitChunks &&
+      config.optimization.splitChunks.cacheGroups
+    ) {
       config.optimization.splitChunks.cacheGroups.react = {
         test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
         name: "react",
