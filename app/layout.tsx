@@ -135,50 +135,78 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
 
-        {/* EMERGENCY FLY.DEV REDIRECT INTERCEPTOR */}
-        <Script id="flydev-interceptor" strategy="beforeInteractive">
+        {/* FINAL FLY.DEV ELIMINATION SYSTEM */}
+        <Script id="final-flydev-elimination" strategy="beforeInteractive">
           {`
-            // IMMEDIATE FLY.DEV BLOCK AND REDIRECT
+            // FINAL SOLUTION - Complete Fly.dev elimination
             (function() {
-              // Detect if we're being accessed from a fly.dev URL
+              console.log('���️ FINAL FLY.DEV ELIMINATION ACTIVE');
+
+              // 1. Immediate hostname check and redirect
               if (window.location.hostname.includes('fly.dev') ||
-                  window.location.hostname.includes('1f687d367311492e88ec0eb21dfc8b09')) {
-                console.log('🚨 FLY.DEV DETECTED - REDIRECTING TO LOCALHOST');
-                window.location.replace('http://localhost:3000/emergency-reset.html');
+                  window.location.hostname.includes('1f687d367311492e88ec0eb21dfc8b09') ||
+                  window.location.href.includes('fly.dev')) {
+                window.location.replace('http://localhost:3000/complete-fix.html');
                 return;
               }
 
-              // Block any attempts to connect to fly.dev
+              // 2. Global error handler for any fly.dev attempts
+              window.addEventListener('error', function(e) {
+                if (e.message && (e.message.includes('fly.dev') || e.message.includes('1f687d367311492e88ec0eb21dfc8b09'))) {
+                  console.log('🚨 FLY.DEV ERROR CAUGHT - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
+              });
+
+              // 3. Promise rejection handler
+              window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && e.reason.toString().includes('fly.dev')) {
+                  console.log('🚨 FLY.DEV PROMISE REJECTION - REDIRECTING');
+                  window.location.replace('http://localhost:3000/complete-fix.html');
+                }
+              });
+
+              // 4. Override all network methods
               if (typeof window !== 'undefined') {
+                // Fetch override
                 const originalFetch = window.fetch;
                 window.fetch = function(...args) {
                   const url = String(args[0] || '');
                   if (url.includes('fly.dev') || url.includes('1f687d367311492e88ec0eb21dfc8b09')) {
-                    console.error('🚨 REDIRECTING FROM FLY.DEV REQUEST');
-                    window.location.replace('http://localhost:3000/emergency-reset.html');
-                    return Promise.reject(new Error('Redirected to reset'));
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    return Promise.reject(new Error('Fly.dev blocked'));
                   }
                   return originalFetch.apply(this, args);
                 };
+
+                // XMLHttpRequest override
+                const originalOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url, ...args) {
+                  if (String(url).includes('fly.dev') || String(url).includes('1f687d367311492e88ec0eb21dfc8b09')) {
+                    window.location.replace('http://localhost:3000/complete-fix.html');
+                    throw new Error('Fly.dev blocked');
+                  }
+                  return originalOpen.call(this, method, url, ...args);
+                };
               }
 
-              // Clear all caches immediately
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(regs => {
-                  regs.forEach(reg => reg.unregister());
-                });
-              }
-
-              if ('caches' in window) {
-                caches.keys().then(names => names.forEach(name => caches.delete(name)));
-              }
-
+              // 5. Clear all storage immediately
               try {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(reg => reg.unregister());
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then(names => names.forEach(name => caches.delete(name)));
+                }
                 localStorage.clear();
                 sessionStorage.clear();
-              } catch(e) {}
+              } catch(e) {
+                console.log('Storage clear error:', e);
+              }
 
-              console.log('✅ FLY.DEV INTERCEPTOR ACTIVE');
+              console.log('✅ FINAL FLY.DEV ELIMINATION COMPLETE');
             })();
           `}
         </Script>
